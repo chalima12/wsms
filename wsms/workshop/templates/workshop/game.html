@@ -1,0 +1,88 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {% block style %}
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+      integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w=="
+      crossorigin="anonymous"
+    />
+    <!-- {% comment %} <link rel="stylesheet" href="{% static "css/style.css" %}}" > {% endcomment %} -->
+<style>
+    .nav__item a,li a{
+        text-decoration: none;
+    }
+    li a {
+    color: white;
+  }
+</style>
+
+    <link rel="stylesheet" href="{% static 'css/game.css' %}">
+
+    {% endblock style %}
+    {% load bootstrap5 %}
+	{% bootstrap_css %}
+	{% bootstrap_javascript %}
+    {% block title %}
+    <title>Tic Tac Toe </title>
+    {% endblock title %}
+    
+    <script type="text/javascript" src="{% static 'jquery-3.5.0.js' %}"></script>
+
+  </head>
+  <body>
+    <div class="container">
+        <div class="mt-4 p-5 bg-success text-white rounded">
+            <h1> Wel come To Tic Tac Toe</h1>
+            <button id="b" class="btn btn-primary btn-lg" >Restart!</button>
+        </div>
+    </div>
+   <div class="container mt-5">
+    <table>
+        <tr><div class="sidebar">
+            <ul>
+                <li class="active"><a href="#">Dashboard</a></li>
+                <li><a href="#">Users</a></li>
+                <li><a href="#">Settings</a></li>
+                <li><a href="#">Logout</a></li>
+            </ul>
+        </div>
+        <div class="sidebar">
+            <ul>
+                <li class="active"><a href="#">Dashboard</a></li>
+                <li><a href="#">Users</a></li>
+                <li><a href="#">Settings</a></li>
+                <li><a href="#">Logout</a></li>
+            </ul>
+        </div>
+        
+            <td> </td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>
+
+            </td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>
+
+            </td>
+            <td></td>
+            <td></td>
+        </tr>
+
+    </table>
+   </div>
+   <script src="{% static 'js/game.js' %}"defer></script>
+
+  </body>
+</html>

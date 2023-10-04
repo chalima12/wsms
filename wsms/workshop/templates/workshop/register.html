@@ -1,0 +1,49 @@
+
+{% extends "./base.html" %}
+{% block content %}
+<div class="container mt-3">
+	<form class="form-group" action="register" method="post">
+		{% csrf_token %}
+
+		<label >User Id
+			<div class="form-floating mb-3 mt-3">
+				{{form.user_id}}
+			</label>
+			  </div>
+		<label >First Name
+		<div class="form-floating mb-3 mt-3">
+			{{form.first_name}}
+		</label>
+		  </div>
+		  <label >
+			Last Name
+			<div class="form-floating mb-3 mt-3">
+			{{form.last_name}}
+		  </div>
+		  </label>
+		  <br>
+		  <label > Email
+			<div class="form-floating mb-3 mt-3">
+		
+				{{form.user_name}}
+			  </div>
+		  </label>
+	  <br>
+	  <label > Pass Word
+		<div class="form-floating mt-3 mb-3">
+		{{form.pass_word}}
+	  </div>
+	  </label>
+	
+	  
+	  <br>
+	  <label >User Type
+		<div class="form-floating mt-3 mb-3">
+			{{form.user_type}}
+		  </div>
+	  </label>
+	  <br>
+	  <button type="submit" class="btn btn-primary">Submit</button>
+	</form>
+  </div>
+{% endblock content %}

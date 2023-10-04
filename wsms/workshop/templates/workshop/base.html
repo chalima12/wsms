@@ -1,0 +1,92 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {% block style %}
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+      integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w=="
+      crossorigin="anonymous"
+    />
+    <!-- {% comment %} <link rel="stylesheet" href="{% static "css/style.css" %}}" > {% endcomment %} -->
+<style>
+    .nav__item a,li a{
+        text-decoration: none;
+    }
+    li a {
+    color: white;
+  }
+</style>
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    {% endblock style %}
+    {% load bootstrap5 %}
+	{% bootstrap_css %}
+	{% bootstrap_javascript %}
+    {% block title %}
+    <title>Workshop Management System</title>
+    {% endblock title %}
+    
+    
+  </head>
+  <body>
+    {% block header %}
+    <header id="header">
+        <div>
+          <i class="fas fa-user-alt"></i>
+          <span>Chalchisa Tamiru</span>
+        </div>
+      </header>
+    {% endblock header %}
+
+
+    {% block navbar %}
+    
+    
+
+    <nav id="nav">
+       <ul>
+        
+          <li class="btn btn-m-5">
+            <a href="">WSMS</a>
+          </li>
+
+       
+        
+          <li class="btn btn-my-20 btn-p-10"><a href="">Dashboard</a></li><br>
+        
+        
+        
+          <li class="btn btn-my-20"><a href="user">User</a></li><br>
+        
+        
+          <li class="btn btn-my-20"><a href="">Section</a></li><br>
+        
+        
+          <li class="btn btn-my-8"><a href="item">Item </a></li><br>
+       
+        
+      
+          <li class="btn btn-my-20"><a href="">Component</a></li>
+       
+
+        
+<li class="btn btn-my-8"><a href="">Report</a></li>
+    
+       </ul>
+               
+      
+    </nav>
+    {% endblock navbar %}
+    {% block content %}
+    
+    {% endblock content %}
+
+    <script src="{% static "js/main.js" %}" defer></script>
+  </body>
+</html>

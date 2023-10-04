@@ -1,0 +1,30 @@
+table tr td{
+    height: 150px;
+    width: 150px;
+    text-align: center;
+    border: 5px solid black;
+    font-size: 100px;
+}
+.sidebar {
+    background: #333;
+    width: 200px;
+    height: 100vh;
+    color: #fff;
+}
+
+ul {
+    padding: 0;
+    list-style: none;
+}
+
+li {
+    padding: 10px;
+    cursor: pointer;
+}
+
+.active {
+    background: #555;
+}
+a{
+    text-decoration: none;
+}
