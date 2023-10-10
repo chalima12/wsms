@@ -31,15 +31,19 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    
     'jquery',
     'bootstrap5',
     'workshop',
+    'jet.dashboard',
+    'jet',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'crispy_forms',
 ]
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
@@ -100,6 +104,9 @@ DATABASES = {
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
+
+
+PASSWORD_HASHERS=['django.contrib.auth.hashers.PBKDF2PasswordHasher']
 
 AUTH_PASSWORD_VALIDATORS = [
     {

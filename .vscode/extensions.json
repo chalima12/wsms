@@ -1,4 +1,6 @@
-{
+{"emmet.includeLanguages": {
+  "django-html": "html"
+}
   "version": "0.2.0",
   "configurations": [
     {

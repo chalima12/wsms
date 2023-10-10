@@ -1,0 +1,17 @@
+
+{% extends "./base1.html" %}
+{% block content %}
+
+<h1>Assign Item</h1>
+<p>Assignment Id: {{ item.as_id}}</p>
+<p>Item : {{ item. item}}</p>
+<p>Engineer: {{ item.engineer }}</p>
+<p>Remark: {{ item.remark }}</p>
+<form method="POST" action="{% url 'create-assignment' item.Serial_no%}">
+{% csrf_token %}
+{{ form.as_p }}
+<input type="submit" value="Assign">
+</form>
+{% endblock %}
+
+{% endblock content %}

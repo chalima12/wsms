@@ -1,0 +1,124 @@
+
+
+
+
+
+
+
+{% extends "./base1.html" %}
+
+
+{% block title %}
+<title>Components List</title>
+  
+
+
+{% endblock title %}
+  
+
+
+{% block content %}
+
+
+  
+  
+
+
+
+  
+
+    <!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+  <div class="container-lg mt-lg-5 mb-2 mx-lg-2"> 
+  <a class="btn btn-warning" href="create-component">
+
+      <span class="fa fa-plus">
+       &nbsp;&nbsp; Add Component
+      </span>
+    </a>
+    
+  
+  </div> 
+
+            <div class="card mt-lg-5">
+              <div class="card-header">
+                <h2 class="container mx-5 card-title">List of Components</h2>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+                <table id="example1" class="table table-bordered table-striped">
+
+                
+                  <thead class="dataTables_info">
+                    <tr>
+                      <th>Received Date</th>
+                      <th>Item</th>
+                      <th>Stock Id</th>
+                      <th>Serial Number</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                   
+                  {% for data in components %}
+                  <tr>
+                    <td>{{data.recived_date}}</td>   
+                      <td> {{data.item}}</td>
+                      <td>{{data.stock_id}}</td>
+                      <td>{{data.Serial_no}}</td>
+                      <td >
+                        
+                   
+                        <a class="btn btn-danger btn-sm" href="#" data-toggle="modal" data-target="#modal-danger">
+                          <span class="fa fa-trash">
+                           Delete
+                          </span>
+                     </a>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                    
+                  </tbody>
+                    </table>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+          <!-- /.col -->
+        </div>
+        <!-- /.row -->
+      </div>
+      <!-- /.container-fluid -->
+    </section>
+
+
+    <div class="modal fade" id="modal-danger">
+      <div class="modal-dialog">
+        <div class="modal-content bg-danger">
+          <div class="modal-header">
+            <a class="btn btn-danger btn-sm" href="#" data-toggle="modal" data-target="#modal-danger">
+             <span class="fa fa-trash">
+              Delete
+             </span>
+        </a>
+            <h4 class="modal-title">Warining</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>Do you want to delete this Component&hellip;</p>
+          </div>
+          <div class="modal-footer justify-content-between">
+            <button type="button" class="btn btn-outline-light" data-dismiss="modal">Cancel</button>
+            <a class="btn btn-outline-light" href='#'>Delete</a>
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+{% endblock content %}
+    
+
