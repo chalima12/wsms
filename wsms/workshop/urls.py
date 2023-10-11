@@ -5,7 +5,7 @@ app_name = 'workshop'
 
 urlpatterns = [
     # view
-    path('', views.index),
+    path('', views.index,name='index'),
     
     #  path("register-item", views.register_item, name="register-item"),
      path("user",views.UserListView.as_view()  ,name="user"),
@@ -20,9 +20,16 @@ urlpatterns = [
      path('create-component', views.ComponentCreateView.as_view(),name='create-component'),
      path("register", views.UserCreateView.as_view(), name="register"),
      path('create-section', views.SectionCreateView.as_view(),name='create-section'),
-     path('create-assignment', views.assign_item_view,name='create-assignment'),
+     path('create-assignment/<str:pk>', views.assign_item_view,name='create-assignment'),
+    #  path('save_assignment', views.save_assignment_view,name='save_assignment'),
+     
+
 # delete
 path("delete-user/<str:pk>",views.delete_user ,name="delete-user"),
-path('item_delete/<int:pk>',views.ItemDeleteView.as_view(), name='user_delete'),
+path('item_delete/<str:pk>',views.delete_item, name='item_delete'),
+path("delete-assignment/<str:pk>",views.delete_assignment ,name="assignment-delete"),
+path('conponent-delete/<str:pk>',views.delete_component, name='conponent-delete'),
+path("delete-section/<str:pk>",views.delete_section ,name="section-delete"),
+
 
 ]

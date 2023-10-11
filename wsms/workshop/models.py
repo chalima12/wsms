@@ -41,6 +41,7 @@ class Item(models.Model):
           ),default=1
           )
     remark= models.TextField(blank=True)
+    is_valid=models.BooleanField(auto_created=True,default=True)
 
     def __str__(self) -> str:
         return f"{self.stock_id},{self.Serial_no}"
@@ -53,6 +54,8 @@ class Component(models.Model):
     stock_id = models.CharField(max_length=15)
     Serial_no =models.CharField(max_length=15,primary_key=True)
     remark= models.TextField(blank=True)
+    is_valid=models.BooleanField(auto_created=True,default=True)
+
     
     def __str__(self) -> str:
         return f"{self.stock_id} {self.Serial_no}"
@@ -63,6 +66,8 @@ class Section(models.Model):
     section_id = models.CharField(max_length=15,primary_key=True)
     name = models.CharField(max_length=100)
     manager = models.ForeignKey(Users, on_delete=models.CASCADE)
+    is_valid=models.BooleanField(auto_created=True,default=True)
+
    
     def __str__(self) -> str:
         return f"{self.name}"
@@ -73,6 +78,8 @@ class Assignments(models.Model):
     Section= models.ForeignKey(Section, on_delete=models.CASCADE)
     remark= models.TextField(blank=True)
     Assigned_date=models.DateField(auto_now=True)
-    completed_date=models.DateField(default="2023-11-02")
+    completed_date=models.DateField(default="2023-11-02",auto_created=True)
+    is_valid=models.BooleanField(auto_created=True,default=True)
+
     def __str__(self) -> str:
         return f"{self.as_id}"

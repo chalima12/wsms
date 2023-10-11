@@ -1,7 +1,7 @@
-from .forms import AssignForm
-
+from .forms import AssignmentForm
+from django.views.decorators.http import require_GET, require_POST
 from django.http import HttpResponseRedirect
-from django.shortcuts import  redirect, render
+from django.shortcuts import  get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.generic import (View,
                                   DateDetailView,
@@ -57,15 +57,19 @@ class SectionCreateView(CreateView):
 
 class AssignmentCreateView(CreateView):
     model = Assignments
-    fields='__all__'
-    template_name = "workshop/item.html"
+    form_class = AssignmentForm
+    template_name = "workshop/Add_assignment.html"
     success_url = reverse_lazy('workshop:assignment')
 
-
-
-
-
- 
+    def get_initial(self):
+        # get the pk from the url kwargs
+        pk = self.kwargs.get("pk")
+        # get the item object or raise a 404 error
+        item = get_object_or_404(Item, pk=pk)
+        # set the initial value for the item field to the item object
+        initial = {"item": item}
+        # return the initial value
+        return initial
 
 
  #view
@@ -89,6 +93,10 @@ class ItemListView(ListView):
     context_object_name='items'
     template_name="workshop/item.html"
     # paginate_by = 10 # if pagination is desired
+    def get_queryset(self):
+    # return only active users
+        return Item.objects.filter(is_valid=True)
+
 
    
 class ComponentListView(ListView):
@@ -96,6 +104,10 @@ class ComponentListView(ListView):
     context_object_name='components'
     template_name="workshop/component.html"
     # paginate_by = 4 # if pagination is desired
+    def get_queryset(self):
+# return only active users
+        return Component.objects.filter(is_valid=True)
+
 
 
 class SectionListView(ListView):
@@ -103,12 +115,20 @@ class SectionListView(ListView):
     context_object_name='sections'
     template_name="workshop/section.html"
     # paginate_by = 4 # if pagination is desired
+    def get_queryset(self):
+# return only active users
+        return Section.objects.filter(is_valid=True)
+
 
 class AssignmentListView(ListView):
     model = Assignments
     context_object_name='forms'
     template_name="workshop/Assignment.html"
     # paginate_by = 4 # if pagination is desired
+    def get_queryset(self):
+# return only active users
+        return Assignments.objects.filter(is_valid=True)
+
  
 
 # delete
@@ -126,21 +146,6 @@ class UserDeleteView(DeleteView):
 
 
 
-
-def assign_item_view(request, Serial_no):
-    item = Item.objects.get(id=Serial_no)
-    if request.method == 'POST':
-        form = AssignForm(request.POST, initial={'item': item.Serial_no})
-        if form.is_valid():
-            form.save()
-        return redirect('asignment')
-    else:
-        form = AssignForm(initial={'item': item.Serial_no})
-        return render(request, 'Add_assignment.html', {'form': form, 'item': item})
-
-
-
-
 def delete_user(request,pk):
     user=Users.objects.get(user_id=pk)
     if request.method=='POST':
@@ -150,15 +155,76 @@ def delete_user(request,pk):
         return redirect('/user')
     context={'user':user}
     return render(request,'workshop/delete-user.html',context)
+# delete Item
+def delete_item(request,pk):
+    item=Item.objects.get(Serial_no=pk)
+    if request.method=='POST':
+        item.is_valid=False
+        item.save()
+        messages.success(request,  f'user {item.Serial_no} has been deactivated successfully.')
+        return redirect('/item')
+    context={'item':item}
+    return render(request,'workshop/delete-item.html',context)
+
+def delete_component(request,pk):
+    component=Component.objects.get(Serial_no=pk)
+    if request.method=='POST':
+        component.is_valid=False
+        component.save()
+        messages.success(request,  f'user {component.Serial_no} has been deactivated successfully.')
+        return redirect('/component')
+    context={'component':component}
+    return render(request,'workshop/delete-component.html',context)
 
 
-# @require_POST
-# def delete_object(request):
-# # get the object id from the form data
-# object_id = request.POST.get("object_id")
-# # get the object or raise a 404 error
-# object = get_object_or_404(Object, id=object_id)
-# # delete the object
-# object.delete()
-# # redirect to another page
-# return redirect("home")
+def delete_section(request,pk):
+    section=Section.objects.get(section_id=pk)
+    if request.method=='POST':
+        section.is_valid=False
+        section.save()
+        messages.success(request,  f'user {section.section_id} has been deactivated successfully.')
+        return redirect('/section')
+    context={'section':section}
+    return render(request,'workshop/delete-section.html',context)
+
+
+def delete_assignment(request,pk):
+    assign=Assignments.objects.get(as_id=pk)
+    if request.method=='POST':
+        assign.is_valid=False
+        assign.save()
+        messages.success(request,  f'user {assign.as_id} has been deactivated successfully.')
+        return redirect('/assignment')
+    context={'assign':assign}
+    return render(request,'workshop/delete-assignment.html',context)
+
+
+
+
+def assign_item_view(request, pk):
+    form = AssignmentForm(instance=item)
+    item = Item.objects.get(Serial_no=pk)
+    if request.method == "POST":
+        form = AssignmentForm(request.POST, instance=item)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect('/user')
+    context={"item": item,"form": form}
+    return render(request, "workshop/Add_assignment.html",context)
+
+# def assign_item_view(request, pk):
+#     item = get_object_or_404(Item, Serial_no=pk)
+#     if request.method == "POST":
+#         form = AssignmentForm(request.POST, instance=item)
+#         if form.is_valid():
+#             form.save()
+#             return redirect("workshop:assignment")
+        
+#     else:
+   
+#         form = AssignmentForm(instance=item)
+#         context = {
+#         "form": form,
+#         "item": item,
+#         }   
+#     return render(request, "workshop/Add_assignment.html", context)

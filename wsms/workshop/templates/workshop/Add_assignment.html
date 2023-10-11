@@ -2,16 +2,51 @@
 {% extends "./base1.html" %}
 {% block content %}
 
-<h1>Assign Item</h1>
-<p>Assignment Id: {{ item.as_id}}</p>
-<p>Item : {{ item. item}}</p>
-<p>Engineer: {{ item.engineer }}</p>
-<p>Remark: {{ item.remark }}</p>
-<form method="POST" action="{% url 'create-assignment' item.Serial_no%}">
-{% csrf_token %}
-{{ form.as_p }}
-<input type="submit" value="Assign">
-</form>
-{% endblock %}
+<div class="container mt-3">
+	<form class="form-group" method="POST" action='#'>
+		{% csrf_token %}
+		<!-- use a hidden input field for the item field -->
+    <div class="form-control-lg">
+        <label >ASS Id
+            <div class="form-floating mb-3 mt-3">
+                {{form.as_id}}
+           
+          </div>
+        </label>
+    </div>
+    <br>
+    <br>
+            
+              
+		<input type="text" name="item" value="{{item.Serial_no}}">
+  
+     
+      
+      <div class="form-control-lg">
+		<!-- display other input fields for the assignment's attributes -->
+            <label >Engineer  </label>
+          </div>
+            <div class="form-floating mb-3 mt-3">
+                {{form.engineer}}
+           
+             
+            </div>
+              <label >Section </label>
+                <div class="form-floating mb-3 mt-3">
+                    {{form.Section}}
+               
+                  </div>
+                  <label >Remark</label>
+                    <div class="form-floating mb-3 mt-3">
+                        {{form.remark}}
+                    
+                      </div>
+                      
+                          <div class="card-footer">
+                            <button type="submit" class="btn btn-primary">Assign</button>
+                          </div>
+
+  </div>
+</div>
 
 {% endblock content %}
