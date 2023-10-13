@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import BaseUserManager
 from django.contrib.auth.models import AbstractBaseUser
 from django.urls import reverse, reverse_lazy
 # from .forms import *
@@ -35,13 +36,15 @@ class Item(models.Model):
     received_by= models.CharField(max_length=100)
     status = models.IntegerField(choices=(
           (1, "pending"),
-          (2, "accepted"),
+          (2, "On_progress"),
            (3, "Completed"),
             (4, "Not maintanable"),
-          ),default=1
+          ),default=1 ,
+          auto_created=True
           )
     remark= models.TextField(blank=True)
     is_valid=models.BooleanField(auto_created=True,default=True)
+    is_accepted=models.BooleanField(auto_created=False,default=False)
 
     def __str__(self) -> str:
         return f"{self.stock_id},{self.Serial_no}"

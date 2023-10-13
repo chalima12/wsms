@@ -1,40 +1,15 @@
 
 {% extends "./base1.html" %}
+{% load crispy_forms_tags %}
 {% block content %}
 <div class="container mt-3">
 	<form class="form-group" method="post">
 		{% csrf_token %}
 		
-        <label >Item
-        <div class="form-floating mb-3 mt-3">
-            {{form.item}}
-        </label>
-          </div>
-                  <br>
-			<label >Stock Id 
-			<div class="form-floating mb-3 mt-3">
-				{{form.stock_id}}
-			</label>
-			  </div>
-			  <label >
-				Serial Number
-				<div class="form-floating mb-3 mt-3">
-				{{form.Serial_no}}
-			  </div>
-			  </label>
-			  <br>
-		  
-		  <br>
-		  <label >Remark
-			<div class="form-floating mt-3 mb-3">
-				{{form.remark}}
-			  </div>
-		  </label>
-		  <br>
-
-		  <div class="card-footer">
-			<button type="submit" class="btn btn-primary">Submit</button>
-		  </div>
+        {{ form|crispy }}
+<div class="card-footer">
+<button type="submit" class="btn btn-primary">Assign</button>
+</div>
 	</form>
   </div>
 {% endblock content %}

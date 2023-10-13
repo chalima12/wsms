@@ -1,81 +1,31 @@
+{% extends "./base1.html" %} {% block content %}
 
-{% extends "./base1.html" %}
-{% block content %}
 <div class="container mt-3">
-	<form class="form-group login-form" method="post">
-		{% csrf_token %}
-		
-	
-		
+  <form method="POST" action="{% url 'workshop:create-item' %}">
+    {% csrf_token %}
+    <!-- display the input fields for the item's attributes -->
+     <label>WS ID</label>
+    <div class="form-floating mb-3 mt-3">{{form.ws_id}}</div>
 
+    <label>Stock ID</label>
+    <div class="form-floating mb-3 mt-3">{{form.stock_id}}</div>
 
+    <label>Serial No</label>
+    <div class="form-floating mb-3 mt-3">{{form.Serial_no}}</div>
 
-			<label >Workshop Id</label>
-				<div class="form-floating mb-3 mt-3">
-					<div class="au-input au-input--full border-success" >
-						{{form.ws_id}}
-					</div>
-					
-				
-				  </div>
-			<label >Stock Id </label>
-			<div class="form-floating mb-3 mt-3">
-				<div class="au-input au-input--full border-success" >
-					{{form.stock_id}}
-				</div>
-				
-			
-			  </div>
-			  <label >Serial Number  </label>
-				<div class="form-floating mb-3 mt-3">
-					<div class="au-input au-input--full border-success" >
-						{{form.Serial_no}}
-					</div>
-				
-			  </div>
-			
+    <label>Delivered By</label>
+    <div class="form-floating mb-3 mt-3">{{form.delivered_by}}</div>
 
-			  <label > Delivered by  </label>
-				<div class="form-floating mb-3 mt-3">
-					<div class="au-input au-input--full border-success" >
-						{{form.delivered_by}}
-					</div>
-			
-				
-				  </div>
-				
-		  <label > Received by</label>
-			<div class="form-floating mt-3 mb-3">
-				<div class="au-input au-input--full border-success" >
-					{{form.received_by}}
-				</div>
-			
-		  </div>
-		  
-		  <label >status  </label>
-			<div class="form-floating mt-3 mb-3">
-				<div class="au-input au-input--full border-success" >
-					{{form.status}}
-				</div>
-				
-			  </div>
-		
-	
-		  <label >Remark  </label>
-			
-			<div class="form-floating mt-3 mb-3">
-				<div class="au-input au-input--full border-success" >
-					{{form.remark}}
-				</div>
-				
-			  </div>
-		
-	
+    <label>Received By</label>
+    <div class="form-floating mb-3 mt-3">{{form.received_by}}</div>
 
+    <label>Remark</label>
+    <div class="form-floating mb-3 mt-3">{{form.remark}}</div>
+    
 
-		  <div class="card-footer">
-			<button type="submit" class="btn btn-primary">Submit</button>
-		  </div>
-	</form>
-  </div>
+    <!-- add more input fields as needed -->
+    <input type="submit" value="Add" class="btn btn-primary" />
+  </form>
+</div>
+
 {% endblock content %}

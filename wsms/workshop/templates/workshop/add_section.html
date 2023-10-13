@@ -1,34 +1,11 @@
-
-{% extends "./base1.html" %}
-{% block content %}
+{% extends "./base1.html" %} {% load crispy_forms_tags %} {% block content %}
 <div class="container mt-3">
-	<form class="form-group" method="post">
-		{% csrf_token %}
-		
-        <label >Section Id
-        <div class="form-floating mb-3 mt-3">
-            {{form.section_id}}
-        </label>
-          </div>
-                  <br>
-			<label >Section Name 
-			<div class="form-floating mb-3 mt-3">
-				{{form.name}}
-			</label>
-			  </div>
-			  <label >
-				Manager
-				<div class="form-floating mb-3 mt-3">
-				{{form.manager}}
-			  </div>
-			  </label>
-			  <br>
-		  
-		  
-              
-			  <div class="card-footer">
-				<button type="submit" class="btn btn-primary">Submit</button>
-			  </div>
-	</form>
-  </div>
-{% endblock content %}
+  <form method="post">
+    {% csrf_token %} {{ form|crispy }}
+    <div class="card-footer">
+      <button type="submit" class="btn btn-primary btn-lg">Register</button>
+    </div>
+  </form>
+</div>
+
+{% endblock content%}

@@ -1,52 +1,15 @@
 
 {% extends "./base1.html" %}
+{% load crispy_forms_tags %}
 {% block content %}
-
 <div class="container mt-3">
-	<form class="form-group" method="POST" action='#'>
+	<form class="form-group" method="post">
 		{% csrf_token %}
-		<!-- use a hidden input field for the item field -->
-    <div class="form-control-lg">
-        <label >ASS Id
-            <div class="form-floating mb-3 mt-3">
-                {{form.as_id}}
-           
-          </div>
-        </label>
-    </div>
-    <br>
-    <br>
-            
-              
-		<input type="text" name="item" value="{{item.Serial_no}}">
-  
-     
-      
-      <div class="form-control-lg">
-		<!-- display other input fields for the assignment's attributes -->
-            <label >Engineer  </label>
-          </div>
-            <div class="form-floating mb-3 mt-3">
-                {{form.engineer}}
-           
-             
-            </div>
-              <label >Section </label>
-                <div class="form-floating mb-3 mt-3">
-                    {{form.Section}}
-               
-                  </div>
-                  <label >Remark</label>
-                    <div class="form-floating mb-3 mt-3">
-                        {{form.remark}}
-                    
-                      </div>
-                      
-                          <div class="card-footer">
-                            <button type="submit" class="btn btn-primary">Assign</button>
-                          </div>
-
-  </div>
+		
+        {{ form|crispy }}
+<div class="card-footer">
+<button type="submit" class="btn btn-primary">Assign</button>
 </div>
-
+	</form>
+  </div>
 {% endblock content %}
