@@ -37,14 +37,19 @@
                       <td>{{data.engineer}}</td>
                       <td>
                         {% if not data.item.is_accepted %}
-                        <a class="btn btn-success btn-sm " href="{% url 'workshop:accept' data.as_id%}" >
+                        <a style='border-radius:15%' class="btn btn-success  " href="{% url 'workshop:accept' data.as_id%}" >
                         <span class="fa ">
                         Accept
                         </span>
                         </a>
                         {% else %}
-                        <button type="button" class="btn btn-primary" disabled>Accepted</button>
+                        <a style='border-radius:15%'  class="btn btn-success btn-sm btn disabled" href='#' > <span class="fa ">Accepted</span></a>
                         {% endif %}
+                        <a style='border-radius:15%' class="btn btn-success  " href="{% url 'workshop:create-component' %}" >
+                          <span class="fa ">
+                          Add Component
+                          </span>
+                          </a>
                         
                     </td>
                     </tr>

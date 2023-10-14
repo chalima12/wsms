@@ -37,9 +37,9 @@ class UserCreateView(CreateView):
         # return the default form_valid behavior
         return super().form_valid(form)
     success_url = reverse_lazy('workshop:user')
-class itemCreateView(CreateView):
+class ItemCreateView(CreateView):
     model = Item
-    form_class=ItemForm
+    form_class = ItemForm
     template_name = "workshop/add-tem.html"
     success_url = reverse_lazy('workshop:item')
 class ComponentCreateView(CreateView):
@@ -96,7 +96,7 @@ class ItemListView(ListView):
     # paginate_by = 10 # if pagination is desired
     def get_queryset(self):
     # return only active users
-        return Item.objects.filter(is_valid=True,status=1)
+        return Item.objects.filter(is_valid=True)
    
 class ComponentListView(ListView):
     model = Component
@@ -225,8 +225,13 @@ def delete_assignment(request,pk):
 
 # def add_item_view(request):
 #     if request.method == "POST":
+#         item =Item.Serial_no
 #         form = ItemForm(request.POST)
 #         if form.is_valid():
+#             if item  in form:
+#                 Item.Repeat_Count+=1
+#                 form.save()
+            
 #             form.save()
 #             return redirect("workshop:item")
 #     else:

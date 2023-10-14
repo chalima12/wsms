@@ -47,9 +47,9 @@
         <nav class="main-header navbar navbar-expand navbar-white navbar-light">
           {% block leftnav %}
           <ul class="navbar-nav">
-            {% comment %} <li class="nav-item">
+            {% comment %} {% comment %} <li class="nav-item">
               <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
-            </li> {% endcomment %}
+            </li> {% endcomment %} 
             <li class="nav-item d-none d-sm-inline-block">
               <a href="/" class="nav-link">Home</a>
             </li>
@@ -241,29 +241,29 @@
                   </a>
                   <ul class="nav nav-treeview">
                     <li class="nav-item">
-                      <a href="user" class="nav-link active">
+                      <a href="{% url 'workshop:user' %}" class="nav-link ">
                         <i class="far fa-circle nav-icon"></i>
                         <p>users</p>
                       </a>
                     </li>
                     <li class="nav-item">
-                      <a href="item" class="nav-link">
+                      <a href="{% url 'workshop:item' %}" class="nav-link ">
                         <i class="far fa-circle nav-icon"></i>
                         <p>Items</p>
                       </a>
                     </li>
                     <li class="nav-item">
-                      <a href="component" class="nav-link">
+                      <a href="{% url 'workshop:component' %}" class="nav-link">
                         <i class="far fa-circle nav-icon"></i>
                         <p>Components</p>
                       </a>
                       <li class="nav-item">
-                        <a href="section" class="nav-link">
+                        <a href="{% url 'workshop:section' %}" class="nav-link">
                           <i class="far fa-circle nav-icon"></i>
                           <p>Sections</p>
                         </a>
                         <li class="nav-item">
-                          <a href="assignment" class="nav-link">
+                          <a href="{% url 'workshop:assignment' %}" class="nav-link">
                             <i class="far fa-circle nav-icon"></i>
                             <p>Assignments</p>
                           </a>

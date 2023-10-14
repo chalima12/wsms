@@ -1,0 +1,22 @@
+{% extends "./base1.html" %}
+
+
+{% block title %}
+<title> Delete Assignment</title>
+<form method='POST'>
+{% endblock title %}
+
+  {% block content %}
+  <div class="container">
+    <p>Are sure you want to delete '{{assign}}'</p>
+       <form  method="POST">
+        {% csrf_token %}
+        <a class="btn-danger btn-sm" href="/assignment">Cancel</a>
+     <input type="submit" name="Confirm">
+    
+       </form>
+    
+</div>
+
+  {% endblock content %}
+    

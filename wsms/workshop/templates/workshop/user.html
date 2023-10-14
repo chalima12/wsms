@@ -3,117 +3,117 @@
 
 {% block title %}
 
-    
+
 <title>List of Users</title>
 
 {% endblock title %}
 {% block content %}
 
 
-  
-  
+
+
 
 
 
 <section class='container-fluid'>
-    <!-- Content Wrapper. Contains page content -->
+<!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
-  <div class="container mt-2"> 
-    <a class="btn btn-warning" href="register">
-  
-        <span class="fa fa-plus">
-          &nbsp;&nbsp; Add User
-        </span>
-      </a>
-      
-    
-    </div> 
+<div class="container mt-2"> 
+<a class="btn btn-warning" href="register">
 
-            <div class="card">
-              <div class="card-header">
-                </h2 class="container mx-5 card-title">List of usres</h2>
-              </div>
-              <!-- /.card-header -->
-              <div class="card-body">
-                <table id="example1" class="table table-bordered table-striped">
+<span class="fa fa-plus">
+&nbsp;&nbsp; Add User
+</span>
+</a>
 
-                    <thead class="table-info-box">
-                      <tr>
-                        <th>Firstname</th>
-                        <th>Lastname</th>
-                        <th>Email</th>
-                        <th>user Detail</th>
-                        <th>Remove</th>
-                        
-                      </tr>
-                    </thead>
-                      <tbody>
-                        {% for data in users %}
-                        
-                       
-                       
-                          <td>{{data.first_name|upper}}</td>
-                          <td>{{data.last_name|upper}}</td>
-                          <td>{{data.user_name}} </td>
-                          <td>
-                               
-                                      <a class="btn btn-info btn-outline-light btn-sm" href="#">
-                                        <span class="fa fa-aws">
-                                        View
-                                        </span>
-                                      </a>
-                                </td>
-                            
-                               
 
-                                <td >
-                           
-                          <a class="btn btn-danger btn-sm btn-outline-light"  
-                            href="{% url 'workshop:delete-user' data.user_id %}" data-target="#modal-danger">
-                            <span class="fa fa-trash" data-toggle="modal" >
-                             Delete
-                            </span>
-                       </a>
-                       
-                       
-                                  </td>
-                            </td>
-                      </tr>
-                       
-        
-                        
-                          {% endfor %}
-                      </tbody>
-                  </table>
-              </div>
-              <!-- /.card-body -->
-            </div>
-            <!-- /.card -->
+</div> 
 
-        
-      <!-- /.container-fluid -->
-    </section>
-    <div class="modal fade" id="modal-danger">
-      <div class="modal-dialog">
-        <div class="modal-content bg-danger">
-          <div class="modal-header">
-            <h4 class="modal-title">Warining</h4>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <p>Do you want to delete this User&hellip;</p>
-          </div>
-          <div class="modal-footer justify-content-between">
-            <button type="button" class="btn btn-outline-light" data-dismiss="modal">Cancel</button>
-            <a class="btn btn-outline-light" href='#'>Delete</a>
-          </div>
-        </div>
-        <!-- /.modal-content -->
-      </div>
-      <!-- /.modal-dialog -->
-    </div>
+<div class="card">
+<div class="card-header">
+</h2 class="container mx-5 card-title">List of usres</h2>
+</div>
+<!-- /.card-header -->
+<div class="card-body">
+<table id="example1" class="table table-bordered table-striped">
+
+<thead class="table-info-box">
+<tr>
+<th>Firstname</th>
+<th>Lastname</th>
+<th>Email</th>
+<th>user Detail</th>
+<th>Remove</th>
+
+</tr>
+</thead>
+<tbody>
+{% for data in users %}
+
+
+
+<td>{{data.first_name|upper}}</td>
+<td>{{data.last_name|upper}}</td>
+<td>{{data.user_name}} </td>
+<td>
+
+<a class="btn btn-info btn-outline-light btn-sm" href="#">
+<span class="fa fa-aws">
+View
+</span>
+</a>
+</td>
+
+
+
+<td >
+
+<a class="btn btn-danger btn-sm btn-outline-light"  
+href="{% url 'workshop:delete-user' data.user_id %}" data-target="#modal-danger">
+<span class="fa fa-trash" data-toggle="modal" >
+Delete
+</span>
+</a>
+
+
+</td>
+</td>
+</tr>
+
+
+
+{% endfor %}
+</tbody>
+</table>
+</div>
+<!-- /.card-body -->
+</div>
+<!-- /.card -->
+
+
+<!-- /.container-fluid -->
+</section>
+<div class="modal fade" id="modal-danger">
+<div class="modal-dialog">
+<div class="modal-content bg-danger">
+<div class="modal-header">
+<h4 class="modal-title">Warining</h4>
+<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+<span aria-hidden="true">&times;</span>
+</button>
+</div>
+<div class="modal-body">
+<p>Do you want to delete this User&hellip;</p>
+</div>
+<div class="modal-footer justify-content-between">
+<button type="button" class="btn btn-outline-light" data-dismiss="modal">Cancel</button>
+<a class="btn btn-outline-light" href='#'>Delete</a>
+</div>
+</div>
+<!-- /.modal-content -->
+</div>
+<!-- /.modal-dialog -->
+</div>
 {% endblock content %}
-    
+
 

@@ -45,6 +45,7 @@ class Item(models.Model):
     remark= models.TextField(blank=True)
     is_valid=models.BooleanField(auto_created=True,default=True)
     is_accepted=models.BooleanField(auto_created=False,default=False)
+    Repeat_Count =models.IntegerField(default=1,auto_created=True)
 
     def __str__(self) -> str:
         return f"{self.stock_id},{self.Serial_no}"
@@ -60,6 +61,9 @@ class Component(models.Model):
     is_valid=models.BooleanField(auto_created=True,default=True)
 
     
+ 
+
+    
     def __str__(self) -> str:
         return f"{self.stock_id} {self.Serial_no}"
     def get_absolute_url (self):
@@ -69,7 +73,7 @@ class Section(models.Model):
     section_id = models.CharField(max_length=15,primary_key=True)
     name = models.CharField(max_length=100)
     manager = models.ForeignKey(Users, on_delete=models.CASCADE)
-    is_valid=models.BooleanField(auto_created=True,default=True)
+    is_valid=models.BooleanField(default=True)
 
    
     def __str__(self) -> str:

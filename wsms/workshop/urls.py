@@ -16,7 +16,7 @@ urlpatterns = [
      path("tictac",views.tictac , name="tictac"),
     #  path('delete', views.delete, name='delete'),
    #create
-     path('create-item', views.itemCreateView.as_view(),name='create-item'),
+     path('create-item', views.ItemCreateView.as_view(),name='create-item'),
      path('create-component', views.ComponentCreateView.as_view(),name='create-component'),
      path("register", views.UserCreateView.as_view(), name="register"),
      path('create-section', views.SectionCreateView.as_view(),name='create-section'),

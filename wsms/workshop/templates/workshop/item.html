@@ -18,7 +18,7 @@
     <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
   <div class="container mt-2"> 
-    <a class="btn btn-warning" href="create-item">
+    <a class="btn btn-warning" href="{% url 'workshop:create-item' %}">
   
         <span class="fa fa-plus">
          &nbsp;&nbsp; Add Item
@@ -39,36 +39,37 @@
                           <th>Received Date</th>
                           <th>Stock Id</th>
                           <th>Serial Number</th>
+                          <th>Status</th>
+                          <th>Acceped</th>
                           <th>Action</th>
                         </tr>
                       </thead>
                       <tbody>
                        
-                      {% for data in items %}
-                      <tr>
-                             
-                          <td> {{data.received_date}}</td>
-                          <td>{{data.stock_id}}</td>
-                          <td>{{data.Serial_no}}</td>
-                          <td >
-                            
-                            <a class="btn btn-info btn-sm" 
-                             href="{% url 'workshop:create-assignment' data.Serial_no %}">
-                              <span class="fa fa-address-book">
-                               Assign
-                              </span>
-                         </a>
-                            
-                         
-                         <a class="btn btn-danger btn-sm" href="{% url 'workshop:item_delete' data.Serial_no%}" >
-                          <span class="fa fa-trash">
-                           Delete
-                          </span>
-                     </a>
-                     
-
-                            
-                          </td>
+                        {% for data in items %}
+                        <tr>
+                        <td> {{data.received_date}}</td>
+                        <td>{{data.stock_id}}</td>
+                        <td>{{data.Serial_no}}</td>
+                        <td>{{data.status}}</td>
+                        <td>{{data.is_accepted}}</td>
+                        <td >
+                        {% if data.status != 2 %}
+                        <a class="btn btn-success btn-sm" 
+                        href="{% url 'workshop:create-assignment' data.Serial_no %}">
+                        <span class="fa fa-address-book">
+                        Assign
+                        </span>
+                        </a>
+                        {% else %}
+                        <button type="button" class="btn btn-info btn-sm" >Assigned</button>
+                        {% endif %}
+                        <a class="btn btn-danger btn-sm" href="{% url 'workshop:item_delete' data.Serial_no%}" >
+                        <span class="fa fa-trash">
+                        Delete
+                        </span>
+                        </a>
+                        </td>
                         </tr>
                         {% endfor %}
                         
@@ -87,28 +88,6 @@
 
 
 
-
-    <div class="modal fade" id="modal-danger">
-      <div class="modal-dialog">
-        <div class="modal-content bg-danger">
-          <div class="modal-header">
-            <h4 class="modal-title">Warining</h4>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <p>Do you want to delete this item&hellip;</p>
-          </div>
-          <div class="modal-footer justify-content-between">
-            <button type="button" class="btn btn-outline-light" data-dismiss="modal">Cancel</button>
-            <a class="btn btn-outline-light" href='#'>Delete</a>
-          </div>
-        </div>
-        <!-- /.modal-content -->
-      </div>
-      <!-- /.modal-dialog -->
-    </div>
 {% endblock content %}
     
 

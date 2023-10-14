@@ -65,9 +65,9 @@ class AssignmentForm(forms.ModelForm):
     # # create a model choice field for the item field
     # item = forms.ModelChoiceField(queryset=Item.objects.all(), label="Item")
     # # create a model choice field for the engineer field
-    # engineer = forms.ModelChoiceField(queryset=Users.objects.filter(user_type=3,is_active=True), label="Engineer") # assume user_type 3 is engineer
+    engineer = forms.ModelChoiceField(queryset=Users.objects.filter(user_type=3,is_active=True), label="Engineer") # assume user_type 3 is engineer
     # # create a model choice field for the section field
-    # Section = forms.ModelChoiceField(queryset=Section.objects.filter(is_valid=True), label="Section")
+    Section = forms.ModelChoiceField(queryset=Section.objects.filter(is_valid=True), label="Section")
     # # create a text area field for the remark field
     # remark = forms.CharField(widget=forms.Textarea, label="Remark", required=False)
 
@@ -82,6 +82,9 @@ class AssignmentForm(forms.ModelForm):
         "Section": forms.Select(attrs={"class": "form-control"}),
         "remark": forms.Textarea(attrs={"class": "form-control"}),
         }
+
+
+
        
 class AcceptForm(forms.Form):
     model=Assignments
