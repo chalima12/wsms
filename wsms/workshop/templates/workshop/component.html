@@ -30,12 +30,7 @@
     <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
   <div class="container-lg mt-lg-5 mb-2 mx-lg-2"> 
-  <a class="btn btn-warning" href="create-component">
-
-      <span class="fa fa-plus">
-       &nbsp;&nbsp; Add Component
-      </span>
-    </a>
+  
     
   
   </div> 
@@ -69,7 +64,7 @@
                       <td >
                         
                    
-                        <a class="btn btn-danger btn-sm" href="{% url 'workshop:conponent-delete' data.Serial_no%}" >
+                        <a class="btn btn-danger btn-sm" href="{% url 'workshop:conponent-delete' data.id%}" >
                           <span class="fa fa-trash">
                            Delete
                           </span>

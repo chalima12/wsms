@@ -30,26 +30,25 @@
                     </tr>
                   </thead>
                   <tbody>
-                    {% for data in forms %}
+                    {% for data in assignments %}
                     <tr>
                       <td>{{data.Section}}</td>
                       <td>{{data.item}}</td>
                       <td>{{data.engineer}}</td>
                       <td>
                         {% if not data.item.is_accepted %}
-                        <a style='border-radius:15%' class="btn btn-success  " href="{% url 'workshop:accept' data.as_id%}" >
+                        <a style='border-radius:15%' class="btn btn-success  " href="{% url 'workshop:accept' data.id%}" >
                         <span class="fa ">
                         Accept
                         </span>
                         </a>
                         {% else %}
-                        <a style='border-radius:15%'  class="btn btn-success btn-sm btn disabled" href='#' > <span class="fa ">Accepted</span></a>
+                        <a style='border-radius:10%'  class="btn btn-success btn-sm btn disabled" href='#' > <span class="fa ">Accepted</span></a>
                         {% endif %}
-                        <a style='border-radius:15%' class="btn btn-success  " href="{% url 'workshop:create-component' %}" >
-                          <span class="fa ">
-                          Add Component
-                          </span>
-                          </a>
+                        <a style='border-radius:10%' class="btn btn-success  " href="{% url 'workshop:create-component' data.id %}" >
+                          <span class="fa fa-plus"> component</span>
+                           
+                        </a>
                         
                     </td>
                     </tr>

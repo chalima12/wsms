@@ -56,11 +56,11 @@
                   <tbody>
                     {% for data in sections %}
                     <tr>
-                      <td>{{data.section_id}}</td>
+                      <td>{{data.id}}</td>
                       <td>{{data.name}}</td>
                       <td>{{data.manager}}</td>
                       <td>
-                        <a class="btn btn-danger btn-sm" href="{% url 'workshop:section-delete' data.section_id%}" >
+                        <a class="btn btn-danger btn-sm" href="{% url 'workshop:section-delete' data.id%}" >
                           <span class="fa fa-trash">
                            Delete
                           </span>

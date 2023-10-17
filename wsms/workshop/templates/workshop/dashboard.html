@@ -1,0 +1,23 @@
+{% extends "./base1.html" %}
+
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.umd.min.js"></script>
+<canvas id="myChart" width="400" height="400"></canvas>
+<script>
+// get the context of the canvas element
+var ctx = document.getElementById("myChart").getContext("2d");
+// create a variable to store the chart instance
+var myChart;
+// use the chart_data variable from the context instead of making an AJAX request
+var data = {{ chart_data|safe }}; // use the safe filter to avoid escaping the JSON string
+// create a chart instance with the data and options
+myChart = new Chart(ctx, {
+type: "bar", // replace with your desired chart type
+data: data, // use the data from the context
+options: {
+// add any options you want for the chart
+}
+});
+</script>
+
+{% endblock content %}

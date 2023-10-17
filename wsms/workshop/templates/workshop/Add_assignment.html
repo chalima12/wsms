@@ -2,13 +2,20 @@
 {% extends "./base1.html" %}
 {% load crispy_forms_tags %}
 {% block content %}
+
 <div class="container mt-3">
-	<form class="form-group" method="post">
+	<form method="post" autocomplete='off' class='card p-3 mt-5 bg-cyan'>
+  
+  <div class="container card p-1 mt-0 text-center border-primary bg-cyan" >
+	<h3>  Add Assignment </h3>
+  
+  </div>
 		{% csrf_token %}
         {{ form|crispy }}
-<div class="card-footer">
-<button type="submit" class="btn btn-primary">Assign</button>
-</div>
+		<div class="col-4">
+			<button type="submit" class="btn btn-light btn-md" style='border-radius:10%'>Assign Item</button>
+		  </div>
+	  
 	</form>
   </div>
 {% endblock content %}

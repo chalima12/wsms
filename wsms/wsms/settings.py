@@ -124,6 +124,13 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+# specify the custom user model
+AUTH_USER_MODEL = 'workshop.User'
+# specify the custom authentication backend
+AUTHENTICATION_BACKENDS = ['workshop.backends.CustomUserAuthBackend']
+# specify the login and logout redirect URLs
+LOGIN_REDIRECT_URL = 'index' # 'index the name of my home page URL
+LOGOUT_REDIRECT_URL = 'login' #  'login' with the name of my login page URL
 
 
 # Internationalization

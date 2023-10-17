@@ -21,7 +21,7 @@ def index(request_iter):
 
 
 class UserCreateView(CreateView):
-    model = Users
+    model = User
     # fields='__all__'
     form_class=UserForm
     template_name = "workshop/register.html"
@@ -47,6 +47,15 @@ class ComponentCreateView(CreateView):
     form_class=ComponentForm
     template_name = "workshop/add_component.html"
     success_url = reverse_lazy('workshop:component')
+    def get_initial(self):
+        # get the initial data for the form
+        initial = super().get_initial()
+        # get the item object from the url parameter
+        item = Item.objects.get(id=self.kwargs['id'])
+        # set the initial value for the item field
+        initial['item'] = item
+        return initial
+    
 
 
 class SectionCreateView(CreateView):
@@ -67,27 +76,27 @@ class AssignmentCreateView(CreateView):
         # get the initial data for the form
         initial = super().get_initial()
         # get the item object from the url parameter
-        item = Item.objects.get(Serial_no=self.kwargs['serial_no'])
+        item = Item.objects.get(id=self.kwargs['id'])
         # set the initial value for the item field
         initial['item'] = item
         return initial
     
     def form_valid(self, form):
         # change the status of the item to 2 (accepted)
-        form.instance.item.status = 2
+        form.instance.item.status = 'on_prograss'
         # save the item object
         form.instance.item.save()
         # call the superclass method to save the assignment object
         return super().form_valid(form)
 
 class UserListView(ListView):
-    model = Users
+    model = User
 
     context_object_name='users'
     template_name="workshop/user.html"
     def get_queryset(self):
 # return only active users
-        return Users.objects.filter(is_active=True)
+        return User.objects.filter(is_active=True)
 class ItemListView(ListView):
     model = Item
     st=Item.status
@@ -117,7 +126,7 @@ class SectionListView(ListView):
         return Section.objects.filter(is_valid=True)
 class AssignmentListView(ListView):
     model = Assignments
-    context_object_name='forms'
+    context_object_name='assignments'
     template_name="workshop/Assignment.html"
     def get_queryset(self):
         return Assignments.objects.filter(is_valid=True)
@@ -130,7 +139,7 @@ class ItemDeleteView(DeleteView):
     success_url = reverse_lazy("item")
 
 class UserDeleteView(DeleteView):
-    model = Users
+    model = User
     context_object_name='user'
     template_name="workshop/user.html"
 
@@ -138,7 +147,7 @@ class UserDeleteView(DeleteView):
 
 
 def delete_user(request,pk):
-    user=Users.objects.get(user_id=pk)
+    user=User.objects.get(id=pk)
     if request.method=='POST':
         user.is_active=False
         user.save()
@@ -148,7 +157,7 @@ def delete_user(request,pk):
     return render(request,'workshop/delete-user.html',context)
 # delete Item
 def delete_item(request,pk):
-    item=Item.objects.get(Serial_no=pk)
+    item=Item.objects.get(id=pk)
     if request.method=='POST':
         item.is_valid=False
         item.save()
@@ -158,7 +167,7 @@ def delete_item(request,pk):
     return render(request,'workshop/delete-item.html',context)
 
 def delete_component(request,pk):
-    component=Component.objects.get(Serial_no=pk)
+    component=Component.objects.get(id=pk)
     if request.method=='POST':
         component.is_valid=False
         component.save()
@@ -169,11 +178,11 @@ def delete_component(request,pk):
 
 
 def delete_section(request,pk):
-    section=Section.objects.get(section_id=pk)
+    section=Section.objects.get(id=pk)
     if request.method=='POST':
         section.is_valid=False
         section.save()
-        messages.success(request,  f'user {section.section_id} has been deactivated successfully.')
+        messages.success(request,  f'user {section.name} has been deactivated successfully.')
         return redirect('/section')
     context={'section':section}
     return render(request,'workshop/delete-section.html',context)
@@ -187,9 +196,9 @@ class AcceptView(View):
 
     def get(self, request, *args, **kwargs):
         # get the assignment object from the url parameter
-        assignment = Assignments.objects.get(as_id=self.kwargs['as_id'])
+        assignment = Assignments.objects.get(id=self.kwargs['id'])
         # create a form with the assignment id as initial value
-        form = self.form_class(initial={'assignment_id': assignment.as_id})
+        form = self.form_class(initial={'assignment_id': assignment.id})
         # render the template with the form
         return render(request, self.template_name, {'form': form})
 
@@ -201,7 +210,7 @@ class AcceptView(View):
         # get the assignment id from the form data
          assignment_id = form.cleaned_data['assignment_id']
         # get the assignment object from the database
-        assignment = Assignments.objects.get(as_id=assignment_id)
+        assignment = Assignments.objects.get(id=assignment_id)
         # get the item object from the assignment object
         item = assignment.item
         # change the is_accepted field of the item to True
@@ -213,12 +222,12 @@ class AcceptView(View):
 
 
 def delete_assignment(request,pk):
-    assign=Assignments.objects.get(as_id=pk)
+    assign=Assignments.objects.get(id=pk)
     
     if request.method=='POST':
         assign.is_valid=False
         assign.save()
-        messages.success(request,  f'user {assign.as_id} has been deactivated successfully.')
+        messages.success(request,  f'user {assign.id} has been deactivated successfully.')
         return redirect('/assignment')
     context={'assign':assign}
     return render(request,'workshop/delete-assignment.html',context)
@@ -242,7 +251,31 @@ def delete_assignment(request,pk):
     
 #     return render(request, "workshop/add-tem.html", context)
 
+from django.http import JsonResponse
+from django.core import serializers
+from .models import Item
 
+def data(request):
+
+    items = Item.objects.all()
+    items_json = serializers.serialize("json", items)
+    labels = [item["fields"]["Serial_no"] for item in items_json]
+    data = [item["fields"]["Repeat_Count"] for item in items_json]
+    chart_data = {
+    "labels": labels,
+    "datasets": [{
+    "label": "Repeat Count",
+    "data": data,
+
+
+    }]
+
+    }
+
+    return JsonResponse(chart_data)
+def chart(request):
+    chart_data=data
+    return render(request, "base1.html", {"chart_data": chart_data})
 
 
 

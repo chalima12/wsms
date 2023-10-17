@@ -54,20 +54,19 @@
                         <td>{{data.status}}</td>
                         <td>{{data.is_accepted}}</td>
                         <td >
-                        {% if data.status != 2 %}
-                        <a class="btn btn-success btn-sm" 
-                        href="{% url 'workshop:create-assignment' data.Serial_no %}">
+                        {% if data.status == 'pending' %}
+                        <a style='border-radius:10%' class="btn btn-success btn-sm" 
+                        href="{% url 'workshop:create-assignment' data.id %}">
                         <span class="fa fa-address-book">
                         Assign
                         </span>
                         </a>
                         {% else %}
-                        <button type="button" class="btn btn-info btn-sm" >Assigned</button>
+                        <a style='border-radius:10%' class="btn btn-success btn-sm disabled" >Assigned</a>
                         {% endif %}
-                        <a class="btn btn-danger btn-sm" href="{% url 'workshop:item_delete' data.Serial_no%}" >
-                        <span class="fa fa-trash">
-                        Delete
-                        </span>
+                        <a style='border-radius:10%' class="btn btn-danger btn-sm" href="{% url 'workshop:item_delete' data.id%}" >
+                          <span class="fa fa-trash"> Delete </span>
+                       
                         </a>
                         </td>
                         </tr>
