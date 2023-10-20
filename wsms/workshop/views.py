@@ -158,7 +158,7 @@ def delete_user(request,pk):
         messages.success(request,  f'user {user.first_name} {user.last_name} has been deactivated successfully.')
         return redirect('/user')
     context={'user':user}
-    return render(request,'workshop/delete-item.html',context)
+    return render(request,'workshop/accept_form.html',context)
 # delete Item
 def delete_item(request,pk):
     item=Item.objects.get(id=pk)
@@ -168,7 +168,7 @@ def delete_item(request,pk):
         messages.success(request,  f'user {item.Serial_no} has been deactivated successfully.')
         return redirect('/item')
     context={'item':item}
-    return render(request,'workshop/delete-item.html',context)
+    return render(request,'workshop/accept_form.html',context)
 
 def delete_component(request,pk):
     component=Component.objects.get(id=pk)
@@ -178,7 +178,7 @@ def delete_component(request,pk):
         messages.success(request,  f'Componente {component.Serial_no} has been deactivated successfully.')
         return redirect('/component')
     context={'component':component}
-    return render(request,'workshop/delete-item.html',context)
+    return render(request,'workshop/accept_form.html',context)
 
 
 def delete_section(request,pk):
