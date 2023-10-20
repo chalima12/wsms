@@ -95,4 +95,4 @@ class Assignments(models.Model):
     is_valid=models.BooleanField(auto_created=True,default=True)
 
     def __str__(self) -> str:
-        return self.item
+        return str(self.item)

@@ -4,8 +4,8 @@ from .models import *
 
 
 class UserForm(ModelForm):
-    user_name=forms.EmailField(widget=forms.EmailInput,label='Your Email')
-    pass_word=forms.CharField(widget=forms.PasswordInput)
+    # user_name=forms.EmailField(widget=forms.EmailInput,label='Your Email')
+    # pass_word=forms.CharField(widget=forms.PasswordInput)
     class Meta:
         model=User
         fields=['first_name','last_name','user_name','pass_word','user_type']
@@ -14,8 +14,8 @@ class UserForm(ModelForm):
                                                  ,'placeholder':'Enter First Name'}),
              'last_name':forms.TextInput(attrs={'class':"form-control form-control",'placeholder':'Enter Last Name' }),
              'user_name':forms.EmailInput(attrs={'class':"form-control form-control",'placeholder':'Enter user Email'}),
-             'pass_word':forms.PasswordInput(attrs={'class':"form-control form-control"}),
-             "user_type": forms.Select(attrs={"class": "form-control"}),
+             'pass_word':forms.PasswordInput(attrs={'class':"form-control form-control",'placeholder':'Enter user password'}),
+             "user_type": forms.Select(attrs={"class": "form-control",'placeholder':'Enter user Email'}),
         }
 
 class ItemForm(forms.ModelForm):

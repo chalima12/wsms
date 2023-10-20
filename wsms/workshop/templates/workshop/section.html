@@ -60,11 +60,16 @@
                       <td>{{data.name}}</td>
                       <td>{{data.manager}}</td>
                       <td>
-                        <a class="btn btn-danger btn-sm" href="{% url 'workshop:section-delete' data.id%}" >
-                          <span class="fa fa-trash">
-                           Delete
-                          </span>
-                     </a>
+                       
+
+                        <a style='border-radius:10%' class="btn btn-danger btn-sm" href="javascript:void(0)"
+                        data-toggle="modal"
+                        class="confirm-accept"
+                        data-url="{% url 'workshop:section-delete' data.id %}"
+                        data-target="#acceptItemModal"
+                        data-message="Are you Sure to delete {{data.name}}  ?">
+                        <i class="far fa-trash-alt"></i>
+                        <span>Delete</span></a>
                     </tr>
                     {% endfor %}
                   </tbody>

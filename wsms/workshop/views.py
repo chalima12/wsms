@@ -1,8 +1,8 @@
 from .forms import *
+from django.template.loader import render_to_string
 from django.views.decorators.http import require_GET, require_POST
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import  get_object_or_404, redirect, render
-from django.urls import reverse
 from django.views.generic import (View,
                                   DateDetailView,
                                   CreateView,
@@ -64,7 +64,6 @@ class SectionCreateView(CreateView):
     template_name = "workshop/add_section.html"
     success_url = reverse_lazy('workshop:section')
 
-
 class AssignmentCreateView(CreateView):
     # specify the form class
     form_class = AssignmentForm
@@ -80,14 +79,26 @@ class AssignmentCreateView(CreateView):
         # set the initial value for the item field
         initial['item'] = item
         return initial
-    
     def form_valid(self, form):
-        # change the status of the item to 2 (accepted)
-        form.instance.item.status = 'on_prograss'
+        # save the form and get the assignment object
+        assignment = form.save()
+        # get the item object from the assignment object
+        item = assignment.item
+        # change the status of the item to on progress
+        item.status = 'on progress'
         # save the item object
-        form.instance.item.save()
-        # call the superclass method to save the assignment object
+        item.save()
+        # return the default form valid response
         return super().form_valid(form)
+
+    class UserListView(ListView):
+        model = User
+
+        context_object_name='users'
+        template_name="workshop/user.html"
+        def get_queryset(self):
+    # return only active users
+            return User.objects.filter(is_active=True)
 
 class UserListView(ListView):
     model = User
@@ -126,24 +137,17 @@ class SectionListView(ListView):
         return Section.objects.filter(is_valid=True)
 class AssignmentListView(ListView):
     model = Assignments
+    
     context_object_name='assignments'
     template_name="workshop/Assignment.html"
     def get_queryset(self):
         return Assignments.objects.filter(is_valid=True)
 
- 
-
-# delete
-class ItemDeleteView(DeleteView):
-    model = Item
-    success_url = reverse_lazy("item")
-
-class UserDeleteView(DeleteView):
-    model = User
-    context_object_name='user'
-    template_name="workshop/user.html"
-
-    success_url = reverse_lazy("user")
+    # def get_context_data(self, **kwargs):          
+    #     context = super().get_context_data(**kwargs)                     
+    #     new_context_entry  = [{'item': assignment.item, 'is_completed': assignment.item.status=="on_progress"} for assignment in context['assignments']]
+    #     context["new_context_entry"] = new_context_entry
+    #     return context
 
 
 def delete_user(request,pk):
@@ -154,7 +158,7 @@ def delete_user(request,pk):
         messages.success(request,  f'user {user.first_name} {user.last_name} has been deactivated successfully.')
         return redirect('/user')
     context={'user':user}
-    return render(request,'workshop/delete-user.html',context)
+    return render(request,'workshop/delete-item.html',context)
 # delete Item
 def delete_item(request,pk):
     item=Item.objects.get(id=pk)
@@ -171,10 +175,10 @@ def delete_component(request,pk):
     if request.method=='POST':
         component.is_valid=False
         component.save()
-        messages.success(request,  f'user {component.Serial_no} has been deactivated successfully.')
+        messages.success(request,  f'Componente {component.Serial_no} has been deactivated successfully.')
         return redirect('/component')
     context={'component':component}
-    return render(request,'workshop/delete-component.html',context)
+    return render(request,'workshop/delete-item.html',context)
 
 
 def delete_section(request,pk):
@@ -182,44 +186,10 @@ def delete_section(request,pk):
     if request.method=='POST':
         section.is_valid=False
         section.save()
-        messages.success(request,  f'user {section.name} has been deactivated successfully.')
+        messages.success(request,  f'Section {section.name} has been deactivated successfully.')
         return redirect('/section')
     context={'section':section}
-    return render(request,'workshop/delete-section.html',context)
-
-#accept Assignment
-class AcceptView(View):
-    # specify the form class
-    form_class = AcceptForm
-    # specify the template name
-    template_name = 'workshop/accept_form.html'
-
-    def get(self, request, *args, **kwargs):
-        # get the assignment object from the url parameter
-        assignment = Assignments.objects.get(id=self.kwargs['id'])
-        # create a form with the assignment id as initial value
-        form = self.form_class(initial={'assignment_id': assignment.id})
-        # render the template with the form
-        return render(request, self.template_name, {'form': form})
-
-    def post(self, request, *args, **kwargs):
-        # get the form data from the request
-        form = self.form_class(request.POST)
-        # validate the form
-        if form.is_valid():
-        # get the assignment id from the form data
-         assignment_id = form.cleaned_data['assignment_id']
-        # get the assignment object from the database
-        assignment = Assignments.objects.get(id=assignment_id)
-        # get the item object from the assignment object
-        item = assignment.item
-        # change the is_accepted field of the item to True
-        item.is_accepted = True
-        # save the item object
-        item.save()
-        # redirect to the assignments list page
-        return redirect('/assignment')
-
+    return render(request,'workshop/accept_form.html',context)
 
 def delete_assignment(request,pk):
     assign=Assignments.objects.get(id=pk)
@@ -231,6 +201,39 @@ def delete_assignment(request,pk):
         return redirect('/assignment')
     context={'assign':assign}
     return render(request,'workshop/delete-assignment.html',context)
+
+
+
+
+
+
+
+def accept_assignment(request,id):
+    assign=Assignments.objects.get(id=id)
+    item=assign.item
+    if request.method=='POST':
+        item.is_accepted=True
+
+        item.save()
+        messages.success(request,  f'Assignment {assign.id} has been accepted successfully.')
+        return redirect('/assignment')
+    context={'assign':assign}
+    return render(request,'workshop/accept_form.html',context)
+
+
+def complete_assignment(request,pk):
+    assign=Assignments.objects.get(id=pk)
+    item=assign.item
+    if request.method=='POST':
+        item.status='completed'
+
+        item.save()
+        messages.success(request,  f'Assignment {assign.id} has been completed successfully.')
+        return redirect('/assignment')
+    context={'assign':assign}
+    return render(request,'workshop/accept_form.html',context)
+
+
 
 # def add_item_view(request):
 #     if request.method == "POST":
@@ -251,31 +254,6 @@ def delete_assignment(request,pk):
     
 #     return render(request, "workshop/add-tem.html", context)
 
-from django.http import JsonResponse
-from django.core import serializers
-from .models import Item
-
-def data(request):
-
-    items = Item.objects.all()
-    items_json = serializers.serialize("json", items)
-    labels = [item["fields"]["Serial_no"] for item in items_json]
-    data = [item["fields"]["Repeat_Count"] for item in items_json]
-    chart_data = {
-    "labels": labels,
-    "datasets": [{
-    "label": "Repeat Count",
-    "data": data,
-
-
-    }]
-
-    }
-
-    return JsonResponse(chart_data)
-def chart(request):
-    chart_data=data
-    return render(request, "base1.html", {"chart_data": chart_data})
 
 
 
@@ -293,10 +271,11 @@ If accidentally error data added the system allow them to delete
 2.Delete Item : Change is_valid to false(invalidate)
 3.Delete Section : Change is_valid to false(invalidate)
 4.Delete Assignment : Change is_valid to false(invalidate)
-
-Remaing Task
 1.Accept an Assignment 
 2.Complete Assignment 
+
+Remaing Task
+
 3.genarate Report
 4.Usre Authantication
 5.Middleware (give access and role to Users)

@@ -1,15 +1,15 @@
 {% extends "./base1.html" %} {% load crispy_forms_tags %} {% block content %}
 
 <div class="container mt-3">
-  <form method="post" autocomplete='off' class='card p-3 mt-5 bg-cyan'>
+  <form method="post" autocomplete='off' class='card p-3 mt-5 bg-light'>
 
-<div class="container card p-1 mt-0 text-center border-primary bg-cyan" >
+<div class="container card p-1 mt-0 text-center border-primary bg-gray" >
   <h3>  Add Section </h3>
 
 </div>
     {% csrf_token %} {{ form|crispy }}
      <div class="col-4">
-      <button type="submit" class="btn btn-light btn-md" style='border-radius:10%'>Add The section</button>
+      <button type="submit" class="btn btn-primary btn-md" style='border-radius:10%'>Add The section</button>
     </div>
   </form>
 </div>

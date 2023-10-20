@@ -1,5 +1,6 @@
 
 from django.urls import path
+from django.contrib.auth import views as auth_views
 from .import views
 app_name = 'workshop'
 
@@ -26,9 +27,12 @@ urlpatterns = [
 # delete
 path("delete-user/<str:pk>",views.delete_user ,name="delete-user"),
 path('item_delete/<str:pk>',views.delete_item, name='item_delete'),
-path("accept-assignment/<str:id>",views.AcceptView.as_view() ,name="accept"),
+path("accept-assignment/<str:id>",views.accept_assignment ,name="accept"),
 path('conponent-delete/<str:pk>',views.delete_component, name='conponent-delete'),
 path("delete-section/<str:pk>",views.delete_section ,name="section-delete"),
+path("complete-assignment/<str:pk>",views.complete_assignment ,name="complete"),
+
+# path('logout/', auth_views.LogoutView.as_view(next_page='/accounts/login'), name='logout'),
 
 
 ]
