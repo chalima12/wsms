@@ -1,0 +1,84 @@
+{% extends "./base1.html" %} {% block title %}
+<title>Report</title>
+
+{% endblock title %} {% block content %}
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+  <!-- Content Header (Page header) -->
+  <section class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1>Report Tables</h1>
+        </div>
+        
+      </div>
+    </div>
+    <!-- /.container-fluid -->
+  </section>
+
+  <!-- Main content -->
+  <section class="content">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-body">
+                <table id="example1" class="table table-bordered table-striped">
+
+                
+                    <thead class="dataTables_info">
+                      <tr>
+                        <th>#</th>
+                        <th>Workshop Id</th>
+                        <th>Received Date</th>
+                        <th>Stock Id</th>
+                        <th>Serial Number</th>
+                        
+                        <th>Delivered By</th>
+                        <th>Received By</th>
+                        <th>Maintained Date</th>
+                        <th>Maintained By</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for data in assignments %}
+                            <tr>
+                              <td>{{forloop.counter}}</td>
+                              <td>{{data.item.ws_id}}</td>
+                              <td>{{data.item.received_date}}</td>
+                              <td>{{data.item.stock_id}}</td>
+                              <td>{{data.item.Serial_no}}</td>
+                              <td>{{data.item.delivered_by}}</td>
+                              <td>{{data.item.received_by}}</td>
+                              <td>{{data.completed_date}}</td>
+                              <td>{{data.engineer}}</td>
+                              
+                            </tr>
+                            
+                      {% endfor %}
+                            
+                          
+                            
+                         
+                    </tbody>
+                      </table>
+            </div>
+            <!-- /.card-body -->
+          </div>
+          <!-- /.card -->
+        </div>
+        <!-- /.col -->
+      </div>
+      <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+  </section>
+  <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+
+
+
+          {% endblock content %}
+      
