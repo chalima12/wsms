@@ -14,6 +14,7 @@ urlpatterns = [
      path("component",views.ComponentListView.as_view() , name="component"),
      path('section', views.SectionListView.as_view(), name='section'),
      path('assignment', views.AssignmentListView.as_view(), name='assignment'),
+     path('report', views.ReporttListView.as_view(), name='report'),
     #  path('delete', views.delete, name='delete'),
    #create
      path('create-item', views.ItemCreateView.as_view(),name='create-item'),

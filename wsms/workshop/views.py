@@ -51,7 +51,8 @@ class ComponentCreateView(CreateView):
         # get the initial data for the form
         initial = super().get_initial()
         # get the item object from the url parameter
-        item = Item.objects.get(id=self.kwargs['id'])
+        ass = Assignments.objects.get(id=self.kwargs['id'])
+        item=ass.item
         # set the initial value for the item field
         initial['item'] = item
         return initial
@@ -108,6 +109,8 @@ class UserListView(ListView):
     def get_queryset(self):
 # return only active users
         return User.objects.filter(is_active=True)
+    
+
 class ItemListView(ListView):
     model = Item
     st=Item.status
@@ -115,7 +118,7 @@ class ItemListView(ListView):
     template_name="workshop/item.html"
     # paginate_by = 10 # if pagination is desired
     def get_queryset(self):
-    # return only active users
+    # return only valid item
         return Item.objects.filter(is_valid=True)
    
 class ComponentListView(ListView):
@@ -124,7 +127,7 @@ class ComponentListView(ListView):
     template_name="workshop/component.html"
     # paginate_by = 4 # if pagination is desired
     def get_queryset(self):
-# return only active users
+# return only valid item
         return Component.objects.filter(is_valid=True)
 
 class SectionListView(ListView):
@@ -133,7 +136,7 @@ class SectionListView(ListView):
     template_name="workshop/section.html"
     # paginate_by = 4 # if pagination is desired
     def get_queryset(self):
-# return only active users
+# return only valid section
         return Section.objects.filter(is_valid=True)
 class AssignmentListView(ListView):
     model = Assignments
@@ -142,14 +145,15 @@ class AssignmentListView(ListView):
     template_name="workshop/Assignment.html"
     def get_queryset(self):
         return Assignments.objects.filter(is_valid=True)
+    
 
-    # def get_context_data(self, **kwargs):          
-    #     context = super().get_context_data(**kwargs)                     
-    #     new_context_entry  = [{'item': assignment.item, 'is_completed': assignment.item.status=="on_progress"} for assignment in context['assignments']]
-    #     context["new_context_entry"] = new_context_entry
-    #     return context
-
-
+class ReporttListView(ListView):
+    model = Assignments
+    
+    context_object_name='assignments'
+    template_name="workshop/report.html"
+    def get_queryset(self):
+        return Assignments.objects.filter(is_valid=True)
 def delete_user(request,pk):
     user=User.objects.get(id=pk)
     if request.method=='POST':
@@ -158,7 +162,9 @@ def delete_user(request,pk):
         messages.success(request,  f'user {user.first_name} {user.last_name} has been deactivated successfully.')
         return redirect('/user')
     context={'user':user}
-    return render(request,'workshop/accept_form.html',context)
+    return render(request,'workshop/delete-item.html',context)
+
+
 # delete Item
 def delete_item(request,pk):
     item=Item.objects.get(id=pk)
@@ -168,7 +174,7 @@ def delete_item(request,pk):
         messages.success(request,  f'user {item.Serial_no} has been deactivated successfully.')
         return redirect('/item')
     context={'item':item}
-    return render(request,'workshop/accept_form.html',context)
+    return render(request,'workshop/delete-item.html',context)
 
 def delete_component(request,pk):
     component=Component.objects.get(id=pk)
@@ -178,7 +184,7 @@ def delete_component(request,pk):
         messages.success(request,  f'Componente {component.Serial_no} has been deactivated successfully.')
         return redirect('/component')
     context={'component':component}
-    return render(request,'workshop/accept_form.html',context)
+    return render(request,'workshop/delete-item.html',context)
 
 
 def delete_section(request,pk):
@@ -189,7 +195,7 @@ def delete_section(request,pk):
         messages.success(request,  f'Section {section.name} has been deactivated successfully.')
         return redirect('/section')
     context={'section':section}
-    return render(request,'workshop/accept_form.html',context)
+    return render(request,'workshop/delete-item.html',context)
 
 def delete_assignment(request,pk):
     assign=Assignments.objects.get(id=pk)
@@ -201,11 +207,6 @@ def delete_assignment(request,pk):
         return redirect('/assignment')
     context={'assign':assign}
     return render(request,'workshop/delete-assignment.html',context)
-
-
-
-
-
 
 
 def accept_assignment(request,id):
@@ -226,7 +227,8 @@ def complete_assignment(request,pk):
     item=assign.item
     if request.method=='POST':
         item.status='completed'
-
+        assign.completed_date=timezone.now()
+        assign.save()
         item.save()
         messages.success(request,  f'Assignment {assign.id} has been completed successfully.')
         return redirect('/assignment')
@@ -273,10 +275,12 @@ If accidentally error data added the system allow them to delete
 4.Delete Assignment : Change is_valid to false(invalidate)
 1.Accept an Assignment 
 2.Complete Assignment 
+3.genarate Report
 
 Remaing Task
 
-3.genarate Report
+
 4.Usre Authantication
 5.Middleware (give access and role to Users)
+6.Dashboard
 """

@@ -48,7 +48,9 @@ class ComponentForm(forms.ModelForm):
         "remark": forms.Textarea(attrs={"class": "form-control"}),
         }
 class SectionForm(forms.ModelForm):
-    # specify the fields and widgets for the form
+    manager = forms.ModelChoiceField(queryset=User.objects.filter(user_type='Manager'
+                ,is_active=True), label="Engineer",
+                widget=forms.Select(attrs={"class":"form-control"})) 
     class Meta:
         model = Section
         fields = [ "name", "manager"]
@@ -78,12 +80,3 @@ class AssignmentForm(forms.ModelForm):
 
 
 
-       
-class AcceptForm(forms.Form):
-    # model=Assignments
-    # create a hidden field for the assignment id
-    assignment_id = forms.CharField(widget=forms.HiddenInput())
-    # create a submit button for the accept action
-    accept = forms.BooleanField( label='Accept', required = True, 
-                                widget=forms.widgets.CheckboxInput( attrs={'class': 'checkbox-inline'}), 
-                                 )

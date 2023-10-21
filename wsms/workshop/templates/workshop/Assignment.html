@@ -52,14 +52,7 @@
                         </a>
                               {% else %}
                               <a style='border-radius:10%'  class="btn btn-success btn-sm btn disabled" href='#' > <span class="fa ">Accepted</span></a>
-                              {% endif %}
-                              {% if not data.item.status == 'completed' %}
-                              <a style='border-radius:10%' class="btn btn-success btn-sm " href="{% url 'workshop:create-component' data.id %}" >
-                                <span class="fa fa-plus"> component</span>
-                                
-                              </a>
-                              {% endif %} 
-
+                             
                               {% if not data.item.status == 'completed' %}
                               <a style='border-radius:10%' class="btn btn-success btn-sm" href="javascript:void(0)"
                               data-toggle="modal"
@@ -68,10 +61,18 @@
                               data-target="#acceptItemModal"
                               data-message="Are you Sure you have Completed this Assignment  ?">
                               <span>Complete</span></a>
+                              <a style='border-radius:10%' class="btn btn-success btn-sm " href="{% url 'workshop:create-component' data.id %}" >
+                                <span class="fa fa-plus"> component</span>
+                                
+                              </a>
                               {% else %}
                               <a style='border-radius:10%'  class="btn btn-success btn-sm btn disabled"
                               href='#'> <span class="fa ">Completed</span></a>
                               {% endif %} 
+                              {% endif %}
+                              
+
+                              
                           </td>
                           </tr>
                           

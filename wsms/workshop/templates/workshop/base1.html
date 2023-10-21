@@ -51,11 +51,17 @@
               <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
             </li> {% endcomment %} 
             <li class="nav-item d-none d-sm-inline-block">
-              <a href="/" class="nav-link">Home</a>
+              <a href="{% url 'workshop:index' %}" class="nav-link">
+                {% block project %}
+                <div class="container m-auto my-2 ">
+                  <h1 class="btn btn-info btn-block p-1" style='cursor:default font-size:24'>Workshop Management System 
+                 
+                </div>
+                {% endblock project %}
+                  
+              </a>
             </li>
-            <li class="nav-item d-none d-sm-inline-block">
-              <a href="#" class="nav-link">Contact</a>
-            </li>
+           
           </ul>
           {% endblock leftnav %}
 
@@ -184,13 +190,7 @@
           </nav>
             {% endblock rightnav %}
               
-            {% block project %}
-            <div class="container m-auto my-2 ">
-              <h1 class="btn btn-info btn-block p-1" style='cursor:default font-size:24'>Workshop Management System 
-             
-            </div>
-            {% endblock project %}
-              
+           
           
             
              
@@ -216,16 +216,7 @@
             </div>
       
             <!-- SidebarSearch Form -->
-            <div class="form-inline">
-              <div class="input-group" data-widget="sidebar-search">
-                <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
-                <div class="input-group-append">
-                  <button class="btn btn-sidebar">
-                    <i class="fas fa-search fa-fw"></i>
-                  </button>
-                </div>
-              </div>
-            </div>
+            
       
             <!-- Sidebar Menu -->
             <nav class="mt-2">
@@ -234,7 +225,7 @@
                      with font-awesome or any other icon font library -->
                 <li class="nav-item menu-open">
                   <a href="#" class="nav-link active">
-                    <i class="nav-icon fas fa-tachometer-alt"></i>
+                    <i class="nav-icon fas fa-home"></i>
                     <p>
                       WSMS
                       <i class="right fas fa-angle-left"></i>
@@ -268,14 +259,38 @@
                             <i class="far fa-circle nav-icon"></i>
                             <p>Assignments</p>
                           </a>
-
-                    </li>
+                          
                   </ul>
+                  <li class="nav-item menu-open">
+                    <a href="#" class="nav-link active">
+                      <i class="nav-icon fas fa-repeat"></i>
+                      <p>
+                        Reports
+                        <i class="right fas fa-angle-left"></i>
+                      </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                      
+                            <li class="nav-item">
+                              <a href="{% url 'workshop:report' %}" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Report</p>
+                              </a> 
+  
+                      
+  
+                      </li>
+                    </ul>
+
                 </li>
+                
+
                 
                 
                
         </aside>
+
+        
       
         {% endblock sidebar %}
           
@@ -286,6 +301,7 @@
          {% endblock content %}
 
          {% include "workshop/accept_form.html" %}
+         {% include "workshop/confirm_modal.html" %}
 
          
 

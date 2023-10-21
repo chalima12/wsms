@@ -58,21 +58,12 @@
                   {% for data in components %}
                   <tr>
                     <td>{{data.recived_date}}</td>   
-                      <td> {{data.item}}</td>
+                      <td> {{data.item.id}}</td>
                       <td>{{data.stock_id}}</td>
                       <td>{{data.Serial_no}}</td>
                       <td >
                         
-                        <a style='border-radius:10%' class="btn btn-danger btn-sm" href="javascript:void(0)" 
-                        data-toggle="modal"
-                        class="confirm-delete"
                         
-                        data-target="#deleteItemModal"
-                        data-message="Are you Sure to delete {{data.Serial_no}}  ?" 
-                        >
-                         <i class="far fa-trash-alt"></i>
-                         <span>Delete</span>
-                     </a>
 
                      <a style='border-radius:10%' class="btn btn-danger btn-sm" href="javascript:void(0)"
                         data-toggle="modal"

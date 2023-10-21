@@ -55,7 +55,8 @@
                         <td>{{data.is_accepted}}</td>
                         <td >
                           {% if data.status == 'pending' %}
-                          <a class='btn btn-success btn-sm' style='border-radius:10%' href="{% url 'workshop:create-assignment' data.id %}">
+                          <a class='btn btn-success btn-sm' 
+                           style='border-radius:10%' href="{% url 'workshop:create-assignment' data.id %}">
                           <span class="fa fa-address-book">
                           Assign
                           </span>
