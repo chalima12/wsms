@@ -9,7 +9,7 @@ class UsersAdmin(admin.ModelAdmin):
     list_filter=['user_type']
 
 class ItemsAdmin(admin.ModelAdmin):
-    list_display=['stock_id','Serial_no','status','is_valid','is_accepted','Repeat_Count']
+    list_display=['stock_id','Serial_no','status','is_valid','is_accepted']
     list_editable=['is_valid','is_accepted']
     
     list_filter=['is_valid','status']

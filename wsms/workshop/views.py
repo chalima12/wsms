@@ -183,14 +183,24 @@ class AssignmentListView(LoginRequiredMixin,ListView):
         return Assignments.objects.filter(is_valid=True, engineer=self.request.user)
     
 
-class ReporttListView(LoginRequiredMixin,ListView):
+class ReporttListView(LoginRequiredMixin, ListView):
     model = Assignments
-    
-    context_object_name='assignments'
-    template_name="workshop/report.html"
-    login_url='workshop:custom_login'
+    context_object_name = 'assignments'
+    template_name = "workshop/report.html"
+    login_url = 'workshop:custom_login'
+
     def get_queryset(self):
         return Assignments.objects.filter(is_valid=True)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        assignments = context['assignments']
+
+        for assignment in assignments:
+            components = Component.objects.filter(item=assignment.item)
+            assignment.components = components
+
+        return context
 @login_required(login_url='/login')
 def delete_user(request,pk):
     user=User.objects.get(id=pk)
@@ -268,18 +278,23 @@ def accept_assignment(request,id):
 
 @login_required(login_url='/login')
 
-def complete_assignment(request,pk):
-    assign=Assignments.objects.get(id=pk)
-    item=assign.item
-    if request.method=='POST':
-        item.status='completed'
-        assign.completed_date=timezone.now()
+def complete_assignment(request, pk):
+    assign = Assignments.objects.get(id=pk)
+    item = assign.item
+    if request.method == 'POST':
+        item.status = 'completed'
+        assign.completed_date = timezone.now()
         assign.save()
+        if 'is_maintainable' in request.POST:
+            item.is_maintainable = True
+        else:
+            item.is_maintainable = False
+        item.comment = request.POST.get('comment', '')
         item.save()
-        messages.success(request,  f'Assignment {assign.id} has been completed successfully.')
+        messages.success(request, f'Assignment {assign.id} has been completed successfully.')
         return redirect('/assignment')
-    context={'assign':assign}
-    return render(request,'workshop/accept_form.html',context)
+    context = {'assign': assign}
+    return render(request, 'workshop/complete.html', context)
 
 
 

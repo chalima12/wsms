@@ -53,9 +53,10 @@ class Item(models.Model):
           auto_created=True
           )
     remark= models.TextField(blank=True)
+    comment= models.TextField(blank=True)
     is_valid=models.BooleanField(auto_created=True,default=True)
-    is_accepted=models.BooleanField(auto_created=False,default=False)
-    Repeat_Count =models.IntegerField(default=1,auto_created=True)
+    is_accepted=models.BooleanField(auto_created=True,default=False)
+    is_maintainable=models.BooleanField(auto_created=True,default=True)
 
     def __str__(self) -> str:
         return self.Serial_no
@@ -64,10 +65,9 @@ class Item(models.Model):
     
 class Component(models.Model):
     recived_date=models.DateField(auto_now=True)
-    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name='components')
     stock_id = models.CharField(max_length=15)
     Serial_no =models.CharField(max_length=15)
-    remark= models.TextField(blank=True)
     is_valid=models.BooleanField(auto_created=True,default=True)
 
     

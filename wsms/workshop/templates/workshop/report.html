@@ -39,30 +39,37 @@
                         <th>Received By</th>
                         <th>Maintained Date</th>
                         <th>Maintained By</th>
+                        <th>Conponents</th>
+                        <th>Received Item Isue</th>
+                        <th>Delivered Item Isue</th>
+                        <th>Is maintainable</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {% for data in assignments %}
-                            <tr>
-                              <td>{{forloop.counter}}</td>
-                              <td>{{data.item.ws_id}}</td>
-                              <td>{{data.item.received_date}}</td>
-                              <td>{{data.item.stock_id}}</td>
-                              <td>{{data.item.Serial_no}}</td>
-                              <td>{{data.item.delivered_by}}</td>
-                              <td>{{data.item.received_by}}</td>
-                              <td>{{data.completed_date}}</td>
-                              <td>{{data.engineer}}</td>
-                              
-                            </tr>
-                            
+                      {% for assignment in assignments %}
+                          <tr>
+                              <td>{{ forloop.counter }}</td>
+                              <td>{{ assignment.item.ws_id }}</td>
+                              <td>{{ assignment.item.received_date }}</td>
+                              <td>{{ assignment.item.stock_id }}</td>
+                              <td>{{ assignment.item.Serial_no }}</td>
+                              <td>{{ assignment.item.delivered_by }}</td>
+                              <td>{{ assignment.item.received_by }}</td>
+                              <td>{{ assignment.completed_date }}</td>
+                              <td>{{ assignment.engineer }}</td>
+                              <td>
+                                  <ul>
+                                      {% for component in assignment.components %}
+                                          <li>{{ component.Serial_no }}</li>
+                                      {% endfor %}
+                                  </ul>
+                              </td>
+                              <td>{{ assignment.item.remark }}</td>
+                              <td>{{ assignment.item.comment }}</td>
+                              <td>{{ assignment.item.is_maintainable }}</td>
+                          </tr>
                       {% endfor %}
-                            
-                          
-                            
-                         
-                    </tbody>
-                      </table>
+                  </tbody>   </table>
             </div>
             <!-- /.card-body -->
           </div>

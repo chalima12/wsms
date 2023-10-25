@@ -38,14 +38,14 @@ class ComponentForm(forms.ModelForm):
     # specify the fields and widgets for the form
     class Meta:
         model = Component
-        fields = ["item", "stock_id", "Serial_no","remark"]
+        fields = ["item", "stock_id", "Serial_no"]
         widgets = {
          "item": forms.HiddenInput(attrs={"class": "form-control"}),
         "stock_id": forms.TextInput(attrs={"class": "form-control"}),
         "Serial_no": forms.TextInput(attrs={"class": "form-control"}),
         
        
-        "remark": forms.Textarea(attrs={"class": "form-control"}),
+        # "remark": forms.Textarea(attrs={"class": "form-control"}),
         }
 class SectionForm(forms.ModelForm):
     manager = forms.ModelChoiceField(queryset=User.objects.filter(user_type='Manager'
