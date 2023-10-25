@@ -53,7 +53,11 @@
                               {% else %}
                               <a style='border-radius:10%'  class="btn btn-success btn-sm btn disabled" href='#' > <span class="fa ">Accepted</span></a>
                              
-                              {% if not data.item.status == 'completed' %}
+                              {% if not data.item.status == 'on_prograss' %}
+                              <a style='border-radius:10%'  class="btn btn-success btn-sm btn disabled"
+                              href='#'> <span class="fa ">Completed</span></a>
+                              
+                              {% else %}
                               <a href="{% url 'workshop:complete' data.id %}" class="btn btn-primary" >
                                 Complete
                               </a>
@@ -62,9 +66,6 @@
                                 <span class="fa fa-plus"> component</span>
                                 
                               </a>
-                              {% else %}
-                              <a style='border-radius:10%'  class="btn btn-success btn-sm btn disabled"
-                              href='#'> <span class="fa ">Completed</span></a>
                               {% endif %} 
                               {% endif %}
                               

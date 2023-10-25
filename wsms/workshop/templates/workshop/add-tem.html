@@ -1,73 +1,75 @@
 {% extends "./base1.html" %}
- {% load crispy_forms_tags %} 
- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+{% load crispy_forms_tags %}
+
 {% block content %}
 
 <div class="container mt-3">
   <form method="post" autocomplete='off' class='card p-3 mt-5 bg-light'>
 
-<div class="container card p-1 mt-0 text-center border-primary bg-gray" >
-  <h3>  Add Item </h3>
+    <div class="container card p-1 mt-0 text-center border-primary bg-gray" >
+      <h3>  Add Item </h3>
+    </div>
 
-</div>
     {% csrf_token %}
     <!-- display the input fields for the item's attributes -->
     <div class="row">
       <div class="col-4">
         <div class="form-floating mb-3 mt-3">
-          {{form.ws_id|as_crispy_field}}
+           {{form.ws_id|as_crispy_field }}
         </div>
       </div>
       <div class="col-4">
         <div class="form-floating mb-3 mt-3">
-          {{form.stock_id|as_crispy_field}}
+          {{ form.stock_id|as_crispy_field }}
         </div>
       </div>
 
       <div class="col-4">
         <div class="form-floating mb-3 mt-3">
-          {{form.Serial_no|as_crispy_field}}
+           {{form.Serial_no|as_crispy_field }}
         </div>
       </div>
     </div>
     <div class="row">
       <div class="col-6">
         <div class="form-floating mb-3 mt-3">
-          {{form.delivered_by|as_crispy_field}}
+           {{ form.delivered_by|as_crispy_field  }}
         </div>
       </div>
       <div class="col-6">
         <div class="form-floating mb-3 mt-3">
-          {{form.received_by|as_crispy_field}}
+          {{ form.received_by|as_crispy_field }}
         </div>
       </div>
     </div>
     <div class="row">
       <div class="col-12">
-        <div class="form-floating mb-3 mt-3">{{form.remark}}</div>
+        <div class="form-floating mb-3 mt-3"> {{form.remark|as_crispy_field}} </div>
       </div>
     </div>
 
-    
     <div class="col-4">
       <button type="submit" class="btn btn-primary btn-md" style='border-radius:10%'>Add The Item</button>
     </div>
 
   </div>
   </form>
-
-<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-<script>
-  // check if there is a message in the context
-  let message = "{{ messages.0 }}";
-  // create a toast instance with some options
-  const Toast = Swal.mixin({
-  toast: true,
-  position: 'top-end',
-  showConfirmButton: false,
-  timer: 3000
-  });
-
 </div>
+
+{% if messages %}
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    // check if there is a warning message in the context
+    {% if messages %}
+      // create a modal popup with the warning message
+      Swal.fire({
+        icon: 'warning',
+        title: 'Warning',
+        text: '{{ messages }}',
+        confirmButtonText: 'Close'
+      });
+    {% endif %}
+  </script>
+{% endif %}
 
 {% endblock content %}

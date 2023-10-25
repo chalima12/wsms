@@ -94,7 +94,18 @@
         </div>
         <!-- /.row -->
       </div>
-
+      {% if messages.warning %}
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+      <script>
+        // create a modal popup with the warning message
+        Swal.fire(
+          icon: 'warning',
+          title: 'Warning',
+          text: '{{ messages.warning }}',
+          confirmButtonText: 'Close'
+        );
+      </script>
+    {% endif %}
     
 {% endblock content %}
     

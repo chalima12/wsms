@@ -62,12 +62,26 @@ class UserCreateView(LoginRequiredMixin,CreateView):
         # return the default form_valid behavior
         return super().form_valid(form)
     success_url = reverse_lazy('workshop:user')
-class ItemCreateView(LoginRequiredMixin,CreateView):
+from django.contrib import messages
+from django.http import JsonResponse
+from django.template.loader import render_to_string
+
+from django.contrib import messages
+
+class ItemCreateView(LoginRequiredMixin, CreateView):
     model = Item
     form_class = ItemForm
     template_name = "workshop/add-tem.html"
     success_url = reverse_lazy('workshop:item')
-    login_url='workshop:custom_login'
+    login_url = 'workshop:custom_login'
+
+    def form_valid(self, form):
+        # Check if there are already 2 or more items with the same serial number
+        serial_no = form.cleaned_data['Serial_no']
+        count = Item.objects.filter(Serial_no=serial_no).count()
+        if count >= 2:
+            messages.warning(self.request, f'This item fixed {count} times before may need spetial attentions.')
+        return super().form_valid(form)
 class ComponentCreateView(LoginRequiredMixin,CreateView):
     model = Component
     form_class=ComponentForm
@@ -289,6 +303,7 @@ def complete_assignment(request, pk):
             item.is_maintainable = True
         else:
             item.is_maintainable = False
+            item.status = 'Not maintanable'
         item.comment = request.POST.get('comment', '')
         item.save()
         messages.success(request, f'Assignment {assign.id} has been completed successfully.')

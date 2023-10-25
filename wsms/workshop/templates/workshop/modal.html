@@ -1,29 +1,43 @@
-<!-- Button trigger modal -->
-  
-  <!-- Modal -->
-  <div class="modal fade" id="completeModal" tabindex="-1" role="dialog" aria-labelledby="completeModalLabel" aria-hidden="true">
+<div class="modal fade" id="warningModal" tabindex="-1" role="dialog" aria-labelledby="warningModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="completeModalLabel">Complete Assignment</h5>
+          <h5 class="modal-title" id="warningModalLabel">Warning</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
-            <form method="POST" action="{% url 'workshop:complete' assign.id %}">
-            {% csrf_token %}
-            <div class="form-group">
-              <label for="remark">Remark:</label>
-              <textarea class="form-control" id="remark" name="remark" rows="3"></textarea>
-            </div>
-            <div class="form-check">
-              <input type="checkbox" class="form-check-input" id="is_maintainable" name="is_maintainable">
-              <label class="form-check-label" for="is_maintainable">Is maintainable?</label>
-            </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
-          </form>
+          <p>{{ message }}</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
         </div>
       </div>
     </div>
   </div>
+  
+  <script>
+    $(document).ready(function() {
+      $('#warningModal').modal('show');
+    });
+
+
+
+    $(document).ready(function() {
+        $.ajax({
+          url: '{% url "workshop:create-item" %}',
+          type: 'POST',
+          data: $('#item-form').serialize(),
+          success: function(response) {
+            if (response.html_message) {
+              $('body').append(response.html_message);
+              $('#warningModal').modal('show');
+            } else {
+              // No warning message, submit the form normally
+              $('#item-form').submit();
+            }
+          }
+        });
+      });
+  </script>

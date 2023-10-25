@@ -93,7 +93,7 @@ class Assignments(models.Model):
     Section= models.ForeignKey(Section, on_delete=models.CASCADE)
     remark= models.TextField(blank=True)
     Assigned_date=models.DateField(auto_now=True)
-    completed_date=models.DateField(default="2023-11-02",auto_created=True)
+    completed_date=models.DateField(blank=True,null=True)
     is_valid=models.BooleanField(auto_created=True,default=True)
 
     def __str__(self) -> str:
