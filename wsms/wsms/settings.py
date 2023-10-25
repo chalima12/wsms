@@ -53,7 +53,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -125,11 +125,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 # specify the custom user model
-# AUTH_USER_MODEL = 'workshop.User'
+AUTH_USER_MODEL = 'workshop.User'
 # # specify the custom authentication backend
 # AUTHENTICATION_BACKENDS = ['workshop.backends.CustomUserAuthBackend']
 # # specify the login and logout redirect URLs
-# LOGIN_REDIRECT_URL = 'index' # 'index the name of my home page URL
+LOGIN_REDIRECT_URL = 'workshop:index' # 'index the name of my home page URL
 # LOGOUT_REDIRECT_URL = 'login' #  'login' with the name of my login page URL
 
 

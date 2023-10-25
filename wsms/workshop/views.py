@@ -1,4 +1,6 @@
+
 from .forms import *
+from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
 from django.views.decorators.http import require_GET, require_POST
 from django.http import HttpResponseRedirect, JsonResponse
@@ -14,17 +16,40 @@ from .models import *
 from django.contrib import messages
 from .forms import UserForm,ItemForm,ComponentForm
 
+from django.views.decorators.csrf import csrf_protect
+
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.views import LoginView
+from django.urls import reverse_lazy
+
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+@csrf_protect
+def custom_login(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('/home')  # Replace 'desired_page' with the URL name or path of the page you want to redirect to after login
+        else:
+            error_message = 'Invalid username or password'
+            return render(request, 'workshop/login.html', {'error_message': error_message})
+    else:
+        return render(request, 'workshop/login.html')
 def tictac(request_iter):
     return  render(request_iter,'workshop/data.html')
 def index(request_iter):
     return  render(request_iter,'workshop/base1.html')
 
 
-class UserCreateView(CreateView):
+class UserCreateView(LoginRequiredMixin,CreateView):
     model = User
     # fields='__all__'
     form_class=UserForm
     template_name = "workshop/register.html"
+    login_url='workshop:custom_login'
     def form_valid(self, form):
         # get the user object from the form
         user = form.save(commit=False)
@@ -37,15 +62,17 @@ class UserCreateView(CreateView):
         # return the default form_valid behavior
         return super().form_valid(form)
     success_url = reverse_lazy('workshop:user')
-class ItemCreateView(CreateView):
+class ItemCreateView(LoginRequiredMixin,CreateView):
     model = Item
     form_class = ItemForm
     template_name = "workshop/add-tem.html"
     success_url = reverse_lazy('workshop:item')
-class ComponentCreateView(CreateView):
+    login_url='workshop:custom_login'
+class ComponentCreateView(LoginRequiredMixin,CreateView):
     model = Component
     form_class=ComponentForm
     template_name = "workshop/add_component.html"
+    login_url='workshop:custom_login'
     success_url = reverse_lazy('workshop:component')
     def get_initial(self):
         # get the initial data for the form
@@ -59,17 +86,19 @@ class ComponentCreateView(CreateView):
     
 
 
-class SectionCreateView(CreateView):
+class SectionCreateView(LoginRequiredMixin,CreateView):
     model = Section
     form_class=SectionForm
     template_name = "workshop/add_section.html"
+    login_url='workshop:custom_login'
     success_url = reverse_lazy('workshop:section')
 
-class AssignmentCreateView(CreateView):
+class AssignmentCreateView(LoginRequiredMixin,CreateView):
     # specify the form class
     form_class = AssignmentForm
     # specify the template name
     template_name = "workshop/Add_assignment.html"
+    login_url='workshop:custom_login'
     # specify the success url
     success_url = reverse_lazy('workshop:assignment')
     def get_initial(self):
@@ -92,68 +121,77 @@ class AssignmentCreateView(CreateView):
         # return the default form valid response
         return super().form_valid(form)
 
-    class UserListView(ListView):
-        model = User
+    # class UserListView(LoginRequiredMixin,ListView):
+    #     model = User
 
-        context_object_name='users'
-        template_name="workshop/user.html"
-        def get_queryset(self):
-    # return only active users
-            return User.objects.filter(is_active=True)
+    #     context_object_name='users'
+    #     template_name="workshop/user.html"
+    #     def get_queryset(self):
+    # # return only active users
+    #         return User.objects.filter(is_active=True)
 
-class UserListView(ListView):
+class UserListView(LoginRequiredMixin,ListView):
     model = User
 
     context_object_name='users'
     template_name="workshop/user.html"
+    login_url='workshop:custom_login'
     def get_queryset(self):
+    
 # return only active users
         return User.objects.filter(is_active=True)
-    
 
-class ItemListView(ListView):
+
+class ItemListView(LoginRequiredMixin,ListView):
     model = Item
     st=Item.status
     context_object_name='items'
     template_name="workshop/item.html"
+    login_url='workshop:custom_login'
     # paginate_by = 10 # if pagination is desired
     def get_queryset(self):
     # return only valid item
         return Item.objects.filter(is_valid=True)
    
-class ComponentListView(ListView):
+class ComponentListView(LoginRequiredMixin,ListView):
     model = Component
     context_object_name='components'
     template_name="workshop/component.html"
+    login_url='workshop:custom_login'
     # paginate_by = 4 # if pagination is desired
     def get_queryset(self):
 # return only valid item
         return Component.objects.filter(is_valid=True)
 
-class SectionListView(ListView):
+class SectionListView(LoginRequiredMixin,ListView):
     model = Section
     context_object_name='sections'
     template_name="workshop/section.html"
+    login_url='workshop:custom_login'
     # paginate_by = 4 # if pagination is desired
     def get_queryset(self):
 # return only valid section
         return Section.objects.filter(is_valid=True)
-class AssignmentListView(ListView):
+class AssignmentListView(LoginRequiredMixin,ListView):
     model = Assignments
     
     context_object_name='assignments'
     template_name="workshop/Assignment.html"
+    login_url='workshop:custom_login'
     def get_queryset(self):
-        return Assignments.objects.filter(is_valid=True)
+        
+        return Assignments.objects.filter(is_valid=True, engineer=self.request.user)
     
 
-class ReporttListView(ListView):
+class ReporttListView(LoginRequiredMixin,ListView):
     model = Assignments
     
     context_object_name='assignments'
     template_name="workshop/report.html"
+    login_url='workshop:custom_login'
     def get_queryset(self):
         return Assignments.objects.filter(is_valid=True)
+@login_required(login_url='/login')
 def delete_user(request,pk):
     user=User.objects.get(id=pk)
     if request.method=='POST':
@@ -166,6 +204,8 @@ def delete_user(request,pk):
 
 
 # delete Item
+@login_required(login_url='/login')
+
 def delete_item(request,pk):
     item=Item.objects.get(id=pk)
     if request.method=='POST':
@@ -175,6 +215,8 @@ def delete_item(request,pk):
         return redirect('/item')
     context={'item':item}
     return render(request,'workshop/delete-item.html',context)
+
+@login_required(login_url='/login')
 
 def delete_component(request,pk):
     component=Component.objects.get(id=pk)
@@ -186,6 +228,7 @@ def delete_component(request,pk):
     context={'component':component}
     return render(request,'workshop/delete-item.html',context)
 
+@login_required(login_url='/login')
 
 def delete_section(request,pk):
     section=Section.objects.get(id=pk)
@@ -197,6 +240,8 @@ def delete_section(request,pk):
     context={'section':section}
     return render(request,'workshop/delete-item.html',context)
 
+
+@login_required(login_url='/login')
 def delete_assignment(request,pk):
     assign=Assignments.objects.get(id=pk)
     
@@ -208,7 +253,7 @@ def delete_assignment(request,pk):
     context={'assign':assign}
     return render(request,'workshop/delete-assignment.html',context)
 
-
+@login_required(login_url='/login')
 def accept_assignment(request,id):
     assign=Assignments.objects.get(id=id)
     item=assign.item
@@ -221,6 +266,7 @@ def accept_assignment(request,id):
     context={'assign':assign}
     return render(request,'workshop/accept_form.html',context)
 
+@login_required(login_url='/login')
 
 def complete_assignment(request,pk):
     assign=Assignments.objects.get(id=pk)

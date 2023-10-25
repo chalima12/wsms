@@ -3,14 +3,14 @@ from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from .managers import CustomUserManager
 
-
+from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.models import BaseUserManager
 from django.urls import reverse, reverse_lazy
 # from .forms import *
 user_type=[('Manager', "manager"),
           ('Registeror', "registeror"),
           ('Engineer', "Engineer"),]
-class User(AbstractBaseUser):
+class User(AbstractBaseUser,PermissionsMixin):
     
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
@@ -25,6 +25,8 @@ class User(AbstractBaseUser):
     REQUIRED_FIELDS = []
 
     objects = CustomUserManager()
+    def has_module_perms(self, app_label):
+        return self.is_superuser or self.is_staff
    
     def __str__(self) -> str:
         return f"{self.first_name.upper()} {self.last_name.upper()}"

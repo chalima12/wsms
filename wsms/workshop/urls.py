@@ -7,6 +7,7 @@ app_name = 'workshop'
 urlpatterns = [
     # view
     path('', views.index,name='index'),
+    path('home', views.index,name='index'),
     
     #  path("register-item", views.register_item, name="register-item"),
      path("user",views.UserListView.as_view()  ,name="user"),
@@ -33,7 +34,9 @@ path('conponent-delete/<str:pk>',views.delete_component, name='conponent-delete'
 path("delete-section/<str:pk>",views.delete_section ,name="section-delete"),
 path("complete-assignment/<str:pk>",views.complete_assignment ,name="complete"),
 
-# path('logout/', auth_views.LogoutView.as_view(next_page='/accounts/login'), name='logout'),
+path('logout/', auth_views.LogoutView.as_view(next_page='/login'), name='logout'),
+path('login/', views.custom_login, name='custom_login'),
+
 
 
 ]

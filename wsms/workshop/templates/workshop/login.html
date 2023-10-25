@@ -1,0 +1,69 @@
+{% extends "./base1.html" %}
+
+{% block content %}
+
+
+<div class="content-wrapper">
+<div class="card col-8 mt-5 mx-5">
+    <div class="col-4">
+    <h1 class="login-box-msg">Log In To WSMS</h1>
+    </div>
+    <div class="card-body">
+        
+    
+                    {% if error_message %}
+                    <p>{{ error_message }}</p>
+                {% endif %}
+              
+        <form method="post" action="{% url 'workshop:custom_login' %}" class='form-group card  bg-red-400'>
+            
+            {% csrf_token %}
+            <label class='col-form-col-form-label-lg m-3' for="username"> Email</label>
+            
+
+            <div class="col-4">
+          <div class="input-group mb-3">
+            
+            <div class="input-group-append">
+                <div class="input-group-text">
+                  <span class="fas fa-envelope"></span>
+                </div>
+              </div>
+              
+            <input type="email" id="username" name="username" class="form-control" placeholder="Email">
+            
+          </div>
+        </div>
+        
+        <label class='col-form-col-form-label-lg m-3' for="username"> Password</label>
+        
+       
+        
+          <div class="col-4">
+          <div class="input-group mb-3">
+            <div class="input-group-append">
+                <div class="input-group-text">
+                  <span class="fas fa-lock"></span>
+                </div>
+              </div>
+            <input type="password" id="password" name="password" class="form-control" placeholder="Password">
+            
+          </div>
+            <div class="col-4">
+              <button type="submit" class="btn btn-primary btn-block btn-sm m-2">Log In</button>
+            </div>
+            <!-- /.col -->
+          </div>
+        </form>
+  
+        
+      <!-- /.card-body -->
+    </div>
+    <!-- /.card -->
+  </div>
+ 
+</div>
+
+
+  
+{% endblock content %}
