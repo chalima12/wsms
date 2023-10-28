@@ -40,6 +40,7 @@ class Item(models.Model):
     """
     ws_id = models.CharField(max_length=15)
     received_date=models.DateField(auto_now=1)
+    engineer= models.ForeignKey(User, on_delete=models.CASCADE,null=True,blank=True)
     stock_id = models.CharField(max_length=15)
     Serial_no =models.CharField(max_length=15)
     delivered_by = models.CharField(max_length=100)
@@ -48,7 +49,6 @@ class Item(models.Model):
           ('pending', "pending"),
           ('on_prograss', "On_progress"),
            ('completed', "Completed"),
-            ('Not maintainable', "Not maintanable"),
           ),default='pending' ,
           auto_created=True
           )
@@ -57,6 +57,7 @@ class Item(models.Model):
     is_valid=models.BooleanField(auto_created=True,default=True)
     is_accepted=models.BooleanField(auto_created=True,default=False)
     is_maintainable=models.BooleanField(auto_created=True,default=True)
+    is_right_to_here=models.BooleanField(auto_created=True,default=True)
 
     def __str__(self) -> str:
         return self.Serial_no

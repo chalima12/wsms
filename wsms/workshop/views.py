@@ -1,20 +1,17 @@
 
+from django.views import View
 from .forms import *
 from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
 from django.views.decorators.http import require_GET, require_POST
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import  get_object_or_404, redirect, render
-from django.views.generic import (View,
-                                  DateDetailView,
+from django.views.generic import (
                                   CreateView,
-                                  UpdateView,
-                                  DetailView
-                                  ,DeleteView,
+                                  DetailView,
                                   ListView)
 from .models import *
 from django.contrib import messages
-from .forms import UserForm,ItemForm,ComponentForm
 
 from django.views.decorators.csrf import csrf_protect
 
@@ -23,6 +20,120 @@ from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import TemplateView
+from django.db.models import Count
+from workshop.models import Assignments
+
+class AssignmentChartView(LoginRequiredMixin,TemplateView):
+    template_name = 'workshop/home.html'
+    login_url='workshop:custom_login'
+    def get_context_data(self,*args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Get the count of assignments grouped by status
+        assignments = Assignments.objects.values('item__Serial_no', 'is_valid').annotate(count=Count('id'))
+        # Convert the data into a format that can be used by Chart.js
+        item=Item.objects.all().count()
+        section=Section.objects.all().count()
+        user=User.objects.all().count()
+        component=Component.objects.all().count()
+        # data = Assignments.objects.values('item__status').annotate(count=Count('item__status'))
+        data = Item.objects.values('status').annotate(count=Count('status'))
+        users = User.objects.values('user_type').annotate(count=Count('user_type'))
+        label3 = [user['user_type'] for user in users]
+        count3 = [user['count'] for user in users]
+        
+        items = Item.objects.values('Serial_no').annotate(count=Count('id'))
+        # Convert the data into a format that can be used by Chart.js
+        label2 = [item['Serial_no'] for item in items]
+        count = [item['count'] for item in items]
+        # Add the data to the context
+        context['label2'] = label2
+        context['count'] = count
+        context['label3'] = label3
+        context['count3'] = count3
+        label = [d['status'] for d in data]
+        counts = [d['count'] for d in data]
+        labels = []
+        valid_counts = []
+        invalid_counts = []
+        for assignment in assignments:
+            labels.append(assignment['item__Serial_no'])
+            if assignment['is_valid']:
+                valid_counts.append(assignment['count'])
+                invalid_counts.append(0)
+            else:
+                valid_counts.append(0)
+                invalid_counts.append(assignment['count'])
+        # Add the data to the context
+        context['item'] = item
+        context['section'] = section
+        context['user'] = user
+        context['component'] = component
+        context['labels'] = labels
+        context['label'] = label
+        context['counts'] = counts
+        context['valid_counts'] = valid_counts
+        context['invalid_counts'] = invalid_counts
+        
+        context['status_counts'] = counts
+        return context    
+        
+@login_required(login_url='workshop:custom_login')
+def assignment_chart_view(request):
+    # Get the count of assignments grouped by status
+    assignments = Assignments.objects.values('item__Serial_no', 'is_valid').annotate(count=Count('id'))
+    # Convert the data into a format that can be used by Chart.js
+    # if request.user.user_type = 'Engineer':
+        
+    item=Item.objects.all().count()
+    section=Section.objects.all().count()
+    user=User.objects.all().count()
+    component=Component.objects.all().count()
+    # data = Assignments.objects.values('item__status').annotate(count=Count('item__status'))
+    data = Item.objects.values('status').annotate(count=Count('status'))
+    users = User.objects.values('user_type').annotate(count=Count('user_type'))
+    label3 = [user['user_type'] for user in users]
+    count3 = [user['count'] for user in users]
+
+    items = Item.objects.values('Serial_no').annotate(count=Count('id'))
+    # Convert the data into a format that can be used by Chart.js
+    label2 = [item['Serial_no'] for item in items]
+    count = [item['count'] for item in items]
+
+    label = [d['status'] for d in data]
+    counts = [d['count'] for d in data]
+    labels = []
+    valid_counts = []
+    invalid_counts = []
+    for assignment in assignments:
+        labels.append(assignment['item__Serial_no'])
+        if assignment['is_valid']:
+            valid_counts.append(assignment['count'])
+            invalid_counts.append(0)
+        else:
+            valid_counts.append(0)
+            invalid_counts.append(assignment['count'])
+
+    # Create the context dictionary
+    context = {
+    'item': item,
+    'section': section,
+    'user': user,
+    'component': component,
+    'labels': labels,
+    'label': label,
+    'counts': counts,
+    'valid_counts': valid_counts,
+    'invalid_counts': invalid_counts,
+    'label2': label2,
+    'count': count,
+    'label3': label3,
+    'count3': count3,
+    'status_counts': counts
+    }
+
+    # Return the response with the template and the context
+    return render(request, 'workshop/home.html', context)
 
 @csrf_protect
 def custom_login(request):
@@ -41,7 +152,7 @@ def custom_login(request):
 def tictac(request_iter):
     return  render(request_iter,'workshop/data.html')
 def index(request_iter):
-    return  render(request_iter,'workshop/base1.html')
+    return  render(request_iter,'workshop/index.html')
 
 
 class UserCreateView(LoginRequiredMixin,CreateView):
@@ -62,11 +173,6 @@ class UserCreateView(LoginRequiredMixin,CreateView):
         # return the default form_valid behavior
         return super().form_valid(form)
     success_url = reverse_lazy('workshop:user')
-from django.contrib import messages
-from django.http import JsonResponse
-from django.template.loader import render_to_string
-
-from django.contrib import messages
 
 class ItemCreateView(LoginRequiredMixin, CreateView):
     model = Item
@@ -74,6 +180,7 @@ class ItemCreateView(LoginRequiredMixin, CreateView):
     template_name = "workshop/add-tem.html"
     success_url = reverse_lazy('workshop:item')
     login_url = 'workshop:custom_login'
+    
 
     def form_valid(self, form):
         # Check if there are already 2 or more items with the same serial number
@@ -87,7 +194,7 @@ class ComponentCreateView(LoginRequiredMixin,CreateView):
     form_class=ComponentForm
     template_name = "workshop/add_component.html"
     login_url='workshop:custom_login'
-    success_url = reverse_lazy('workshop:component')
+    success_url = reverse_lazy('workshop:assignment')
     def get_initial(self):
         # get the initial data for the form
         initial = super().get_initial()
@@ -130,6 +237,7 @@ class AssignmentCreateView(LoginRequiredMixin,CreateView):
         item = assignment.item
         # change the status of the item to on progress
         item.status = 'on progress'
+        item.engineer=assignment.engineer
         # save the item object
         item.save()
         # return the default form valid response
@@ -144,6 +252,8 @@ class AssignmentCreateView(LoginRequiredMixin,CreateView):
     # # return only active users
     #         return User.objects.filter(is_active=True)
 
+class ItemDetailView(DetailView):
+    model = Item
 class UserListView(LoginRequiredMixin,ListView):
     model = User
 
@@ -303,7 +413,11 @@ def complete_assignment(request, pk):
             item.is_maintainable = True
         else:
             item.is_maintainable = False
-            item.status = 'Not maintanable'
+        if 'is_right_to_here' in request.POST:
+            item.is_right_to_here = True
+        else:
+            item.is_right_to_here = False
+        
         item.comment = request.POST.get('comment', '')
         item.save()
         messages.success(request, f'Assignment {assign.id} has been completed successfully.')
@@ -332,6 +446,23 @@ def complete_assignment(request, pk):
     
 #     return render(request, "workshop/add-tem.html", context)
 
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
+from django.shortcuts import render, redirect
+
+def change_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user) # To keep the user logged in
+            return redirect('password_change_done')
+    else:
+        form = PasswordChangeForm(request.user)
+    return render(request, 'change-password/change_password.html', {'form': form})
+
+def password_change_done(request):
+    return render(request, 'change-password/password_change_done.html')
 
 
 

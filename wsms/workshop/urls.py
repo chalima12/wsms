@@ -1,5 +1,5 @@
 
-from django.urls import path
+from django.urls import path,include
 from django.contrib.auth import views as auth_views
 from .import views
 app_name = 'workshop'
@@ -11,6 +11,7 @@ urlpatterns = [
     
     #  path("register-item", views.register_item, name="register-item"),
      path("user",views.UserListView.as_view()  ,name="user"),
+     path("chart",views.assignment_chart_view  ,name="chart"),
      path("item",views.ItemListView.as_view() , name="item"),
      path("component",views.ComponentListView.as_view() , name="component"),
      path('section', views.SectionListView.as_view(), name='section'),
@@ -24,7 +25,9 @@ urlpatterns = [
      path('create-section', views.SectionCreateView.as_view(),name='create-section'),
      path('create-assignment/<str:id>', views.AssignmentCreateView.as_view(),name='create-assignment'),
     #  path('save_assignment', views.save_assignment_view,name='save_assignment'),
-     
+     path('change_password/', views.change_password, name='change_password'),
+     path('password_change_done/', views.password_change_done, name='password_change_done'),
+     path('accounts/', include('django.contrib.auth.urls')), 
 
 # delete
 path("delete-user/<str:pk>",views.delete_user ,name="delete-user"),
@@ -33,6 +36,7 @@ path("accept-assignment/<str:id>",views.accept_assignment ,name="accept"),
 path('conponent-delete/<str:pk>',views.delete_component, name='conponent-delete'),
 path("delete-section/<str:pk>",views.delete_section ,name="section-delete"),
 path('complete-assignment/<int:pk>/', views.complete_assignment, name='complete'),
+path('item/<int:pk>/', views.ItemDetailView.as_view(), name='item_detail'),
 
 path('logout/', auth_views.LogoutView.as_view(next_page='/login'), name='logout'),
 path('login/', views.custom_login, name='custom_login'),

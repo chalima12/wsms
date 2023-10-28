@@ -17,7 +17,16 @@
 
     <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
-  <div class="container mt-2"> 
+  <div class="container mt-1"> 
+       
+    {% if messages %}
+    <ul class="messages alert-danger float-right">
+    {% for message in messages %}
+    <li style='List-style:none' class="{{ message.tags }}">{{ message }}</li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+    
     <a class="btn btn-warning" href="{% url 'workshop:create-item' %}">
   
         <span class="fa fa-plus">
@@ -25,17 +34,17 @@
         </span>
       </a>
     </div>
-            <div class="card">
+            <div class="card m-3">
               <div class="card-header">
-                <h2 class="container mx-5 card-title">List of Unassigned Items</h2>
+                <h2 class="container mx-5 card-title">List of Items</h2>
               </div>
               <!-- /.card-header -->
               <div class="card-body">
                 <table id="example1" class="table table-bordered table-striped">
-
                 
                       <thead class="dataTables_info">
                         <tr>
+                          <th>ID</th>
                           <th>Received Date</th>
                           <th>Stock Id</th>
                           <th>Serial Number</th>
@@ -48,21 +57,25 @@
                        
                         {% for data in items %}
                         <tr>
+                          <td>{{data.id}}</td>
                         <td> {{data.received_date}}</td>
                         <td>{{data.stock_id}}</td>
                         <td>{{data.Serial_no}}</td>
                         <td>{{data.status}}</td>
                         <td>{{data.is_accepted}}</td>
                         <td >
+                          <a style='border-radius:10%'  class="btn btn-info btn-sm btn " 
+                        href='{% url "workshop:item_detail" data.id%}' > <span class="fas fa-eye ">Item</span></a>
+                        
                           {% if data.status == 'pending' %}
-                          <a class='btn btn-success btn-sm' 
+                          <a class='btn btn-secondary btn-sm' 
                            style='border-radius:10%' href="{% url 'workshop:create-assignment' data.id %}">
                           <span class="fa fa-address-book">
                           Assign
                           </span>
                           </a>
                           {% else %}
-                          <a class='btn btn-success btn-sm btn disabled' style='border-radius:10%' href="#">
+                          <a class='btn btn-secondary btn-sm btn disabled' style='border-radius:10%' href="#">
                           <span class="fa fa-address-book">
                           Assigned
                           </span>
@@ -94,6 +107,7 @@
         </div>
         <!-- /.row -->
       </div>
+    </div>  
       {% if messages.warning %}
       <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
       <script>

@@ -56,20 +56,4 @@
   </form>
 </div>
 
-{% if messages %}
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script>
-    // check if there is a warning message in the context
-    {% if messages %}
-      // create a modal popup with the warning message
-      Swal.fire({
-        icon: 'warning',
-        title: 'Warning',
-        text: '{{ messages }}',
-        confirmButtonText: 'Close'
-      });
-    {% endif %}
-  </script>
-{% endif %}
-
 {% endblock content %}

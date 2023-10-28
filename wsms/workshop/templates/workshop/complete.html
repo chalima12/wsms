@@ -2,17 +2,28 @@
 
 {% block content %}
 <div class="container mt-3">
-<form class='card mt-3' method="POST" action="{% url 'workshop:complete' assign.id %}">
+<form class='card p-3 mt-5 bg-light' method="POST" action="{% url 'workshop:complete' assign.id %}">
+  <div class="container card p-1 mt-0 text-center border-primary bg-gray" >
+    <h3>  Complete Assignment </h3>
+  </div>
+  
     {% csrf_token %}
-    <div class="form-group">
+    <div class="form-group m-2" >
       <label for="comment">Comment:</label>
       <textarea class="form-control" id="comment" name="comment" rows="3"></textarea>
     </div>
-    <div class="form-check">
+    <div class="form-check m-2">
       <input type="checkbox" class="form-check-input" id="is_maintainable" name="is_maintainable">
       <label class="form-check-label" for="is_maintainable">Is maintainable?</label>
     </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <div class="form-check m-2">
+      <input type="checkbox" class="form-check-input" id="is_right_to_here" name="is_right_to_here">
+      <label class="form-check-label" for="is_right_to_here">Is should be here?</label>
+    </div>
+    <div class="col-4 m-3">
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+  
   </form>
 </div>
 {% endblock content %}
