@@ -9,8 +9,15 @@
 </head>
   {% include './component/static.html' %}
 <body>
+  
   {% include './component/sidebar.html' %}
-       {% include './component/navbar.html' %}
+  
+  {% block navbar %}
+  {% include './component/navbar.html' %}
+  {% endblock navbar %}
+    
+     
+       
          
          {% block content %}
          

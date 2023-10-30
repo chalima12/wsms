@@ -20,7 +20,7 @@
         <!-- Add icons to the links using the .nav-icon class
              with font-awesome or any other icon font library -->
         <li class="nav-item menu-open">
-          <a href="#" class="nav-link active">
+          <a href="#" class="nav-link ">
             <i class="nav-icon fas fa-home"></i>
             <p>
               WSMS
@@ -28,51 +28,67 @@
             </p>
           </a>
           <ul class="nav nav-treeview">
-            <li class="nav-item">
-              <a href="{% url 'workshop:chart' %}" class="nav-link ">
-                <i class="far fa-circle nav-icon"></i>
-                <p>Dashboard</p>
+            {% url 'workshop:chart' as chart_url %}
+              <li class="nav-item">
+              <a href="{{ chart_url }}" 
+              class="nav-link {% if request.path == chart_url %}active{% endif %}">
+              <i class="far fa-circle nav-icon"></i>
+             <p> Dashboard</P>
               </a>
-            </li>
+              </li>
+              {% url 'workshop:user' as user_url %}
             <li class="nav-item">
-              <a href="{% url 'workshop:user' %}" class="nav-link ">
+              <a href="{{ user_url }}"
+               class="nav-link {% if request.path == user_url %}active{% endif %}"> 
                 <i class="far fa-circle nav-icon"></i>
                 <p>users</p>
               </a>
             </li>
+            {% url 'workshop:item' as item_url %}
             <li class="nav-item">
-              <a href="{% url 'workshop:item' %}" class="nav-link ">
+              <a href="{{ item_url }}" 
+              class="nav-link {% if request.path == item_url %}active{% endif %}"> 
                 <i class="far fa-circle nav-icon"></i>
                 <p>Items</p>
               </a>
             </li>
+            {% url 'workshop:component' as component_url %}
             <li class="nav-item">
-              <a href="{% url 'workshop:component' %}" class="nav-link">
+              <a href="{{ component_url }}" 
+              class="nav-link {% if request.path == component_url %}active{% endif %}">  
                 <i class="far fa-circle nav-icon"></i>
                 <p>Components</p>
               </a>
+              {% url 'workshop:section' as section_url %}
               <li class="nav-item">
-                <a href="{% url 'workshop:section' %}" class="nav-link">
+                <a href="{{ section_url }}" 
+                class="nav-link {% if request.path == section_url %}active{% endif %}">  
                   <i class="far fa-circle nav-icon"></i>
                   <p>Sections</p>
                 </a>
+                {% url 'workshop:assignment' as assignment_url %}
                 <li class="nav-item">
-                  <a href="{% url 'workshop:assignment' %}" class="nav-link">
+                  <a href="{{ assignment_url }}"
+                  class="nav-link {% if request.path == assignment_url %}active{% endif %}"> 
                     <i class="far fa-circle nav-icon"></i>
                     <p>Assignments</p>
                   </a>
           </ul>
+          
           <li class="nav-item menu-open">
-            <a href="#" class="nav-link active">
+            <a href="#" class="nav-link ">
               <i class="nav-icon fas fa-repeat"></i>
               <p>
                 Reports
+                
                 <i class="right fas fa-angle-left"></i>
               </p>
             </a>
             <ul class="nav nav-treeview">
+              {% url 'workshop:report' as report_url %}
                     <li class="nav-item">
-                      <a href="{% url 'workshop:report' %}" class="nav-link">
+                      <a href="{{ report_url }}"
+                      class="nav-link {% if request.path == report_url %}active{% endif %}"> 
                         <i class="far fa-circle nav-icon"></i>
                         <p>Report</p>
                       </a> 

@@ -84,8 +84,9 @@ def assignment_chart_view(request):
     assignments = Assignments.objects.values('item__Serial_no', 'is_valid').annotate(count=Count('id'))
     # Convert the data into a format that can be used by Chart.js
     # if request.user.user_type = 'Engineer':
-        
-    item=Item.objects.all().count()
+    item=Assignments.objects.filter(engineer=request.user).count()
+    # item=Item.objects.all().count()
+    
     section=Section.objects.all().count()
     user=User.objects.all().count()
     component=Component.objects.all().count()
