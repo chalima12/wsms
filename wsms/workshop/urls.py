@@ -37,7 +37,7 @@ path('conponent-delete/<str:pk>',views.delete_component, name='conponent-delete'
 path("delete-section/<str:pk>",views.delete_section ,name="section-delete"),
 path('complete-assignment/<int:pk>/', views.complete_assignment, name='complete'),
 path('item/<int:pk>/', views.ItemDetailView.as_view(), name='item_detail'),
-
+path('assign_role/<int:pk>/', views.AssignRoleView.as_view(), name='assign_role'),
 path('logout/', auth_views.LogoutView.as_view(next_page='/login'), name='logout'),
 path('login/', views.custom_login, name='custom_login'),
 

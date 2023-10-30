@@ -56,13 +56,12 @@
 <td>{{data.last_name|upper}}</td>
 <td>{{data.user_name}} </td>
 <td>
-
-<a class="btn btn-info btn-outline-light btn-sm" href="#">
-<span class="fa fa-aws">
-View
-</span>
-</a>
-</td>
+    <a class="btn btn-info btn-outline-light btn-sm" href="{% url 'workshop:assign_role' assigned_user.id %}">
+        <span class="fa fa-aws">
+          Assign Role
+        </span>
+      </a>
+      
 
 
 

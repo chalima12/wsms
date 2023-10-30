@@ -3,7 +3,12 @@
 {% block content %}
 
 {% block dashbord %}
+
+{% if user.view_dashboard %}
 {% include './component/dasboard.html' %}
+{% endif %}
+    
+
 {% endblock dashbord %}
     
 {% endblock content %}

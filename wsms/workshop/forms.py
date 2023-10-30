@@ -17,7 +17,31 @@ class UserForm(ModelForm):
              'pass_word':forms.PasswordInput(attrs={'class':"form-control form-control",'placeholder':'Enter user password'}),
              "user_type": forms.Select(attrs={"class": "form-control",'placeholder':'Enter user Email'}),
         }
-
+class UserPermissionsForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['view_dashboard', 'view_user', 'view_item', 'view_component', 'view_assignment', 'view_section', 'view_report',
+                  'add_user','add_item','add_component','add_assignment','add_section'
+                  ,'delete_user','delete_component','delete_section','delete_assignment','delete_item' ]
+        widgets = {
+        'view_dashboard': forms.CheckboxInput(),
+        'view_user': forms.CheckboxInput(),
+        'view_item': forms.CheckboxInput(),
+        'view_component': forms.CheckboxInput(),
+        'view_section': forms.CheckboxInput(),
+        'view_assignment': forms.CheckboxInput(),
+        'view_report': forms.CheckboxInput(),
+        'add_user': forms.CheckboxInput(),
+        'add_item': forms.CheckboxInput(),
+        'add_component': forms.CheckboxInput(),
+        'add_assignment': forms.CheckboxInput(),
+        'add_section': forms.CheckboxInput(),
+        'delete_user': forms.CheckboxInput(),
+        'delete_item': forms.CheckboxInput(),
+        'delete_component': forms.CheckboxInput(),
+        'delete_section': forms.CheckboxInput(),
+        'delete_assignment': forms.CheckboxInput(),
+        }
 class ItemForm(forms.ModelForm):
     # specify the fields and widgets for the form
     class Meta:

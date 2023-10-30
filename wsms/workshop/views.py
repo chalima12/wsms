@@ -261,10 +261,15 @@ class UserListView(LoginRequiredMixin,ListView):
     context_object_name='users'
     template_name="workshop/user.html"
     login_url='workshop:custom_login'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['assigned_user'] = self.request.user
+        return context
+
     def get_queryset(self):
     
 # return only active users
-        return User.objects.filter(is_active=True)
+        return User.objects.filter(is_active=True,is_admin=False)
 
 
 class ItemListView(LoginRequiredMixin,ListView):
@@ -466,6 +471,16 @@ def password_change_done(request):
     return render(request, 'change-password/password_change_done.html')
 
 
+from django.views.generic import UpdateView
+
+from .forms import UserPermissionsForm
+
+class AssignRoleView(UpdateView):
+    model = User
+    template_name='workshop/assign_role.html'
+    form_class = UserPermissionsForm
+    success_url = reverse_lazy('workshop:user')
+    
 
 
 """

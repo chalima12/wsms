@@ -20,6 +20,26 @@ class User(AbstractBaseUser,PermissionsMixin):
     is_active=models.BooleanField(auto_created=True,default=True)
     is_staff = models.BooleanField(default=True,null=True,auto_created=True,blank=True)
     is_superuser = models.BooleanField(default=False,auto_created=True,null=True,blank=True)
+    view_dashboard = models.BooleanField(default=True,null=True,auto_created=True,blank=True)
+    # for role and permision
+    is_admin = models.BooleanField(default=False,null=True,auto_created=True,blank=True)
+    view_user = models.BooleanField(default=False,null=True,auto_created=True,blank=True)
+    view_item = models.BooleanField(default=True,null=True,auto_created=True,blank=True)
+    view_component = models.BooleanField(default=False,null=True,auto_created=True,blank=True)
+    view_assignment = models.BooleanField(default=False,null=True,auto_created=True,blank=True)
+    view_section = models.BooleanField(default=False,null=True,auto_created=True,blank=True)
+    view_report = models.BooleanField(default=False,null=True,auto_created=True,blank=True)
+    add_user = models.BooleanField(default=False,null=True,auto_created=True,blank=True)
+    add_item = models.BooleanField(default=False,null=True,auto_created=True,blank=True)
+    add_component = models.BooleanField(default=False,null=True,auto_created=True,blank=True)
+    add_assignment = models.BooleanField(default=False,null=True,auto_created=True,blank=True)
+    add_section = models.BooleanField(default=False,null=True,auto_created=True,blank=True)
+    delete_user = models.BooleanField(default=False,null=True,auto_created=True,blank=True)
+    delete_item = models.BooleanField(default=False,null=True,auto_created=True,blank=True)
+    delete_component = models.BooleanField(default=False,null=True,auto_created=True,blank=True)
+    delete_section = models.BooleanField(default=False,null=True,auto_created=True,blank=True)
+    delete_assignment = models.BooleanField(default=False,null=True,auto_created=True,blank=True)
+    
     date_joined = models.DateTimeField(default=timezone.now)
     USERNAME_FIELD = "user_name"
     REQUIRED_FIELDS = []
@@ -99,3 +119,9 @@ class Assignments(models.Model):
 
     def __str__(self) -> str:
         return str(self.item)
+class Notification(models.Model):
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    engineer = models.ForeignKey(User, on_delete=models.CASCADE)
+    status = models.CharField(max_length=10, choices=[('pending', 'Pending'), ('read', 'Read')])
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
