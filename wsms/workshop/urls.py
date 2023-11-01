@@ -40,7 +40,10 @@ path('item/<int:pk>/', views.ItemDetailView.as_view(), name='item_detail'),
 path('assign_role/<int:pk>/', views.AssignRoleView.as_view(), name='assign_role'),
 path('logout/', auth_views.LogoutView.as_view(next_page='/login'), name='logout'),
 path('login/', views.custom_login, name='custom_login'),
+path('message-count_1/', views.get_message_count_1, name='message_count_1'),
+path('read_noficatins/', views.read_notifications, name='read_noficatins'),
 
+path('read_notification/<int:notification_id>/', views.read_notifications, name='read_notification'),
 
 
 ]

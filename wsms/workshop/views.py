@@ -1,11 +1,9 @@
 
-from django.views import View
+import datetime
+from workshop import signals
 from .forms import *
 from django.contrib.auth.decorators import login_required
-from django.template.loader import render_to_string
-from django.views.decorators.http import require_GET, require_POST
-from django.http import HttpResponseRedirect, JsonResponse
-from django.shortcuts import  get_object_or_404, redirect, render
+from django.shortcuts import  redirect, render
 from django.views.generic import (
                                   CreateView,
                                   DetailView,
@@ -16,7 +14,6 @@ from django.contrib import messages
 from django.views.decorators.csrf import csrf_protect
 
 from django.contrib.auth import authenticate, login
-from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -150,11 +147,18 @@ def custom_login(request):
             return render(request, 'workshop/login.html', {'error_message': error_message})
     else:
         return render(request, 'workshop/login.html')
-def tictac(request_iter):
-    return  render(request_iter,'workshop/data.html')
+
 def index(request_iter):
     return  render(request_iter,'workshop/index.html')
 
+from django.shortcuts import render
+
+def notifications_view(request):
+    user_id = request.user
+    notifications = Notification.objects.filter(engineer=user_id,status='pending')
+    count=notifications.count()
+    context = {'notifications': notifications,'count': count}
+    return render(request, 'notifications.html', context)
 
 class UserCreateView(LoginRequiredMixin,CreateView):
     model = User
@@ -218,7 +222,7 @@ class SectionCreateView(LoginRequiredMixin,CreateView):
 class AssignmentCreateView(LoginRequiredMixin,CreateView):
     # specify the form class
     form_class = AssignmentForm
-    # specify the template name
+    assignment_created = signals.Signal()
     template_name = "workshop/Add_assignment.html"
     login_url='workshop:custom_login'
     # specify the success url
@@ -241,8 +245,31 @@ class AssignmentCreateView(LoginRequiredMixin,CreateView):
         item.engineer=assignment.engineer
         # save the item object
         item.save()
+        # Emit the signal.
+        self.assignment_created.send(sender=self, assignment=assignment)
         # return the default form valid response
         return super().form_valid(form)
+    
+from django.http import JsonResponse
+
+def send_notification(request):
+    # Get the assignment object from the request.
+    assignment = Assignments.objects.get(id=request.POST['assignment_id'])
+
+    # Create a notification for the engineer.
+    notification = Notification.objects.create(
+        user=assignment.engineer,
+        message=f'You have been assigned to the Item {assignment.item.name}.',
+        link=reverse('workshop:assignment_detail', args=[assignment.id])
+    )
+
+    # Send the notification to the engineer.
+    notification.send()
+
+    # Return a success response.
+    return JsonResponse({'success': True})
+
+
 
     # class UserListView(LoginRequiredMixin,ListView):
     #     model = User
@@ -261,11 +288,7 @@ class UserListView(LoginRequiredMixin,ListView):
     context_object_name='users'
     template_name="workshop/user.html"
     login_url='workshop:custom_login'
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['assigned_user'] = self.request.user
-        return context
-
+    
     def get_queryset(self):
     
 # return only active users
@@ -432,7 +455,6 @@ def complete_assignment(request, pk):
     return render(request, 'workshop/complete.html', context)
 
 
-
 # def add_item_view(request):
 #     if request.method == "POST":
 #         item =Item.Serial_no
@@ -460,15 +482,16 @@ def change_password(request):
     if request.method == 'POST':
         form = PasswordChangeForm(request.user, request.POST)
         if form.is_valid():
+            messages.success(request, 'Password changed Successfully')
             user = form.save()
             update_session_auth_hash(request, user) # To keep the user logged in
-            return redirect('password_change_done')
+            return redirect('workshop:chart')
     else:
         form = PasswordChangeForm(request.user)
-    return render(request, 'change-password/change_password.html', {'form': form})
+    return render(request, 'workshop/change-password/change_password.html', {'form': form})
 
 def password_change_done(request):
-    return render(request, 'change-password/password_change_done.html')
+    return render(request, 'workshop/change-password/password_change_done.html')
 
 
 from django.views.generic import UpdateView
@@ -480,7 +503,45 @@ class AssignRoleView(UpdateView):
     template_name='workshop/assign_role.html'
     form_class = UserPermissionsForm
     success_url = reverse_lazy('workshop:user')
-    
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     context['assigned_user'] = self.object
+    #     return context
+
+
+@login_required
+def get_message_count_1(request):
+    startdate = timezone.now()
+    enddate = startdate + datetime.timedelta(days=-1)
+    user_id = request.user
+    no_assignment = Item.objects.filter(engineer=user_id,is_accepted=False).count()
+    notify=f'you have { no_assignment } new assignments'
+ 
+    data = {
+        'message_count_1': no_assignment,
+        'notify': notify
+    }
+    return JsonResponse(data)
+
+@login_required
+def read_notifications(request, notification_id):
+    notification = Notification.objects.get(id=notification_id)
+
+    if request.method == 'POST':
+        # Update the status of the notification to read.
+        notification.status = 'read'
+        notification.save()
+
+        # Return a JSON response with the new status.
+        data = {
+            'status': notification.status
+        }
+        return JsonResponse(data)
+
+    # If the request is not a POST request, return an error.
+    return JsonResponse({'error': 'Invalid request.'}, status=400)
+
+
 
 
 """

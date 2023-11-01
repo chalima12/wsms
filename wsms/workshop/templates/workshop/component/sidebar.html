@@ -28,6 +28,8 @@
             </p>
           </a>
           <ul class="nav nav-treeview">
+            
+            {% if user.view_dashboard %}
             {% url 'workshop:chart' as chart_url %}
               <li class="nav-item">
               <a href="{{ chart_url }}" 
@@ -36,22 +38,33 @@
              <p> Dashboard</P>
               </a>
               </li>
+              {% endif %}
+              
+              {% if user.view_user %}
               {% url 'workshop:user' as user_url %}
-            <li class="nav-item">
-              <a href="{{ user_url }}"
-               class="nav-link {% if request.path == user_url %}active{% endif %}"> 
-                <i class="far fa-circle nav-icon"></i>
-                <p>users</p>
-              </a>
-            </li>
-            {% url 'workshop:item' as item_url %}
-            <li class="nav-item">
-              <a href="{{ item_url }}" 
-              class="nav-link {% if request.path == item_url %}active{% endif %}"> 
-                <i class="far fa-circle nav-icon"></i>
-                <p>Items</p>
-              </a>
-            </li>
+              <li class="nav-item">
+                <a href="{{ user_url }}"
+                 class="nav-link {% if request.path == user_url %}active{% endif %}"> 
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>users</p>
+                </a>
+              </li>
+              {% endif %}
+                
+             
+             {% if user.view_item %}
+             {% url 'workshop:item' as item_url %}
+             <li class="nav-item">
+               <a href="{{ item_url }}" 
+               class="nav-link {% if request.path == item_url %}active{% endif %}"> 
+                 <i class="far fa-circle nav-icon"></i>
+                 <p>Items</p>
+               </a>
+             </li>
+             {% endif %}
+              
+            
+            {% if user.view_component %}
             {% url 'workshop:component' as component_url %}
             <li class="nav-item">
               <a href="{{ component_url }}" 
@@ -59,21 +72,36 @@
                 <i class="far fa-circle nav-icon"></i>
                 <p>Components</p>
               </a>
-              {% url 'workshop:section' as section_url %}
+            </li>
+            {% endif %}
+              
+            
+            {% if user.view_section %}
+            {% url 'workshop:section' as section_url %}
+            <li class="nav-item">
+              <a href="{{ section_url }}" 
+              class="nav-link {% if request.path == section_url %}active{% endif %}">  
+                <i class="far fa-circle nav-icon"></i>
+                <p>Sections</p>
+              </a>
+            </li>
+            {% endif %}
+              
+              
+              {% if use.view_assignment %}
+                
+              {% url 'workshop:assignment' as assignment_url %}
               <li class="nav-item">
-                <a href="{{ section_url }}" 
-                class="nav-link {% if request.path == section_url %}active{% endif %}">  
+                <a href="{{ assignment_url }}"
+                class="nav-link {% if request.path == assignment_url %}active{% endif %}"> 
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Sections</p>
+                  <p>Assignments</p>
                 </a>
-                {% url 'workshop:assignment' as assignment_url %}
-                <li class="nav-item">
-                  <a href="{{ assignment_url }}"
-                  class="nav-link {% if request.path == assignment_url %}active{% endif %}"> 
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Assignments</p>
-                  </a>
+              </li>
+              {% endif %}
+                
           </ul>
+          
           
           <li class="nav-item menu-open">
             <a href="#" class="nav-link ">
@@ -85,14 +113,18 @@
               </p>
             </a>
             <ul class="nav nav-treeview">
+              {% if user.view_report %}
               {% url 'workshop:report' as report_url %}
-                    <li class="nav-item">
-                      <a href="{{ report_url }}"
-                      class="nav-link {% if request.path == report_url %}active{% endif %}"> 
-                        <i class="far fa-circle nav-icon"></i>
-                        <p>Report</p>
-                      </a> 
-              </li>
+              <li class="nav-item">
+                <a href="{{ report_url }}"
+                class="nav-link {% if request.path == report_url %}active{% endif %}"> 
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Report</p>
+                </a> 
+        </li>
+          {% endif %}
+            
+              
             </ul>
         </li> 
 </aside>

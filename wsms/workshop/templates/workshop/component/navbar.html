@@ -8,13 +8,13 @@
         <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
       </li> {% endcomment %} 
       <li class="nav-item d-none d-sm-inline-block">
-        <a class="btn btn-info btn-block p-1  nav-link disabled">
+        
           {% block project %}
           <div class="container m-auto my-2 ">
-            <h1  style='font-size:36'>Workshop Management System 
+            <h1  style='font-size:36'>Workshop Management System </h1>
           </div> 
           {% endblock project %}
-        </a>
+      
       </li>     
     </ul>
     {% endblock leftnav %}
@@ -30,9 +30,14 @@
               <a href="#" class="btn-img img dropdown-toggle rounded-circle" 
               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
               <img class='profile-user-img rounded-circle sm' src="{% static 'dist/img/user2-160x160.jpg' %}" class="img-circle elevation-2" alt="User Image">
-              <div class='btn text-white'>{{ user.first_name }} {{ user.last_name }}</div>
+              
+              {% if request.user is user %}
+                <div class='btn text-white'>{{ user.first_name }} {{ user.last_name }}</div>
+              {% endif %}
+                
+              
               </a>            <div class="dropdown-menu">
-            <a class="dropdown-item d-flex align-items-center" href="#">
+            <a class="dropdown-item d-flex align-items-center" href="{% url 'workshop:change_password' %}">
             <div class="icon d-flex align-items-center justify-content-center mr-3">
             </div>
             Change Password
@@ -58,37 +63,40 @@
             {% else %}
             <a style='border-radius:15% ' href="{% url 'workshop:custom_login' %}"  class="btn-block btn-lg btn-secondary"> Login</a>
             {% endif %}
-            <!-- Notifications Dropdown Menu -->
+            <li
+ 
+            class="nav-item dropdown">
             
-            <li class="nav-item dropdown">
-              
-              
-
-              <a class="nav-link" data-toggle="dropdown" href="#">
+                    
+            <a
+             
+            class="nav-link"
+             
+            data-toggle="dropdown"
+             
+            href="#">
+            <div style="font-size: 30px; color:yellow;" >          
               <i class="far fa-bell"></i>
-              <span class="badge badge-warning navbar-badge">15</span>
-              </a>
-              <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-              <span class="dropdown-item dropdown-header">15 Notifications</span>
-              <div class="dropdown-divider"></div>
-              <a href="#" class="dropdown-item">
-              <i class="fas fa-envelope mr-2"></i> 4 new messages
-              <span class="float-right text-muted text-sm">3 mins</span>
-              </a>
-              <div class="dropdown-divider"></div>
-              <a href="#" class="dropdown-item">
-              <i class="fas fa-users mr-2"></i> 8 friend requests
-              <span class="float-right text-muted text-sm">12 hours</span>
-              </a>
-              <div class="dropdown-divider"></div>
-              <a href="#" class="dropdown-item">
-              <i class="fas fa-file mr-2"></i> 3 new reports
-              <span class="float-right text-muted text-sm">2 days</span>
-              </a>
-              <div class="dropdown-divider"></div>
-              <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
               </div>
-              </li>
+            <span style="font-size: 20px;color:red;" class="badge badge-cyan navbar-badge" id="message-count_1">
+             
+            </a>
+            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                        
+              <span class="dropdown-item dropdown-header" id="message-count_2"> new Assignment</span>
+              <div class="dropdown-divider"></div>
+              {% for notification in notifications %}
+              <a href="#" class="dropdown-item">
+                  <i class="fas fa-{{ notification.icon }} mr-2"></i> {{ notification.message }}
+                  <span class="float-right text-muted text-sm">{{ notification.timestamp }}</span>
+              </a>
+              {% endfor %}
+              <div class="dropdown-divider"></div>
+             
+
+          </div>
+
+                </li>
         <li class="nav-item">
           <a class="nav-link" data-widget="fullscreen" href="#" role="button">
             <i class="fas fa-expand-arrows-alt"></i>

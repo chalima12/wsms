@@ -2,13 +2,23 @@
 
 {% block content %}
 
+
+       
+    {% if messages %}
+    <ul class="messages alert-success float-right">
+    {% for message in messages %}
+    <li style='List-style:none' class="{{ message.tags }}">{{ message }}</li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+<
 {% block dashbord %}
 
-{% if user.view_dashboard %}
+{% if not user.view_dashboard %}
 {% include './component/dasboard.html' %}
 {% endif %}
     
 
 {% endblock dashbord %}
-    
+
 {% endblock content %}
