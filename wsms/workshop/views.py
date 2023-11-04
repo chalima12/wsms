@@ -514,14 +514,24 @@ def get_message_count_1(request):
     startdate = timezone.now()
     enddate = startdate + datetime.timedelta(days=-1)
     user_id = request.user
-    no_assignment = Item.objects.filter(engineer=user_id,is_accepted=False).count()
+    no_assignment = Notification.objects.filter(engineer=user_id,status='pending').count()
     notify=f'you have { no_assignment } new assignments'
- 
+
+    # Add the following code to remove the badge if the engineer clicks mark as read
+    if request.method == 'POST':
+        if request.POST.get('mark_as_read'):
+            Notification.objects.filter(engineer=user_id,status='read').update(status='read')
+            no_assignment = 0
+            
+            
+            
+
     data = {
         'message_count_1': no_assignment,
         'notify': notify
     }
     return JsonResponse(data)
+
 
 @login_required
 def read_notifications(request, notification_id):

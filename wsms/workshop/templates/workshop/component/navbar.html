@@ -83,16 +83,10 @@
             </a>
             <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
                         
-              <span class="dropdown-item dropdown-header" id="message-count_2"> new Assignment</span>
-              <div class="dropdown-divider"></div>
-              {% for notification in notifications %}
-              <a href="#" class="dropdown-item">
-                  <i class="fas fa-{{ notification.icon }} mr-2"></i> {{ notification.message }}
-                  <span class="float-right text-muted text-sm">{{ notification.timestamp }}</span>
-              </a>
-              {% endfor %}
-              <div class="dropdown-divider"></div>
+              <span class="dropdown-item dropdown-header" id="message-count_2"></span>
              
+              <div class="dropdown-divider"></div>
+              <a class="mark_as_read btn btn-light">Mark as read</a>
 
           </div>
 

@@ -122,6 +122,6 @@ class Assignments(models.Model):
 class Notification(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     engineer = models.ForeignKey(User, on_delete=models.CASCADE)
-    status = models.CharField(max_length=10, choices=[('pending', 'Pending'), ('read', 'Read')])
+    status = models.CharField(max_length=10, choices=[('pending', 'Pending'), ('read', 'Read')],default='pending',auto_created=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
