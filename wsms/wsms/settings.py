@@ -34,15 +34,15 @@ INSTALLED_APPS = [
     
     'jquery',
     'bootstrap5',
+    'channels',
     'workshop',
-    'jet.dashboard',
-    'jet',
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    
+    'adminlte3',
+    'adminlte3_theme',
+     'django.contrib.admin',
     'django.contrib.staticfiles',
     'crispy_forms',
     'crispy_bootstrap5',  
@@ -155,6 +155,11 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATICFILES_DIR=[os.path.join(BASE_DIR,'static'),]
 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
+
+
 CCRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
@@ -164,4 +169,18 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.core.Router',
+        'ROUTES': [
+            {
+                'pattern': r'^/ws/assignments/notifications/$',
+                'consumer': 'wsms.workshop.consumers.AssignmentsNotificationConsumer',
+            },
+        ],
+    },
+}
+
+ASGI_APPLICATION = 'wsms.routing.application'
 

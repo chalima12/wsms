@@ -39,7 +39,8 @@ class User(AbstractBaseUser,PermissionsMixin):
     delete_component = models.BooleanField(default=False,null=True,auto_created=True,blank=True)
     delete_section = models.BooleanField(default=False,null=True,auto_created=True,blank=True)
     delete_assignment = models.BooleanField(default=False,null=True,auto_created=True,blank=True)
-    
+    profile_picture = models.ImageField(upload_to='profile_pics/', null=True, blank=True)
+
     date_joined = models.DateTimeField(default=timezone.now)
     USERNAME_FIELD = "user_name"
     REQUIRED_FIELDS = []
@@ -67,7 +68,7 @@ class Item(models.Model):
     received_by= models.CharField(max_length=100)
     status = models.CharField(choices=(
           ('pending', "pending"),
-          ('on_prograss', "On_progress"),
+          ('on_progress', "On_progress"),
            ('completed', "Completed"),
           ),default='pending' ,
           auto_created=True
@@ -119,9 +120,14 @@ class Assignments(models.Model):
 
     def __str__(self) -> str:
         return str(self.item)
+
+
 class Notification(models.Model):
-    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    assignment = models.ForeignKey(Assignments, on_delete=models.CASCADE)  # Use a ForeignKey to link with Assignments
     engineer = models.ForeignKey(User, on_delete=models.CASCADE)
-    status = models.CharField(max_length=10, choices=[('pending', 'Pending'), ('read', 'Read')],default='pending',auto_created=True)
+    status = models.CharField(max_length=10, choices=[('pending', 'Pending'), ('read', 'Read')], default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    message = models.TextField(null=True)  # Define the 'message' field
+    link = models.CharField(max_length=255, null=True)  # Define the 'link' field
+

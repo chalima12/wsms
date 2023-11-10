@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -6,10 +7,54 @@
     {% block title %}
     <title>Workshop Management System</title>
     {% endblock title %}
+    {% block css %}
+     <!-- Google Font: Source Sans Pro -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="/static/plugins/fontawesome-free/css/all.min.css">
+
+<!-- Ionicons -->
+
+
+<!-- Tempusdominus Bootstrap 4 -->
+<link rel="stylesheet" href="/static/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+
+<!-- iCheck -->
+<link rel="stylesheet" href="/static/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+<link rel="stylesheet" href="{% static 'adminlte/plugins/chart.js/Chart.min.css' %}">
+
+
+<!-- JQVMap -->
+<link rel="stylesheet" href="/static/plugins/jqvmap/jqvmap.min.css">
+
+<!-- Theme style -->
+<link rel="stylesheet" href="/static/dist/css/adminlte.min.css">
+
+<!-- overlayScrollbars -->
+<link rel="stylesheet" href="/static/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
+
+<!-- Daterange picker -->
+<link rel="stylesheet" href="/static/plugins/daterangepicker/daterangepicker.css">
+
+<!-- summernote -->
+<link rel="stylesheet" href="/static/plugins/summernote/summernote-bs4.min.css">
+
+     <link
+ 
+     rel="stylesheet"
+      
+     href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      
+     integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+      
+     crossorigin="anonymous">
+     <link rel="stylesheet" href="{% static 'adminlte/plugins/chart.js/Chart.min.css' %}">
+{% endblock css %}
 </head>
-  {% include './component/static.html' %}
-<body>
   
+<body>
+
   {% include './component/sidebar.html' %}
      
        {% include './component/navbar.html' %}
@@ -24,7 +69,144 @@
          {% endblock content %}
 
          {% include "workshop/accept_form.html" %}
-          {% include "workshop/modal.html" %} 
+     
          {% include "workshop/confirm_modal.html" %}
+         {% include "workshop/data.html" %}
+          
+          
+          <script>
+          $('.mark-as-read').click(function() {
+          var notificationId = $(this).data('notification-id');
+          
+          if (notificationId) {
+          $.ajax({
+          url: '/workshop/mark_as_read/' + notificationId + '/',
+          method: 'POST',
+          success: function(data) {
+           if (data.success) {
+             $('#message-count_' + notificationId).text('Read');
+             $(this).remove();
+           } else {
+             alert('Error marking the notification as read: ' + data.error);
+           }
+          },
+          error: function() {
+           alert('An error occurred while marking the notification as read.');
+          }
+          });
+          }
+          });
+          
+          
+          
+          </script>
+          
+          
+          <script>
+             $(document).ready(function() {
+                 // Function to load notifications
+                 function loadNotifications() {
+                     $.ajax({
+                         url: '/get-notifications/',
+                         success: function(data) {
+                             // Update the unread count badge
+                             $('#unread-count-badge').text(data.unread_count);
+             
+                             // Update the notifications dropdown
+                             $('#notifications-dropdown').empty();
+                             for (var i = 0; i < data.notifications.length; i++) {
+                                 var notification = data.notifications[i];
+                                 var notificationElement = '<div class="notification ' + (notification.status === 'read' ? 'read' : '') + '">' +
+                                     '<a href="' + notification.link + '">' + notification.message + '</a>' +
+                                     '<button class="mark-as-read" data-notification-id="' + notification.id + '">Mark as Read</button>' +
+                                     '</div>';
+                                 $('#notifications-dropdown').append(notificationElement);
+                             }
+                         }
+                     });
+                 }
+             
+                 // Initial load of notifications
+                 loadNotifications();
+             
+                 // Reload notifications every 30 seconds
+                 setInterval(loadNotifications, 30000);
+             
+                 // Mark notification as read
+                 $('#notifications-dropdown').on('click', '.mark-as-read', function() {
+                     var notificationId = $(this).data('notification-id');
+                     $.ajax({
+                         url: '/mark-notification-as-read/' + notificationId + '/',
+                         success: function(data) {
+                             if (data.status === 'read') {
+                                 $(this).parent().addClass('read');
+                             }
+                         }
+                     });
+                 });
+             });
+          </script>
+          
+          
+          <script>
+             $(document).ready(function() {
+               function getMessageCount_1() {
+                 $.ajax({
+                     url: '/message-count_1/',
+                     success: function(data) {
+                         $('#message-count_1').html(data.message_count_1);
+                         $('#message-count_2').html(data.notify);
+               
+                        
+                         $('.mark_as_read').on('click', function() {
+                             $.ajax({
+                                 url: '/message-count_1/',
+                                 method: 'POST',
+                                 data: {
+                                     mark_as_read: true
+                                 },
+                                 success: function(data) {
+                                   $('#message-count_1').html(data.message_count_1);
+                                   $('#message-count_2').html(data.notify);
+                                 }
+                             });
+                         });
+                     }
+                 });
+               }
+               
+               
+             getMessageCount_1();
+             setInterval(getMessageCount_1, 30000);
+          });
+          
+          </script>
+          
+          
+          <script>
+          $(document).ready(function() {
+           // ...
+          
+           // Mark notification as read
+           $('#notifications-dropdown').on('click', '.mark-as-read', function() {
+               var notificationId = $(this).data('notification-id'); // Get the notification ID from the button's data attribute
+               $.ajax({
+                   url: '/mark_notification_as_read/', // Use the correct URL
+                   method: 'POST',
+                   data: {
+                       notification_id: notificationId // Pass the notification ID to the view
+                   },
+                   success: function(data) {
+                       if (data.status === 'read') {
+                           $(this).parent().addClass('read');
+                       }
+                   }
+               });
+           });
+          });
+          
+             </script>
+          
+
 </body>
 </html>

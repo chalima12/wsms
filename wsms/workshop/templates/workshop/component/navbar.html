@@ -22,75 +22,80 @@
         <ul class="navbar-nav ml-auto">
         <!-- Navbar Search -->
               {% if user.is_authenticated %}
-            <section class="ftco-section">
-            <div class="container ml-3">
-            <div class="row justify-content-center">
-            <div class="col-md-6 d-flex justify-content-center">
-            <div class="btn-group">
-              <a href="#" class="btn-img img dropdown-toggle rounded-circle" 
-              data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
-              <img class='profile-user-img rounded-circle sm' src="{% static 'dist/img/user2-160x160.jpg' %}" class="img-circle elevation-2" alt="User Image">
-              
-              {% if request.user is user %}
-                <div class='btn text-white'>{{ user.first_name }} {{ user.last_name }}</div>
-              {% endif %}
-                
-              
-              </a>            <div class="dropdown-menu">
-            <a class="dropdown-item d-flex align-items-center" href="{% url 'workshop:change_password' %}">
-            <div class="icon d-flex align-items-center justify-content-center mr-3">
-            </div>
-            Change Password
-            <section class="ftco-section"></a>
-            <a class="dropdown-item d-flex align-items-center" href="#">
-            <div class="icon d-flex align-items-center justify-content-center mr-3">
-            </div> 
-            Edit profile
-            </a>
-            <a class="dropdown-item d-flex align-items-center" href="{% url 'workshop:logout' %}">
-            <div class="icon d-flex align-items-center justify-content-center mr-3">
-
-            </div> 
-            Logout
-            </a>
-            </div>
-            </div>
-            </div>
-            </div>
-            </div>
-            </section>
-            
-            {% else %}
-            <a style='border-radius:15% ' href="{% url 'workshop:custom_login' %}"  class="btn-block btn-lg btn-secondary"> Login</a>
-            {% endif %}
-            <li
- 
-            class="nav-item dropdown">
-            
+              <section class="ftco-section">
+                <div class="container ml-3">
+                <div class="row justify-content-center">
+                <div class="col-md-6 d-flex justify-content-center">
+                <div class="btn-group">
+                  <a href="#" class="btn-img img dropdown-toggle rounded-circle" 
+                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+                  <img class='profile-user-img rounded-circle sm' src="{{ user.profile_picture.url }}" class="img-circle elevation-2">
+             
+                 
+                    <div class='btn text-white'>{{ user.first_name }} {{ user.last_name }}</div>
+                 
                     
-            <a
-             
-            class="nav-link"
-             
-            data-toggle="dropdown"
-             
-            href="#">
-            <div style="font-size: 30px; color:yellow;" >          
-              <i class="far fa-bell"></i>
-              </div>
-            <span style="font-size: 20px;color:red;" class="badge badge-cyan navbar-badge" id="message-count_1">
-             
-            </a>
-            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                  
+                  </a>            <div class="dropdown-menu">
+                <a class="dropdown-item d-flex align-items-center" href="{% url 'workshop:change_password' %}">
+                <div class="icon d-flex align-items-center justify-content-center mr-3">
+                </div>
+                Change Password
+                <section class="ftco-section"></a>
+                <a class="dropdown-item d-flex align-items-center" href="#">
+                <div class="icon d-flex align-items-center justify-content-center mr-3">
+                </div> 
+                Edit profile
+                </a>
+                <a class="dropdown-item d-flex align-items-center" href="{% url 'workshop:logout' %}">
+                <div class="icon d-flex align-items-center justify-content-center mr-3">
+    
+                </div> 
+                Logout
+                </a>
+                </div>
+                </div>
+                </div>
+                </div>
+                </div>
+                </section>
+                
+                {% else %}
+                <a style='border-radius:15% ' href="{% url 'workshop:custom_login' %}"  class="btn-block btn-lg btn-secondary"> Login</a>
+                {% endif %}
+                <li
+     
+                class="nav-item dropdown">
+                
                         
-              <span class="dropdown-item dropdown-header" id="message-count_2"></span>
-             
-              <div class="dropdown-divider"></div>
-              <a class="mark_as_read btn btn-light">Mark as read</a>
-
-          </div>
-
-                </li>
+                <a
+                 
+                class="nav-link"
+                 
+                data-toggle="dropdown"
+                 
+                href="#">
+                <div style="font-size: 30px; color:yellow;" >          
+                  <i class="far fa-bell"></i>
+                  </div>
+                <span style="font-size: 20px;color:red;" class="badge badge-cyan navbar-badge" id="message-count_1">
+                 
+                </a>
+                <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                            
+                  <span class="dropdown-item dropdown-header" id="message-count_2"></span>
+                 
+                  <div class="dropdown-divider"></div>
+                  <button class="mark-as-read" data-notification-id="{{ notification.id }}">Mark as Read</button>
+    
+              </div>
+    
+                    </li>
+              
+        
+          
+          
+          
         <li class="nav-item">
           <a class="nav-link" data-widget="fullscreen" href="#" role="button">
             <i class="fas fa-expand-arrows-alt"></i>
@@ -100,3 +105,151 @@
     </nav>
   </div>
       {% endblock rightnav %}
+      {% block js %}
+      = <!-- jQuery -->
+      <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+      <!-- jQuery UI 1.11.4 -->
+      <script src="{% static 'plugins/jquery-ui/jquery-ui.min.js' %}"></script>
+      <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+      <script>
+        $.widget.bridge('uibutton', $.ui.button)
+      </script>
+      <!-- Bootstrap 4 -->
+      <script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+      <!-- ChartJS -->
+      <script src="{% static 'plugins/chart.js/Chart.min.js' %}"></script>
+      <!-- Sparkline -->
+      <script src="{% static 'plugins/sparklines/sparkline.js' %}"></script>
+      <!-- JQVMap -->
+      <script src="{% static 'plugins/jqvmap/jquery.vmap.min.js' %}"></script>
+      <script src="{% static 'plugins/jqvmap/maps/jquery.vmap.usa.js' %}"></script>
+      <!-- jQuery Knob Chart -->
+      <script src="{% static 'plugins/jquery-knob/jquery.knob.min.js' %}"></script>
+      <!-- daterangepicker -->
+      <script src="{% static 'plugins/moment/moment.min.js' %}"></script>
+      <script src="{% static 'plugins/daterangepicker/daterangepicker.js' %}"></script>
+      <!-- Tempusdominus Bootstrap 4 -->
+      <script src="{% static 'plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js' %}"></script>
+      <!-- Summernote -->
+      <script src="{% static 'plugins/summernote/summernote-bs4.min.js' %}"></script>
+      <!-- overlayScrollbars -->
+      <script src="{% static 'plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js' %}"></script>
+      <!-- AdminLTE App -->
+      <script src="{% static 'dist/js/adminlte.js' %}"></script>
+      <script src="{% static 'adminlte/plugins/chart.js/Chart.min.js' %}"></script>
+      <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+      <script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}"></script>
+      <script src="{% static 'plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+      <script src="{% static 'plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+      <script src="{% static 'plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
+      <script src="{% static 'plugins/datatables-buttons/js/dataTables.buttons.min.js' %}"></script>
+      <script src="{% static 'plugins/datatables-buttons/js/buttons.bootstrap4.min.js' %}"></script>
+      <script src="{% static 'plugins/jszip/jszip.min.js' %}"></script>
+      <script src="{% static 'plugins/pdfmake/pdfmake.min.js' %}"></script>
+      <script src="{% static 'plugins/pdfmake/vfs_fonts.js' %}"></script>
+      <script src="{% static 'plugins/datatables-buttons/js/buttons.html5.min.js' %}"></script>
+      <script src="{% static 'plugins/datatables-buttons/js/buttons.print.min.js' %}"></script>
+      <script src="{% static 'plugins/datatables-buttons/js/buttons.colVis.min.js' %}"></script>
+      <script src="{% static 'dist/js/adminlte.min.js' %}"></script>
+      <!-- Page specific script -->
+       <!-- DataTables  & Plugins -->
+<script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/dataTables.buttons.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.bootstrap4.min.js' %}"></script>
+<script src="{% static 'plugins/jszip/jszip.min.js' %}"></script>
+<script src="{% static 'plugins/pdfmake/pdfmake.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.html5.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.print.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.colVis.min.js' %}"></script>
+     
+
+<script>
+         $(document).ready(function() {
+             // Function to load notifications
+             function loadNotifications() {
+                 $.ajax({
+                     url: '/get-notifications/',
+                     success: function(data) {
+                         // Update the unread count badge
+                         $('#unread-count-badge').text(data.unread_count);
+         
+                         // Update the notifications dropdown
+                         $('#notifications-dropdown').empty();
+                         for (var i = 0; i < data.notifications.length; i++) {
+                             var notification = data.notifications[i];
+                             var notificationElement = '<div class="notification ' + (notification.status === 'read' ? 'read' : '') + '">' +
+                                 '<a href="' + notification.link + '">' + notification.message + '</a>' +
+                                 '<button class="mark-as-read" data-notification-id="' + notification.id + '">Mark as Read</button>' +
+                                 '</div>';
+                             $('#notifications-dropdown').append(notificationElement);
+                         }
+                     }
+                 });
+             }
+         
+             // Initial load of notifications
+             loadNotifications();
+         
+             // Reload notifications every 30 seconds
+             setInterval(loadNotifications, 30000);
+         
+             // Mark notification as read
+             $('#notifications-dropdown').on('click', '.mark-as-read', function() {
+                 var notificationId = $(this).data('notification-id');
+                 $.ajax({
+                     url: '/mark-notification-as-read/' + notificationId + '/',
+                     success: function(data) {
+                         if (data.status === 'read') {
+                             $(this).parent().addClass('read');
+                         }
+                     }
+                 });
+             });
+         });
+     </script>
+     
+
+     <script>
+         $(document).ready(function() {
+           function getMessageCount_1() {
+             $.ajax({
+                 url: '/message-count_1/',
+                 success: function(data) {
+                     $('#message-count_1').html(data.message_count_1);
+                     $('#message-count_2').html(data.notify);
+           
+                    
+                     $('.mark_as_read').on('click', function() {
+                         $.ajax({
+                             url: '/message-count_1/',
+                             method: 'POST',
+                             data: {
+                                 mark_as_read: true
+                             },
+                             success: function(data) {
+                               $('#message-count_1').html(data.message_count_1);
+                               $('#message-count_2').html(data.notify);
+                             }
+                         });
+                     });
+                 }
+             });
+           }
+           
+           
+         getMessageCount_1();
+         setInterval(getMessageCount_1, 30000);
+     });
+
+ </script>
+     
+
+ 
+         
+    
+     
+  
+  {% endblock js %}   

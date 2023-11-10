@@ -20,6 +20,19 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 from django.db.models import Count
 from workshop.models import Assignments
+from django.dispatch import Signal
+from .import signals
+from django.http import JsonResponse
+from django.urls import reverse
+from django.views.generic.edit import CreateView
+from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import JsonResponse
+
+from django.http import JsonResponse
+
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
 
 class AssignmentChartView(LoginRequiredMixin,TemplateView):
     template_name = 'workshop/home.html'
@@ -75,62 +88,62 @@ class AssignmentChartView(LoginRequiredMixin,TemplateView):
         context['status_counts'] = counts
         return context    
         
+from django.shortcuts import render
+from django.db.models import Count
+from .models import Assignments, Item, User, Component, Section
+
 @login_required(login_url='workshop:custom_login')
 def assignment_chart_view(request):
     # Get the count of assignments grouped by status
-    assignments = Assignments.objects.values('item__Serial_no', 'is_valid').annotate(count=Count('id'))
-    # Convert the data into a format that can be used by Chart.js
-    # if request.user.user_type = 'Engineer':
-    item=Assignments.objects.filter(engineer=request.user).count()
-    # item=Item.objects.all().count()
-    
-    section=Section.objects.all().count()
-    user=User.objects.all().count()
-    component=Component.objects.all().count()
-    # data = Assignments.objects.values('item__status').annotate(count=Count('item__status'))
+    assignments = Item.objects.values('Serial_no', 'is_accepted').annotate(count=Count('id'))
+
+    item = Item.objects.all().count()
+    section = Section.objects.all().count()
+    user = User.objects.all().count()
+    component = Component.objects.all().count()
+
     data = Item.objects.values('status').annotate(count=Count('status'))
     users = User.objects.values('user_type').annotate(count=Count('user_type'))
+
     label3 = [user['user_type'] for user in users]
     count3 = [user['count'] for user in users]
 
     items = Item.objects.values('Serial_no').annotate(count=Count('id'))
-    # Convert the data into a format that can be used by Chart.js
     label2 = [item['Serial_no'] for item in items]
     count = [item['count'] for item in items]
 
     label = [d['status'] for d in data]
     counts = [d['count'] for d in data]
+
     labels = []
     valid_counts = []
     invalid_counts = []
+
     for assignment in assignments:
-        labels.append(assignment['item__Serial_no'])
-        if assignment['is_valid']:
+        labels.append(assignment['Serial_no'])
+        if assignment['is_accepted']:
             valid_counts.append(assignment['count'])
             invalid_counts.append(0)
         else:
             valid_counts.append(0)
             invalid_counts.append(assignment['count'])
 
-    # Create the context dictionary
     context = {
-    'item': item,
-    'section': section,
-    'user': user,
-    'component': component,
-    'labels': labels,
-    'label': label,
-    'counts': counts,
-    'valid_counts': valid_counts,
-    'invalid_counts': invalid_counts,
-    'label2': label2,
-    'count': count,
-    'label3': label3,
-    'count3': count3,
-    'status_counts': counts
+        'item': item,
+        'section': section,
+        'user': user,
+        'component': component,
+        'labels': labels,
+        'label': label,
+        'counts': counts,
+        'valid_counts': valid_counts,
+        'invalid_counts': invalid_counts,
+        'label2': label2,
+        'count': count,
+        'label3': label3,
+        'count3': count3,
     }
 
-    # Return the response with the template and the context
     return render(request, 'workshop/home.html', context)
 
 @csrf_protect
@@ -141,7 +154,7 @@ def custom_login(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('/home')  # Replace 'desired_page' with the URL name or path of the page you want to redirect to after login
+            return redirect('/chart')  # Replace 'desired_page' with the URL name or path of the page you want to redirect to after login
         else:
             error_message = 'Invalid username or password'
             return render(request, 'workshop/login.html', {'error_message': error_message})
@@ -219,66 +232,101 @@ class SectionCreateView(LoginRequiredMixin,CreateView):
     login_url='workshop:custom_login'
     success_url = reverse_lazy('workshop:section')
 
-class AssignmentCreateView(LoginRequiredMixin,CreateView):
-    # specify the form class
+
+
+
+class AssignmentCreateView(LoginRequiredMixin, CreateView):
+    model = Assignments
     form_class = AssignmentForm
-    assignment_created = signals.Signal()
     template_name = "workshop/Add_assignment.html"
-    login_url='workshop:custom_login'
-    # specify the success url
+    login_url = 'workshop:custom_login'
     success_url = reverse_lazy('workshop:assignment')
+    
+
     def get_initial(self):
-        # get the initial data for the form
         initial = super().get_initial()
-        # get the item object from the url parameter
         item = Item.objects.get(id=self.kwargs['id'])
-        # set the initial value for the item field
         initial['item'] = item
         return initial
+
     def form_valid(self, form):
-        # save the form and get the assignment object
         assignment = form.save()
-        # get the item object from the assignment object
         item = assignment.item
-        # change the status of the item to on progress
-        item.status = 'on progress'
-        item.engineer=assignment.engineer
-        # save the item object
+        item.status = 'on_progress'
+        item.engineer = assignment.engineer
         item.save()
-        # Emit the signal.
-        self.assignment_created.send(sender=self, assignment=assignment)
-        # return the default form valid response
+
         return super().form_valid(form)
     
+
+
+
+# View for sending notifications
+
+
+@login_required
+def get_notifications(request):
+    user_id = request.user.id
+
+    notifications = Notification.objects.filter(engineer=user_id).order_by('-created_at')
+    unread_count = notifications.filter(status='pending').count()
+
+    notifications_data = [
+        {
+            'id': notification.id,
+            'message': notification.message,
+            'link': notification.link,
+            'status': notification.status,
+            'created_at': notification.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+        }
+        for notification in notifications
+    ]
+
+    data = {
+        'notifications': notifications_data,
+        'unread_count': unread_count,
+    }
+
+    return JsonResponse(data)
+
+
+
+
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 
-def send_notification(request):
-    # Get the assignment object from the request.
-    assignment = Assignments.objects.get(id=request.POST['assignment_id'])
+def mark_notification_as_read(request, notification_id):
+    try:
+        # Get the notification object with the specified ID or return a 404 error if not found
+        notification = get_object_or_404(Notification, pk=notification_id)
 
-    # Create a notification for the engineer.
-    notification = Notification.objects.create(
-        user=assignment.engineer,
-        message=f'You have been assigned to the Item {assignment.item.name}.',
-        link=reverse('workshop:assignment_detail', args=[assignment.id])
-    )
+        # Mark the notification as 'read'
+        notification.status = 'read'
+        notification.save()
 
-    # Send the notification to the engineer.
-    notification.send()
+        # Check if there are any remaining unread notifications
+        unread_notifications = Notification.objects.filter(status='pending')
 
-    # Return a success response.
-    return JsonResponse({'success': True})
+        # Determine whether to hide the dropdown based on the presence of unread notifications
+        hide_dropdown = not unread_notifications.exists()
 
+        # Prepare the JSON response
+        response_data = {
+            'success': True,
+            'hideDropdown': hide_dropdown
+        }
 
+        return JsonResponse(response_data)
 
-    # class UserListView(LoginRequiredMixin,ListView):
-    #     model = User
+    except Notification.DoesNotExist:
+        # Handle the case where the notification ID is invalid
+        response_data = {
+            'success': False,
+            'error': 'Notification not found'
+        }
 
-    #     context_object_name='users'
-    #     template_name="workshop/user.html"
-    #     def get_queryset(self):
-    # # return only active users
-    #         return User.objects.filter(is_active=True)
+        return JsonResponse(response_data)
+
 
 class ItemDetailView(DetailView):
     model = Item
@@ -478,17 +526,20 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render, redirect
 
+from .forms import CustomPasswordChangeForm  # Import your custom form
+
 def change_password(request):
     if request.method == 'POST':
-        form = PasswordChangeForm(request.user, request.POST)
+        form = CustomPasswordChangeForm(request.user, request.POST)  # Use the custom form
         if form.is_valid():
             messages.success(request, 'Password changed Successfully')
             user = form.save()
-            update_session_auth_hash(request, user) # To keep the user logged in
+            update_session_auth_hash(request, user)  # To keep the user logged in
             return redirect('workshop:chart')
     else:
-        form = PasswordChangeForm(request.user)
+        form = CustomPasswordChangeForm(request.user)  # Use the custom form
     return render(request, 'workshop/change-password/change_password.html', {'form': form})
+
 
 def password_change_done(request):
     return render(request, 'workshop/change-password/password_change_done.html')
@@ -507,6 +558,50 @@ class AssignRoleView(UpdateView):
     #     context = super().get_context_data(**kwargs)
     #     context['assigned_user'] = self.object
     #     return context
+
+
+from django.shortcuts import render
+from django.http import JsonResponse
+from .models import Notification
+
+def get_message_count(request):
+    user = request.user
+    unread_notifications = Notification.objects.filter(user=user, status='pending').count()
+    
+    data = {
+        'message_count': unread_notifications,
+    }
+    
+    return JsonResponse(data)
+
+# def mark_notification_as_read(request, notification_id):
+#     try:
+#         notification = Notification.objects.get(id=notification_id, user=request.user)
+#         notification.mark_as_read()
+#         return JsonResponse({'success': 'Notification marked as read.'})
+#     except Notification.DoesNotExist:
+#         return JsonResponse({'error': 'Notification not found.'}, status=400)
+
+
+
+
+
+@login_required
+def mark_notification_as_read1(request, notification_id):
+    if request.method == 'POST':
+        try:
+            notification = Notification.objects.get(id=notification_id, status='pending')
+            print('Received Notification ID:', notification_id)  # Check if the correct ID is being received
+            notification.status = 'read'
+            notification.save()
+            print('Notification marked as read:', notification_id)  # Check if it's successfully marked as read
+            return JsonResponse({'status': 'read'})
+        except Notification.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Notification not found or already marked as read'})
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'})
+
+
 
 
 @login_required
@@ -533,23 +628,26 @@ def get_message_count_1(request):
     return JsonResponse(data)
 
 
-@login_required
-def read_notifications(request, notification_id):
-    notification = Notification.objects.get(id=notification_id)
 
+# views.py
+from django.contrib import messages
+
+def edit_profile_picture(request):
     if request.method == 'POST':
-        # Update the status of the notification to read.
-        notification.status = 'read'
-        notification.save()
+        form = ProfilePictureForm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            # Update the profile picture behind the scenes
+            # without the user's awareness
+            form.save()
+            messages.success(request, 'Profile picture updated.')
+            return redirect('workshop:user')  # Redirect to the user's profile page
+        else:
+            messages.error(request, 'Profile picture update failed. Please try again.')
 
-        # Return a JSON response with the new status.
-        data = {
-            'status': notification.status
-        }
-        return JsonResponse(data)
+    else:
+        form = ProfilePictureForm(instance=request.user)
 
-    # If the request is not a POST request, return an error.
-    return JsonResponse({'error': 'Invalid request.'}, status=400)
+    return render(request, 'workshop/edit_profile_picture.html', {'form': form})
 
 
 

@@ -10,7 +10,7 @@ class UsersAdmin(admin.ModelAdmin):
 
 class ItemsAdmin(admin.ModelAdmin):
     list_display=['id','Serial_no','status','is_valid','is_accepted']
-    list_editable=['is_valid','is_accepted']
+    list_editable=['is_valid','is_accepted','status']
     
     list_filter=['is_valid','status']
 # Register your models here.
@@ -19,4 +19,4 @@ admin.site.register(Item,ItemsAdmin)
 admin.site.register(Assignments)
 admin.site.register(Section)
 admin.site.register(Component)
-# admin.site.register(Work_with)
+admin.site.register(Notification)

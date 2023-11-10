@@ -1,0 +1,30 @@
+
+
+
+{% extends './base1.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<div class="content-wrapper">
+    <div class="container mt-1"> 
+<!-- edit_profile_picture.html -->
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form|crispy }}
+   
+
+    <input style='display: none' type="hidden" name="clear_profile_picture" value="False">
+    <button type="submit">Upload Profile Picture</button>
+</form>
+
+
+{% block js %}
+<script>
+    // Set the default value for the clear_profile_picture field
+    document.querySelector('input[name="clear_profile_picture"]').value = "True";
+</script>
+{% endblock js %}
+    
+
+
+{% endblock %}
