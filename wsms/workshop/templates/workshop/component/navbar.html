@@ -42,7 +42,7 @@
                 </div>
                 Change Password
                 <section class="ftco-section"></a>
-                <a class="dropdown-item d-flex align-items-center" href="#">
+                <a class="dropdown-item d-flex align-items-center" href="{% url 'workshop:edit_profile_picture' %}">
                 <div class="icon d-flex align-items-center justify-content-center mr-3">
                 </div> 
                 Edit profile
@@ -166,50 +166,6 @@
 <script src="{% static 'plugins/datatables-buttons/js/buttons.colVis.min.js' %}"></script>
      
 
-<script>
-         $(document).ready(function() {
-             // Function to load notifications
-             function loadNotifications() {
-                 $.ajax({
-                     url: '/get-notifications/',
-                     success: function(data) {
-                         // Update the unread count badge
-                         $('#unread-count-badge').text(data.unread_count);
-         
-                         // Update the notifications dropdown
-                         $('#notifications-dropdown').empty();
-                         for (var i = 0; i < data.notifications.length; i++) {
-                             var notification = data.notifications[i];
-                             var notificationElement = '<div class="notification ' + (notification.status === 'read' ? 'read' : '') + '">' +
-                                 '<a href="' + notification.link + '">' + notification.message + '</a>' +
-                                 '<button class="mark-as-read" data-notification-id="' + notification.id + '">Mark as Read</button>' +
-                                 '</div>';
-                             $('#notifications-dropdown').append(notificationElement);
-                         }
-                     }
-                 });
-             }
-         
-             // Initial load of notifications
-             loadNotifications();
-         
-             // Reload notifications every 30 seconds
-             setInterval(loadNotifications, 30000);
-         
-             // Mark notification as read
-             $('#notifications-dropdown').on('click', '.mark-as-read', function() {
-                 var notificationId = $(this).data('notification-id');
-                 $.ajax({
-                     url: '/mark-notification-as-read/' + notificationId + '/',
-                     success: function(data) {
-                         if (data.status === 'read') {
-                             $(this).parent().addClass('read');
-                         }
-                     }
-                 });
-             });
-         });
-     </script>
      
 
      <script>
@@ -245,11 +201,5 @@
      });
 
  </script>
-     
-
- 
-         
-    
-     
   
   {% endblock js %}   

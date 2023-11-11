@@ -2,20 +2,13 @@
 {% load crispy_forms_tags %} 
 {% block content %}
 
-
-
-
-
-  
-  
-  
 <div class="container mt-3">
   <form method="post" autocomplete='off' class='card p-3 mt-5 bg-light'>
 
-<div class="container card p-0 mt-0 text-center border-primary bg-gray" >
-  <h3>  Add User </h3>
+    <div class="container card p-0 mt-0 text-center border-primary bg-gray">
+      <h3>Add User</h3>
+    </div>
 
-</div>
     {% csrf_token %} 
     <div class="row">
       <div class="col-6">
@@ -33,23 +26,32 @@
       <div class="col-4">
         {{form.pass_word|as_crispy_field}}
 
+        <!-- Show/Hide Password Checkbox and JavaScript -->
+        <div class="form-group">
+          <input type="checkbox" id="showPassword"> Show Password
+        </div>
       </div>
       <div class="col-4">
         {{form.user_type|as_crispy_field}}
-
       </div>
-
     </div>
 
     <div class="col-4">
       <button type="submit" class="btn btn-primary btn-md" style='border-radius:10%'>Register</button>
     </div>
 
-  </div>
-    
-      
-    
-  </form>
-</div>
+    </form>
 
-{% endblock content%}
+    <!-- JavaScript for Show/Hide Password -->
+    <script>
+      const passwordField = document.getElementById('id_pass_word');
+      const showPasswordCheckbox = document.getElementById('showPassword');
+
+      showPasswordCheckbox.addEventListener('change', function() {
+        const type = this.checked ? 'text' : 'password';
+        passwordField.type = type;
+      });
+    </script>
+  </div>
+
+  {% endblock content %}

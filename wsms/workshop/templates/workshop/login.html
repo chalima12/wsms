@@ -2,67 +2,69 @@
 {% block content %}
 <div class="content-wrapper">
  
-<div class="card  card-dark col-8 mt-5 mx-5">
+<div class="card card-dark col-8 mt-5 mx-5">
     <div class="col-4">
     <h1 class="login-box-msg">Log In To WSMS</h1>
     </div>
     <div class="card-body">
-        
-    
-                    {% if error_message %}
-                    <p>{{ error_message }}</p>
-                {% endif %}
-              
+        {% if error_message %}
+            <p>{{ error_message }}</p>
+        {% endif %}
         <form  method="post" action="{% url 'workshop:custom_login' %}" class='form-group'>
-            
             {% csrf_token %}
-            <label class='col-form-col-form-label-lg m-3' for="username"> Email</label>
-            
 
+            <!-- Email Field -->
+            <label class='col-form-col-form-label-lg m-3' for="username"> Email</label>
             <div class="col-4">
-          <div class="input-group mb-3">
-            
-            <div class="input-group-append">
-                <div class="input-group-text">
-                  <span class="fas fa-envelope"></span>
+                <div class="input-group mb-3">
+                    <div class="input-group-append">
+                        <div class="input-group-text">
+                            <span class="fas fa-envelope"></span>
+                        </div>
+                    </div>
+                    <input type="email" id="username" name="username" class="form-control" placeholder="Email">
                 </div>
-              </div>
-              
-            <input type="email" id="username" name="username" class="form-control" placeholder="Email">
-            
-          </div>
-        </div>
-        
-        <label class='col-form-col-form-label-lg m-3' for="username"> Password</label>
-        
-       
-        
-          <div class="col-4">
-          <div class="input-group mb-3">
-            <div class="input-group-append">
-                <div class="input-group-text">
-                  <span class="fas fa-lock"></span>
-                </div>
-              </div>
-            <input type="password" id="password" name="password" class="form-control" placeholder="Password">
-            
-          </div>
-            <div class="col-4">
-              <button type="submit" class="btn btn-primary btn-block btn-sm m-2">Log In</button>
             </div>
-            <!-- /.col -->
-          </div>
+
+            <!-- Password Field -->
+            <label class='col-form-col-form-label-lg m-3' for="password"> Password</label>
+            <div class="col-4">
+                <div class="input-group mb-3">
+                    <div class="input-group-append">
+                        <div class="input-group-text">
+                            <span class="fas fa-lock"></span>
+                        </div>
+                    </div>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="Password">
+                    <div class="input-group-append">
+                        <div class="input-group-text">
+                            <input type="checkbox" id="showPassword"> Show 
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Submit Button -->
+            <div class="col-4">
+                <button type="submit" class="btn btn-primary btn-block btn-sm m-2">Log In</button>
+            </div>
         </form>
+
+        <!-- JavaScript for Show/Hide Password -->
+        <script>
+            const passwordField = document.getElementById('password');
+            const showPasswordCheckbox = document.getElementById('showPassword');
+
+            showPasswordCheckbox.addEventListener('change', function() {
+                const type = this.checked ? 'text' : 'password';
+                passwordField.type = type;
+            });
+        </script>
   
-        
       <!-- /.card-body -->
     </div>
     <!-- /.card -->
   </div>
- 
-
 </div>
 
-
-  
 {% endblock content %}
