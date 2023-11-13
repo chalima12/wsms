@@ -45,9 +45,9 @@ path('get-message-count/', views.get_message_count, name='get_message_count'),
  path('edit-profile-picture/', views.edit_profile_picture, name='edit_profile_picture'),
 
 # path('read_notification/<int:notification_id>/', views.read_notifications, name='read_notification'),
-
+path('mark_as_read/<int:notification_id>/', views.mark_as_read, name='mark_as_read'),
 path('get-notifications/', views.get_notifications, name='get_notifications'),
-path('mark-notification-as-read/', views.mark_notification_as_read1, name='mark_notification_as_read'),
-path('mark_as_read/<int:notification_id>/', views.mark_notification_as_read, name='mark_notification_as_read'),
+# path('mark-notification-as-read/', views.mark_notification_as_read1, name='mark_notification_as_read'),
+# path('mark_as_read/<int:notification_id>/', views.mark_notification_as_read, name='mark_notification_as_read'),
 path('message-count_1/', views.get_message_count_1, name='message_count_1'),
 ]

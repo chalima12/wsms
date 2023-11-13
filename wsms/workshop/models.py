@@ -121,13 +121,16 @@ class Assignments(models.Model):
     def __str__(self) -> str:
         return str(self.item)
 
-
 class Notification(models.Model):
-    assignment = models.ForeignKey(Assignments, on_delete=models.CASCADE)  # Use a ForeignKey to link with Assignments
+    assignment = models.ForeignKey(Assignments, on_delete=models.CASCADE)
     engineer = models.ForeignKey(User, on_delete=models.CASCADE)
     status = models.CharField(max_length=10, choices=[('pending', 'Pending'), ('read', 'Read')], default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    message = models.TextField(null=True)  # Define the 'message' field
-    link = models.CharField(max_length=255, null=True)  # Define the 'link' field
+    message = models.TextField(null=True)
+    link = models.CharField(max_length=255, null=True)
 
+    def mark_as_read(self):
+        if self.status == 'pending':
+            self.status = 'read'
+            self.save()

@@ -179,6 +179,7 @@ class UserCreateView(LoginRequiredMixin,CreateView):
     form_class=UserForm
     template_name = "workshop/register.html"
     login_url='workshop:custom_login'
+
     def form_valid(self, form):
         # get the user object from the form
         user = form.save(commit=False)
@@ -639,7 +640,7 @@ def edit_profile_picture(request):
             # Update the profile picture behind the scenes
             # without the user's awareness
             form.save()
-            messages.success(request, 'Profile picture updated.')
+            messages.success(request, 'Profile has updated successfully.')
             return redirect('workshop:user')  # Redirect to the user's profile page
         else:
             messages.error(request, 'Profile picture update failed. Please try again.')
@@ -649,6 +650,17 @@ def edit_profile_picture(request):
 
     return render(request, 'workshop/edit_profile_picture.html', {'form': form})
 
+# views.py
+
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Notification
+
+@login_required
+def mark_as_read(request, notification_id):
+    notification = get_object_or_404(Notification, pk=notification_id, engineer=request.user)
+    notification.mark_as_read()
+    return redirect('notifications_list')  # Redirect to the notifications list or wherever you display notifications
 
 
 

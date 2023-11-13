@@ -36,6 +36,13 @@
       </a>
     </div>
 
+    {% if messages %}
+    <ul class="messages alert-success float-right">
+    {% for message in messages %}
+    <li style='List-style:none' class="{{ message.tags }}">{{ message }}</li>
+    {% endfor %}
+    </ul>
+    {% endif %}
             <div class="card">
               <div class="card-header">
                 <h2 class="container mx-5 card-title">List of Sections</h2>

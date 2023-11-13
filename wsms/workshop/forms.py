@@ -109,7 +109,7 @@ class AssignmentForm(forms.ModelForm):
 class ProfilePictureForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['profile_picture']
+        fields = ['first_name','last_name','user_name','profile_picture']
 
 
 

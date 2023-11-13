@@ -34,6 +34,7 @@
           </a>
           <ul class="nav nav-treeview">
             
+            {% if user.view_dashboard %}
             
             {% url 'workshop:chart' as chart_url %}
               <li class="nav-item">
@@ -42,9 +43,14 @@
               <i class="far fa-circle nav-icon"></i>
              <p> Dashboard</P>
               </a>
-              </li>
+              </li>  
+            {% endif %}
+              
+            
              
               
+              {% if  user.view_user%}
+                
               
               {% url 'workshop:user' as user_url %}
               <li class="nav-item">
@@ -54,10 +60,12 @@
                   <p>users</p>
                 </a>
               </li>
+              {% endif %}
+                
               
                 
              
-             
+             {% if user.view_item %}
              {% url 'workshop:item' as item_url %}
              <li class="nav-item">
                <a href="{{ item_url }}" 
@@ -67,9 +75,10 @@
                </a>
              </li>
              
+             {% endif %}
               
             
-            
+            {% if user.view_component %}
             {% url 'workshop:component' as component_url %}
             <li class="nav-item">
               <a href="{{ component_url }}" 
@@ -79,9 +88,13 @@
               </a>
             </li>
             
+            {% endif %}
+              
+            
               
             
             
+            {% if user.view_section %}
             {% url 'workshop:section' as section_url %}
             <li class="nav-item">
               <a href="{{ section_url }}" 
@@ -90,11 +103,16 @@
                 <p>Sections</p>
               </a>
             </li>
+            {% endif %}
+              
+            
+              
+            
+            
+            
           
               
-              
-              
-                
+              {% if user.view_assignment %}
               {% url 'workshop:assignment' as assignment_url %}
               <li class="nav-item">
                 <a href="{{ assignment_url }}"
@@ -103,6 +121,12 @@
                   <p>Assignments</p>
                 </a>
               </li>
+              {% endif %}
+                
+              
+              
+                
+             
               
                 
           </ul>
@@ -119,6 +143,7 @@
             </a>
             <ul class="nav nav-treeview">
               
+              {% if user.view_report %}
               {% url 'workshop:report' as report_url %}
               <li class="nav-item">
                 <a href="{{ report_url }}"
@@ -127,6 +152,9 @@
                   <p>Report</p>
                 </a> 
         </li>
+              {% endif %}
+                
+              
           
             
               

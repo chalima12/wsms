@@ -3,6 +3,7 @@
 {% block content %}
 
         
+        {% if not user.view_dashboard %}
         {% block dashbord %}
         <!-- Content Wrapper. Contains page content -->
         {% load static %}
@@ -19,6 +20,13 @@
             </div>
             <!-- /.content-header -->
 
+            {% if messages %}
+            <ul class="messages alert-success float-right">
+            {% for message in messages %}
+            <li style='List-style:none' class="{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+            </ul>
+            {% endif %}
             <!-- Main content -->
             <section class="content">
                 <!-- Small boxes (Stat box) -->
@@ -253,5 +261,8 @@
 
                
     {% endblock dashbord %}
-    
+
+        {% endif %}
+          
+            
 {% endblock content %}

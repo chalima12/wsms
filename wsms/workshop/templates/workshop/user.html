@@ -29,6 +29,13 @@
 
 </div> 
 
+{% if messages %}
+<ul class="messages alert-success float-right">
+{% for message in messages %}
+<li style='List-style:none' class="{{ message.tags }}">{{ message }}</li>
+{% endfor %}
+</ul>
+{% endif %}
 <div class="card">
 <div class="card-header">
 </h2 class="container mx-5 card-title">List of usres</h2>
@@ -42,8 +49,13 @@
 <th>Firstname</th>
 <th>Lastname</th>
 <th>Email</th>
-<th>user Detail</th>
+
+{% if user.is_admin %}
+  
+<th>give role</th>
 <th>Remove</th>
+  
+{% endif %}
 
 </tr>
 </thead>
@@ -55,6 +67,8 @@
 <td>{{data.first_name|upper}}</td>
 <td>{{data.last_name|upper}}</td>
 <td>{{data.user_name}} </td>
+
+{% if user.is_admin %}
 <td>
   <a class="btn btn-info btn-outline-light btn-sm" href="{% url 'workshop:assign_role' data.id %}">
     <span class="fa fa-aws">
@@ -66,20 +80,23 @@
 
 
 <td >
+  <a style='border-radius:10%' class="btn btn-danger btn-sm" href="javascript:void(0)"
+  data-toggle="modal"
+  class="confirm-accept"
+  data-url="{% url 'workshop:delete-user' data.id %}"
+ 
+  data-target="#acceptItemModal"
+  data-message="Are you Sure to delete {{data.first_name}}  ?">
+  <i class="far fa-trash-alt"></i>
+  <span>Delete</span></a>
+ 
+ </td>
+ </td> 
+{% endif %}
+  
 
    
- <a style='border-radius:10%' class="btn btn-danger btn-sm" href="javascript:void(0)"
- data-toggle="modal"
- class="confirm-accept"
- data-url="{% url 'workshop:delete-user' data.id %}"
-
- data-target="#acceptItemModal"
- data-message="Are you Sure to delete {{data.first_name}}  ?">
- <i class="far fa-trash-alt"></i>
- <span>Delete</span></a>
-
-</td>
-</td>
+ 
 </tr>
 
 

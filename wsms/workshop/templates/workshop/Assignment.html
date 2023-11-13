@@ -10,19 +10,19 @@
 {% block content %}
     <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
-    
-  {% if messages %}
-  <ul class="messages alert-danger float-right">
-  {% for message in messages %}
-  <li style='List-style:none' class="{{ message.tags }}">{{ message }}</li>
-  {% endfor %}
-  </ul>
-  {% endif %}
 
             <div class="card">
               <div class="card-header">
                 <h2 class="container mx-5 card-title">List of Assignments</h2>
               </div>
+
+     {% if messages %}
+     <ul class="messages alert-success float-right">
+     {% for message in messages %}
+     <li style='List-style:none' class="{{ message.tags }}">{{ message }}</li>
+     {% endfor %}
+     </ul>
+     {% endif %}
               <!-- /.card-header -->
               <div class="card-body">
                 <table id="example1" class="table table-bordered table-striped">
