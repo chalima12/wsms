@@ -1,56 +1,46 @@
 <!-- Modal -->
-
-<div class="modal fade modal-sm"  id="acceptItemModal" tabindex="-1"  role="dialog"
-aria-labelledby="acceptItemModalLabel" aria-hidden="true">
-<div class="modal-sm modal-dialog " role="document"> </div>
-
-<div class="modal-content">
-
- <div class="modal-header">
-   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-	 <span aria-hidden="true">&times;</span>
-   </button>
- </div>
-
- <div class="modal-body confirm-accept text-center" >
-	 <div class="alert" id="accept_item_alert"></div>
-	 <div id="modal-message"></div>
-	 <hr>
-	 <form action="" method="post" id="form_confirm_modal">
-		 {% csrf_token %}
-		 {{form.as_p}}
-	   <button type="button" class="btn btn-primary" data-dismiss="modal" id="confirmButtonModal">Confirm</button>
-	   <button type="button" class="btn btn-danger" data-dismiss="modal">cancel</button>
-	 </form>
-	 <input type="hidden" id="address_suppress"/>
- </div>
-
- </div>
-
-</div>
-
-<script type="text/javascript">
-
-document.addEventListener('DOMContentLoaded', () => {
-   let form_confirm = document.querySelector('#form_confirm_modal')
-   let buttons = document.querySelectorAll("[data-target='#acceptItemModal']");
-	   buttons.forEach(button => {
-		   button.addEventListener("click", () => {
-
-				// extract texts from calling element and replace the modals texts with it
-			   if (button.dataset.message) {
-				   document.getElementById("modal-message").innerHTML = button.dataset.message;
-			   }
-			   if (button.dataset.url) {
-				   form_confirm.action = button.dataset.url;
-			   }
-
-		   })
-	   });
-  let confirmModal = document.getElementById("confirmButtonModal")
-   confirmModal.addEventListener('click', () => {
-	   form_confirm.submit();
-
-   });
-});
-</script>
+<div class="modal fade" id="acceptItemModal" tabindex="-1" role="dialog" aria-labelledby="acceptItemModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+	  <div class="modal-content">
+		<div class="modal-header">
+		  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		  </button>
+		</div>
+		<div class="modal-body confirm-accept text-center">
+		  <div class="alert" id="accept_item_alert"></div>
+		  <div id="modal-message"></div>
+		  <hr>
+		  <form action="" method="post" id="form_confirm_modal">
+			{% csrf_token %}
+			{{form.as_p}}
+			<button type="button" class="btn btn-primary" data-dismiss="modal" id="confirmButtonModal">Confirm</button>
+			<button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+		  </form>
+		  <input type="hidden" id="address_suppress" />
+		</div>
+	  </div>
+	</div>
+  </div>
+  
+  <script type="text/javascript">
+	document.addEventListener('DOMContentLoaded', () => {
+	  let form_confirm = document.querySelector('#form_confirm_modal');
+	  let buttons = document.querySelectorAll("[data-target='#acceptItemModal']");
+	  buttons.forEach(button => {
+		button.addEventListener("click", () => {
+		  if (button.dataset.message) {
+			document.getElementById("modal-message").innerHTML = button.dataset.message;
+		  }
+		  if (button.dataset.url) {
+			form_confirm.action = button.dataset.url;
+		  }
+		});
+	  });
+	  let confirmModal = document.getElementById("confirmButtonModal");
+	  confirmModal.addEventListener('click', () => {
+		form_confirm.submit();
+	  });
+	});
+  </script>
+  

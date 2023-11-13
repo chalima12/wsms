@@ -1,7 +1,7 @@
 {% load static %}
   <!-- Site wrapper -->
 <div class="wrapper">
-<nav class="main-header navbar navbar-expand navbar-cyan navbar-light layout-fixed">
+<nav class="main-header navbar navbar-expand navbar-navy navbar-light layout-fixed">
     {% block leftnav %}
     <ul class="navbar-nav">
       {% comment %} {% comment %} <li class="nav-item">
@@ -29,7 +29,12 @@
                 <div class="btn-group">
                   <a href="#" class="btn-img img dropdown-toggle rounded-circle" 
                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+                  
+                  {% if user.profile_picture %}
                   <img class='profile-user-img rounded-circle sm' src="{{ user.profile_picture.url }}" class="img-circle elevation-2">
+                  {% endif %}
+                    
+                  
              
                  
                     <div class='btn text-white'>{{ user.first_name }} {{ user.last_name }}</div>
@@ -63,34 +68,24 @@
                 {% else %}
                 <a style='border-radius:15% ' href="{% url 'workshop:custom_login' %}"  class="btn-block btn-lg btn-secondary"> Login</a>
                 {% endif %}
-                <li
-     
-                class="nav-item dropdown">
-                
-                        
-                <a
-                 
-                class="nav-link"
-                 
-                data-toggle="dropdown"
-                 
-                href="#">
-                <div style="font-size: 30px; color:yellow;" >          
-                  <i class="far fa-bell"></i>
+                <li class="nav-item dropdown">
+                  <a class="nav-link position-relative" data-toggle="dropdown" href="#">
+                      <div style="font-size: 24px; color: #3498db;"> <!-- Adjust the color of the bell icon here -->
+                          <i class="far fa-bell"></i>
+                          <!-- Check if count_1 is greater than zero before displaying -->
+                       
+                              <span style="position: absolute; top: 0; right: 0; font-size: 18px; color: #e74c3c;" class="badge badge-cyan navbar-badge" id="message-count_1">{{ count_1 }}</span> <!-- Adjust the color of the badge here -->
+                         
+                      </div>
+                  </a>
+                  <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                      <span class="dropdown-item dropdown-header" id="message-count_2"></span>
+                      <div class="dropdown-divider"></div>
                   </div>
-                <span style="font-size: 20px;color:red;" class="badge badge-cyan navbar-badge" id="message-count_1">
-                 
-                </a>
-                <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                            
-                  <span class="dropdown-item dropdown-header" id="message-count_2"></span>
-                 
-                  <div class="dropdown-divider"></div>
-                  <button class="mark-as-read" data-notification-id="{{ notification.id }}">Mark as Read</button>
-    
-              </div>
-    
-                    </li>
+              </li>
+              
+              
+              
               
         
           

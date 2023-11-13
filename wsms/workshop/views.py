@@ -465,18 +465,29 @@ def delete_assignment(request,pk):
     context={'assign':assign}
     return render(request,'workshop/delete-assignment.html',context)
 
-@login_required(login_url='/login')
-def accept_assignment(request,id):
-    assign=Assignments.objects.get(id=id)
-    item=assign.item
-    if request.method=='POST':
-        item.is_accepted=True
+from django.shortcuts import get_object_or_404
 
+@login_required(login_url='/login')
+def accept_assignment(request, id):
+    assign = get_object_or_404(Assignments, id=id)
+    item = assign.item
+
+    # Retrieve the associated Notification
+    notification = Notification.objects.filter(assignment=assign).first()
+
+    if request.method == 'POST':
+        item.is_accepted = True
         item.save()
-        messages.success(request,  f'Assignment {assign.id} has been accepted successfully.')
+
+        # Update the status of the associated Notification
+        if notification:
+            notification.mark_as_read()
+
+        messages.success(request, f'Assignment {assign.id} has been accepted successfully.')
         return redirect('/assignment')
-    context={'assign':assign}
-    return render(request,'workshop/accept_form.html',context)
+
+    context = {'assign': assign}
+    return render(request, 'workshop/accept_form.html', context)
 
 @login_required(login_url='/login')
 
@@ -621,11 +632,11 @@ def get_message_count_1(request):
             
             
             
-
-    data = {
-        'message_count_1': no_assignment,
-        'notify': notify
-    }
+    if no_assignment!=0:
+        data = {
+            'message_count_1': no_assignment,
+            'notify': notify
+        }
     return JsonResponse(data)
 
 
