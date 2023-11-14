@@ -171,21 +171,6 @@
                  success: function(data) {
                      $('#message-count_1').html(data.message_count_1);
                      $('#message-count_2').html(data.notify);
-           
-                    
-                     $('.mark_as_read').on('click', function() {
-                         $.ajax({
-                             url: '/message-count_1/',
-                             method: 'POST',
-                             data: {
-                                 mark_as_read: true
-                             },
-                             success: function(data) {
-                               $('#message-count_1').html(data.message_count_1);
-                               $('#message-count_2').html(data.notify);
-                             }
-                         });
-                     });
                  }
              });
            }

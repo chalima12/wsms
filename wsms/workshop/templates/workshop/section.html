@@ -34,15 +34,21 @@
           &nbsp;&nbsp; Add Section
         </span>
       </a>
+      <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% endfor %}
+        {% endif %}
+</div> 
+
     </div>
 
-    {% if messages %}
-    <ul class="messages alert-success float-right">
-    {% for message in messages %}
-    <li style='List-style:none' class="{{ message.tags }}">{{ message }}</li>
-    {% endfor %}
-    </ul>
-    {% endif %}
             <div class="card">
               <div class="card-header">
                 <h2 class="container mx-5 card-title">List of Sections</h2>
@@ -114,6 +120,34 @@
       </div>
       <!-- /.modal-dialog -->
     </div>
+<!-- Add this script at the end of your HTML file or in a separate JavaScript file -->
+<script>
+  // Use JavaScript to periodically check for the presence of the success message
+  setInterval(function () {
+      var successMessage = document.querySelector('.alert-success');
+
+      if (successMessage) {
+          // Update the navbar content here
+          // You can use DOM manipulation or make an AJAX request to get updated data
+          // For simplicity, let's assume the updated data is available in a JavaScript variable 'userData'
+          updateNavbar(userData);
+
+          // Remove the success message
+          successMessage.remove();
+      }
+  }, 1000);  // Check every 1 second (adjust the interval as needed)
+
+  function updateNavbar(userData) {
+      // Update the navbar content based on the userData
+      // Use DOM manipulation or any other method that suits your implementation
+      // For example, you can update the user's name and profile picture
+      document.querySelector('.profile-user-name').innerText = userData.user_name;
+
+      if (userData.profile_picture_url) {
+          document.querySelector('.profile-user-img').src = userData.profile_picture_url;
+      }
+  }
+</script>
 
 {% endblock content %}
     

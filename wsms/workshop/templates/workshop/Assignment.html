@@ -1,109 +1,183 @@
-
 {% extends "./base1.html" %}
 
-
 {% block title %}
-<title> Assignments List</title>
- 
+<title>Assignments List</title>
 {% endblock title %}
-  
+
 {% block content %}
-    <!-- Content Wrapper. Contains page content -->
+<!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
-
-            <div class="card">
-              <div class="card-header">
-                <h2 class="container mx-5 card-title">List of Assignments</h2>
-              </div>
-
-     {% if messages %}
-     <ul class="messages alert-success float-right">
-     {% for message in messages %}
-     <li style='List-style:none' class="{{ message.tags }}">{{ message }}</li>
-     {% endfor %}
-     </ul>
-     {% endif %}
-              <!-- /.card-header -->
-              <div class="card-body">
-                <table id="example1" class="table table-bordered table-striped">
-
-                
-                  <thead class="dataTables_info">
-                    <tr>
-                      <th>Section</th>
-                      <th>Item</th>
-                      <th>Engineer</th>
-                      <th>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for data in assignments %}
-                          <tr>
-                            <td>{{data.Section}}</td>
-                            <td>{{data.item}}</td>
-                            <td>{{data.engineer}}</td>
-                            <td>
-                              <a style='border-radius:10%'  class="btn btn-info btn-sm btn " 
-                              href='{% url "workshop:item_detail" data.item.id%}' > <span class="fas fa-eye ">Item</span></a>
-                              
-                            
-                              {% if not data.item.is_accepted %}
-                                      <a style='border-radius:10%' class="btn btn-success btn-sm" href="javascript:void(0)" 
-                                      data-toggle="modal"
-                                      class="confirm-accept"
-                                      data-url="{% url 'workshop:accept' data.id %}"
-                                      data-target="#acceptItemModal"
-                                      data-message="Are you Sure to accept this Assignment  ?" 
-                                      >
-                                      
-                                        <span>Accept</span>
-                                    </a>
-                                    
-                              {% else %}
-                                          <a style='border-radius:10%'  class="btn btn-success btn-sm btn disabled" href='#' > <span class="fa ">Accepted</span></a>
-                                        
-                                          {% if  data.item.status == 'completed'%}
-                                          <a style='border-radius:10%'  class="btn btn-primary btn-sm btn disabled"
-                                          href='#'> <span class="fa ">Completed</span></a>
-                                          
-                                          {% else %}
-                                          <a href="{% url 'workshop:complete' data.id %}" class="btn btn-primary btn-sm" >
-                                            Complete
-                                          </a>
-                                        
-                                          <a style='border-radius:10%' class="btn btn-warning btn-sm " href="{% url 'workshop:create-component' data.id %}" >
-                                            <span class="fa fa-plus"> component</span>
-                                            
-                                          </a>
-                                          {% endif %} 
-                              {% endif %}
-                              
-
-                              
-                          </td>
-                          </tr>
-                          
+    <div class="card">
+        <div class="card-header">
+            <h2 class="container mx-5 card-title">List of Assignments</h2>
+            <div class="container">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
                     {% endfor %}
-                          
-                        
-                          
-                       
-                  </tbody>
-                    </table>
-              </div>
-              <!-- /.card-body -->
-            </div>
-            <!-- /.card -->
-          </div>
-          <!-- /.col -->
+                {% endif %}
+        </div> 
+        
         </div>
-        <!-- /.row -->
-      </div>
-  </div>
+
+        
+        <!-- /.card-header -->
+        <div class="card-body">
+            <table id="example1" class="table table-bordered table-striped">
+                <thead class="dataTables_info">
+                    <tr>
+                        <th>Section</th>
+                        <th>Item</th>
+                        <th>Engineer</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for data in assignments %}
+                    <tr>
+                        <td>{{ data.Section }}</td>
+                        <td>{{ data.item }}</td>
+                        <td>{{ data.engineer }}</td>
+                        <td>
+                            <a style='border-radius:10%' class="btn btn-info btn-sm btn "
+                                href='{% url "workshop:item_detail" data.item.id%}'> <span
+                                    class="fas fa-eye ">Item</span></a>
+
+                            {% if not data.item.is_accepted %}
+                            <a style='border-radius:10%' class="btn btn-success btn-sm" href="javascript:void(0)"
+                                data-toggle="modal" class="confirm-accept" data-url="{% url 'workshop:accept' data.id %}"
+                                data-target="#acceptItemModal" data-message="Are you Sure to accept this Assignment  ?">
+                                <span>Accept</span>
+                            </a>
+                            {% else %}
+                            <a style='border-radius:10%' class="btn btn-success btn-sm btn disabled" href='#'> <span
+                                    class="fa ">Accepted</span></a>
+                            {% if data.item.status == 'completed' %}
+                            <a style='border-radius:10%' class="btn btn-primary btn-sm btn disabled" href='#'> <span
+                                    class="fa ">Completed</span></a>
+                            {% else %}
+                            <a href="#" class="btn btn-primary btn-sm" data-toggle="modal"
+                                data-target="#completeModal{{ data.id }}">Complete</a>
+                            <a style='border-radius:10%' class="btn btn-warning btn-sm "
+                                href="{% url 'workshop:create-component' data.id %}"> <span
+                                    class="fa fa-plus"> component</span></a>
+                            {% endif %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <!-- /.card-body -->
+    </div>
+    <!-- /.card -->
+</div>
+</div>
+
+<!-- Add a modal for each assignment -->
+{% for data in assignments %}
+<div class="modal fade" id="completeModal{{ data.id }}" tabindex="-1" role="dialog"
+    aria-labelledby="completeModalLabel{{ data.id }}" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="completeModalLabel{{ data.id }}">Complete Assignment</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Your existing complete form content goes here -->
+                <form class='card p-3 mt-5 bg-light complete-modal-form'
+                    method="POST" action="{% url 'workshop:complete' data.id %}">
+                    {% csrf_token %}
+                    <div class="form-group m-2">
+                        <label for="comment">Comment:</label>
+                        <textarea class="form-control" id="comment" name="comment" rows="3"></textarea>
+                    </div>
+                    <div class="form-check m-2">
+                        <input type="checkbox" class="form-check-input" id="is_maintainable"
+                            name="is_maintainable">
+                        <label class="form-check-label" for="is_maintainable">Is maintainable?</label>
+                    </div>
+                    <div class="form-check m-2">
+                        <input type="checkbox" class="form-check-input" id="is_right_to_here"
+                            name="is_right_to_here">
+                        <label class="form-check-label" for="is_right_to_here">Is should be here?</label>
+                    </div>
+                    <div class="col-4 m-3">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- Add this script to the end of your template -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('.complete-modal-form').on('submit', function (e) {
+            e.preventDefault(); // Prevent the default form submission
+
+            // Capture the form and modal elements
+            var form = $(this);
+            var modal = form.closest('.modal');
+
+            // Perform an AJAX request to submit the form data
+            $.ajax({
+                type: 'POST',
+                url: form.attr('action'),
+                data: form.serialize(),
+                success: function (data) {
+                    // Update modal content or close modal, depending on your requirements
+                    modal.find('.modal-body').html('<p>Assignment completed successfully.</p>');
+                    // You might want to close the modal after a successful submission
+                    // modal.modal('hide');
+                },
+                error: function () {
+                    // Handle errors, if any
+                    modal.find('.modal-body').html('<p>Error completing assignment.</p>');
+                }
+            });
+        });
+    });
+</script>
+<!-- Add this script at the end of your HTML file or in a separate JavaScript file -->
+<script>
+    // Use JavaScript to periodically check for the presence of the success message
+    setInterval(function () {
+        var successMessage = document.querySelector('.alert-success');
+
+        if (successMessage) {
+            // Update the navbar content here
+            // You can use DOM manipulation or make an AJAX request to get updated data
+            // For simplicity, let's assume the updated data is available in a JavaScript variable 'userData'
+            updateNavbar(userData);
+
+            // Remove the success message
+            successMessage.remove();
+        }
+    }, 1000);  // Check every 1 second (adjust the interval as needed)
+
+    function updateNavbar(userData) {
+        // Update the navbar content based on the userData
+        // Use DOM manipulation or any other method that suits your implementation
+        // For example, you can update the user's name and profile picture
+        document.querySelector('.profile-user-name').innerText = userData.user_name;
+
+        if (userData.profile_picture_url) {
+            document.querySelector('.profile-user-img').src = userData.profile_picture_url;
+        }
+    }
+</script>
+
 {% endblock content %}
-    
-
-
-
-
-

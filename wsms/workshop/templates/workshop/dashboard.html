@@ -59,7 +59,7 @@
     {% load static %}
     <!-- Site wrapper -->
   <div class="wrapper">
-  <nav class="main-header navbar navbar-expand navbar-cyan navbar-light layout-fixed">
+    <nav class="main-header navbar navbar-expand navbar-navy navbar-light layout-fixed">
       {% block leftnav %}
       <ul class="navbar-nav">
         {% comment %} {% comment %} <li class="nav-item">
@@ -87,7 +87,10 @@
               <div class="btn-group">
                 <a href="#" class="btn-img img dropdown-toggle rounded-circle" 
                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
-                <img class='profile-user-img rounded-circle sm' src="{{ user.profile_picture.url }}" class="img-circle elevation-2">
+                {% if user.profile_picture %}
+                  <img class='profile-user-img rounded-circle sm' src="{{ user.profile_picture.url }}" class="img-circle elevation-2">
+                  {% endif %}
+   
            
                
                   <div class='btn text-white'>{{ user.first_name }} {{ user.last_name }}</div>
@@ -121,34 +124,21 @@
               {% else %}
               <a style='border-radius:15% ' href="{% url 'workshop:custom_login' %}"  class="btn-block btn-lg btn-secondary"> Login</a>
               {% endif %}
-              <li
-   
-              class="nav-item dropdown">
-              
-                      
-              <a
-               
-              class="nav-link"
-               
-              data-toggle="dropdown"
-               
-              href="#">
-              <div style="font-size: 30px; color:yellow;" >          
-                <i class="far fa-bell"></i>
+              <li class="nav-item dropdown">
+                <a class="nav-link position-relative" data-toggle="dropdown" href="#">
+                    <div style="font-size: 24px; color: #3498db;"> <!-- Adjust the color of the bell icon here -->
+                        <i class="far fa-bell"></i>
+                        <!-- Check if count_1 is greater than zero before displaying -->
+                     
+                            <span style="position: absolute; top: 0; right: 0; font-size: 18px; color: #e74c3c;" class="badge badge-cyan navbar-badge" id="message-count_1">{{ count_1 }}</span> <!-- Adjust the color of the badge here -->
+                       
+                    </div>
+                </a>
+                <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                    <span class="dropdown-item dropdown-header" id="message-count_2"></span>
+                    <div class="dropdown-divider"></div>
                 </div>
-              <span style="font-size: 20px;color:red;" class="badge badge-cyan navbar-badge" id="message-count_1">
-               
-              </a>
-              <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                          
-                <span class="dropdown-item dropdown-header" id="message-count_2"></span>
-               
-                <div class="dropdown-divider"></div>
-                <button class="mark-as-read" data-notification-id="{{ notification.id }}">Mark as Read</button>
-  
-            </div>
-  
-                  </li>
+            </li>
             
           <li class="nav-item">
             <a class="nav-link" data-widget="fullscreen" href="#" role="button">
@@ -412,51 +402,6 @@
   });
 </script>
         
-
-<script>
-            $(document).ready(function() {
-                // Function to load notifications
-                function loadNotifications() {
-                    $.ajax({
-                        url: '/get-notifications/',
-                        success: function(data) {
-                            // Update the unread count badge
-                            $('#unread-count-badge').text(data.unread_count);
-            
-                            // Update the notifications dropdown
-                            $('#notifications-dropdown').empty();
-                            for (var i = 0; i < data.notifications.length; i++) {
-                                var notification = data.notifications[i];
-                                var notificationElement = '<div class="notification ' + (notification.status === 'read' ? 'read' : '') + '">' +
-                                    '<a href="' + notification.link + '">' + notification.message + '</a>' +
-                                    '<button class="mark-as-read" data-notification-id="' + notification.id + '">Mark as Read</button>' +
-                                    '</div>';
-                                $('#notifications-dropdown').append(notificationElement);
-                            }
-                        }
-                    });
-                }
-            
-                // Initial load of notifications
-                loadNotifications();
-            
-                // Reload notifications every 30 seconds
-                setInterval(loadNotifications, 30000);
-            
-                // Mark notification as read
-                $('#notifications-dropdown').on('click', '.mark-as-read', function() {
-                    var notificationId = $(this).data('notification-id');
-                    $.ajax({
-                        url: '/mark-notification-as-read/' + notificationId + '/',
-                        success: function(data) {
-                            if (data.status === 'read') {
-                                $(this).parent().addClass('read');
-                            }
-                        }
-                    });
-                });
-            });
-        </script>
         
 
         <script>
@@ -467,21 +412,7 @@
                     success: function(data) {
                         $('#message-count_1').html(data.message_count_1);
                         $('#message-count_2').html(data.notify);
-              
-                       
-                        $('.mark_as_read').on('click', function() {
-                            $.ajax({
-                                url: '/message-count_1/',
-                                method: 'POST',
-                                data: {
-                                    mark_as_read: true
-                                },
-                                success: function(data) {
-                                  $('#message-count_1').html(data.message_count_1);
-                                  $('#message-count_2').html(data.notify);
-                                }
-                            });
-                        });
+            
                     }
                 });
               }
@@ -493,30 +424,6 @@
 
     </script>
         
-
-    <script>
-        $(document).ready(function() {
-          // ...
-      
-          // Mark notification as read
-          $('#notifications-dropdown').on('click', '.mark-as-read', function() {
-              var notificationId = $(this).data('notification-id'); // Get the notification ID from the button's data attribute
-              $.ajax({
-                  url: '/mark_notification_as_read/', // Use the correct URL
-                  method: 'POST',
-                  data: {
-                      notification_id: notificationId // Pass the notification ID to the view
-                  },
-                  success: function(data) {
-                      if (data.status === 'read') {
-                          $(this).parent().addClass('read');
-                      }
-                  }
-              });
-          });
-      });
-      
-            </script>
            
             
         

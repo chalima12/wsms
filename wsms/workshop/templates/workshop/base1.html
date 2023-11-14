@@ -62,13 +62,18 @@
          
          {% block content %}
 
-     {% if messages %}
-     <ul class="messages alert-success float-right">
-     {% for message in messages %}
-     <li style='List-style:none' class="{{ message.tags }}">{{ message }}</li>
-     {% endfor %}
-     </ul>
-     {% endif %}
+     <!-- Add this code to your base template or any template where you want to display messages -->
+{% if messages %}
+{% for message in messages %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+{% endfor %}
+{% endif %}
+
          
          {% block dashbord %}
           
