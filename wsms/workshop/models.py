@@ -60,7 +60,8 @@ class Item(models.Model):
     status(pending,accepted,completed,not maintable),remark
     """
     ws_id = models.CharField(max_length=15)
-    received_date=models.DateField(auto_now=1)
+    received_date = models.DateField(auto_created=True, null=True)
+
     engineer= models.ForeignKey(User, on_delete=models.CASCADE,null=True,blank=True)
     stock_id = models.CharField(max_length=15)
     Serial_no =models.CharField(max_length=15)

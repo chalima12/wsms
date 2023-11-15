@@ -28,20 +28,15 @@
                 <div class="col-md-6 d-flex justify-content-center">
                 <div class="btn-group">
                   <a href="#" class="btn-img img dropdown-toggle rounded-circle" 
-                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
-                  
-                  {% if user.profile_picture %}
-                  <img class='profile-user-img rounded-circle sm' src="{{ user.profile_picture.url }}" class="img-circle elevation-2">
-                  {% endif %}
-                    
-                  
-             
-                 
-                    <div class='btn text-white'>{{ user.first_name }} {{ user.last_name }}</div>
-                 
-                    
-                  
-                  </a>            <div class="dropdown-menu">
+   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    {% if user.profile_picture %}
+        <img class='profile-user-img rounded-circle sm img-fluid' 
+             src="{{ user.profile_picture.url }}" 
+             alt="Profile Picture">
+    {% endif %}
+    <div class='btn text-white'>{{ user.first_name }} {{ user.last_name }}</div>
+</a>
+            <div class="dropdown-menu">
                 <a class="dropdown-item d-flex align-items-center" href="{% url 'workshop:change_password' %}">
                 <div class="icon d-flex align-items-center justify-content-center mr-3">
                 </div>

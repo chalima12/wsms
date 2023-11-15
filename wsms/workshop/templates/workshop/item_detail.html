@@ -1,30 +1,40 @@
-{% extends "./base1.html" %}
-
-{% block content %}
-
-<div class="container mt-3">
-  <div class="card">
-    <div class="card-header">
-      <h3 class="card-title">Item Details</h3>
-    </div>
-    <div class="card-body">
-      <div class="row">
-        <div class="col-md-6">
-          <p><strong>WS ID:</strong> {{ item.ws_id }}</p>
-          <p><strong>Received Date:</strong> {{ item.received_date }}</p>
-          <p><strong>Stock ID:</strong> {{ item.stock_id }}</p>
-          <p><strong>Serial No:</strong> {{ item.Serial_no }}</p>
-        </div>
-        <div class="col-md-6">
-          <p><strong>Status:</strong> {{ item.status }}</p>
-          <p><strong>Delivered By:</strong> {{ item.delivered_by }}</p>
-          <p><strong>Received By:</strong> {{ item.received_by }}</p>
-          <p><strong>Is Accepted:</strong> {{ item.is_accepted }}</p>
-        </div>
+<!-- Item Details Modal -->
+<div class="modal fade" id="itemDetailsModal{{ data.id }}" tabindex="-1" role="dialog" aria-labelledby="itemDetailsModalLabel{{ data.id }}" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+          <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          <div class="modal-body">
+              <div class="container mt-3">
+                  <div class="card">
+                      <div class="card-header">
+                          <h3 class="card-title">Item Details</h3>
+                      </div>
+                      <div class="card-body">
+                          <div class="row">
+                              <div class="col-md-6">
+                                  <p><strong>WS ID:</strong> {{ data.item.ws_id }}</p>
+                                  <p><strong>Received Date:</strong> {{ data.item.received_date }}</p>
+                                  <p><strong>Stock ID:</strong> {{ data.item.stock_id }}</p>
+                                  <p><strong>Serial No:</strong> {{ data.item.Serial_no }}</p>
+                              </div>
+                              <div class="col-md-6">
+                                  <p><strong>Status:</strong> {{ data.item.status }}</p>
+                                  <p><strong>Delivered By:</strong> {{ data.item.delivered_by }}</p>
+                                  <p><strong>Received By:</strong> {{ data.item.received_by }}</p>
+                                  <p><strong>Is Accepted:</strong> {% if data.item.is_accepted %}Accepted{% else %}Not Accepted{% endif %}</p>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
       </div>
-      <a class="btn btn-warning" href="javascript:history.back()">Back</a>
-    </div>
   </div>
 </div>
-
-{% endblock content %}

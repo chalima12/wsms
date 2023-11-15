@@ -1,29 +1,8 @@
 {% extends './base1.html' %}
 {% load crispy_forms_tags %} 
 {% block content %}
-<div class="modal fade" id="assignRoleModal" tabindex="-1" aria-labelledby="assignRoleModalLabel" aria-hidden="true">
-<div class="modal-dialog modal-lg">
-<div class="modal-content">
-<div class="modal-header">
-<h5 class="modal-title" id="assignRoleModalLabel">Assign Role</h5>
-<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-<span aria-hidden="true">×</span>
-</button>
-</div>
-<div class="modal-body">
-<!-- your form goes here -->
-<form method="post">
-{% csrf_token %}
-<!-- ... other form fields ... -->
-<input type="submit" value="Assign Role">
-</form>
-</div>
-</div>
-</div>
-</div>
-
-<div class="container">
-    <h2>Assign Role</h2>
+<div class="container mt-3 card">
+    <h2>Assign Role to: {{role.first_name}} {{role.last_name}}</h2>
 
     <form  method="post">
         {% csrf_token %}
@@ -124,7 +103,7 @@
                {{form.add_section|as_crispy_field }}
             </div>
           </div>
-        <input type="submit" value="Assign Role">
+        <input style='border-radius:10%' class='btn btn-primary btn-sm m-3 ' type="submit" value="Assign Role">
     </form>
 
 </div>

@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from django.views.generic import UpdateView, CreateView, DetailView, ListView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse, reverse_lazy
@@ -196,18 +197,18 @@ class AssignmentCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
 
 class ItemDetailView(DetailView):
     model = Item
-class UserListView(LoginRequiredMixin,ListView):
+class UserListView(LoginRequiredMixin, ListView):
     model = User
+    context_object_name = 'users'
+    template_name = "workshop/user.html"
+    login_url = 'workshop:custom_login'
 
-    context_object_name='users'
-    template_name="workshop/user.html"
-    login_url='workshop:custom_login'
-    
     def get_queryset(self):
-    
-# return only active users
-        return User.objects.filter(is_active=True,is_admin=False)
+        return User.objects.filter(is_active=True, is_admin=False)
 
+    def get(self, request, *args, **kwargs):
+        users = self.get_queryset()
+        return render(request, self.template_name, {'user_list': users})
 
 class ItemListView(LoginRequiredMixin,ListView):
     model = Item
@@ -218,7 +219,7 @@ class ItemListView(LoginRequiredMixin,ListView):
     # paginate_by = 10 # if pagination is desired
     def get_queryset(self):
     # return only valid item
-        return Item.objects.filter(is_valid=True).order_by('-id')
+        return Item.objects.filter(is_valid=True).order_by('id')
    
 class ComponentListView(LoginRequiredMixin,ListView):
     model = Component
@@ -241,15 +242,20 @@ class SectionListView(LoginRequiredMixin,ListView):
         return Section.objects.filter(is_valid=True)
 class AssignmentListView(LoginRequiredMixin,ListView):
     model = Assignments
-    
-    context_object_name='assignments'
-    template_name="workshop/Assignment.html"
-    login_url='workshop:custom_login'
+    context_object_name = 'assignments'
+    template_name = "workshop/Assignment.html"
+    login_url = 'workshop:custom_login'
+
     def get_queryset(self):
-        
-        return Assignments.objects.filter(is_valid=True, engineer=self.request.user).order_by('-id')
-    
-# views.py
+        user = self.request.user
+        user_type = user.user_type
+
+        if user_type == 'manager':
+            # If the user is a manager, retrieve all assignments
+            return Assignments.objects.filter(is_valid=True).order_by('-id')
+        else:
+            # If the user is not a manager, retrieve assignments for the specific engineer
+            return Assignments.objects.filter(is_valid=True, engineer=user).order_by('-id')
 
 
 
@@ -417,6 +423,7 @@ def password_change_done(request):
 
 class AssignRoleView(UpdateView):
     model = User
+    context_object_name = 'role'
     template_name = 'workshop/assign_role.html'
     form_class = UserPermissionsForm
     success_url = reverse_lazy('workshop:user')
@@ -430,8 +437,7 @@ class AssignRoleView(UpdateView):
         return super().form_valid(form)
 @login_required
 def get_message_count_1(request):
-    startdate = timezone.now()
-    enddate = startdate + datetime.timedelta(days=-1)
+    
     user_id = request.user
     no_assignment = Notification.objects.filter(engineer=user_id,status='pending').count()
     notify=f'you have { no_assignment } new assignments'
@@ -444,12 +450,13 @@ def get_message_count_1(request):
             
             
             
-    if no_assignment!=0:
+    if no_assignment != 0:
         data = {
             'message_count_1': no_assignment,
             'notify': notify
         }
-    return JsonResponse(data)
+        return JsonResponse(data)
+    return JsonResponse({})
 
 
 
