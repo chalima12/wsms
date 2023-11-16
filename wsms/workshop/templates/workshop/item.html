@@ -43,7 +43,7 @@
                         <th>Stock Id</th>
                         <th>Serial Number</th>
                         <th>Status</th>
-                        <th>Accepted</th>
+                        <th>Is Accepted</th>
                         {% if user.delete_item %}
                             <th>Action</th>
                         {% endif %}
@@ -56,12 +56,18 @@
                         <td>{{ data.received_date }}</td>
                         <td>{{ data.stock_id }}</td>
                         <td>{{ data.Serial_no }}</td>
-                        <td>{{ data.status }}</td>
-                        <td>{{ data.is_accepted }}</td>
+                        <td 
+                        {% if data.status == 'completed' %}style="color:#49FB09;" {% elif data.status == 'pending' %}style="color:red;" 
+                        {% else %}style="color:orange;" {% endif %}
+                            
+                            ><i><b>{{ data.status }}</b></i></td>
+                        <td>
+                        {% if data.is_accepted %}Yes {% else %}No{% endif %}
+                            </td>
                         {% if user.delete_item %}
                         <td>
                             <button type="button" class="btn btn-info btn-sm btn" data-toggle="modal" data-target="#itemDetailsModal{{ data.id }}">
-                                <span class="fas fa-eye">Item</span>
+                                <span class="fas fa-eye">Detail</span>
                             </button>
 
                             {% if data.status == 'pending' %}

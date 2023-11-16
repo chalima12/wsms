@@ -250,7 +250,7 @@ class AssignmentListView(LoginRequiredMixin,ListView):
         user = self.request.user
         user_type = user.user_type
 
-        if user_type == 'manager':
+        if user_type == 'Manager':
             # If the user is a manager, retrieve all assignments
             return Assignments.objects.filter(is_valid=True).order_by('-id')
         else:
@@ -275,17 +275,26 @@ class ReporttListView(LoginRequiredMixin, ListView):
             start_date = current_date - timedelta(days=current_date.weekday())
         elif time_range == 'monthly':
             start_date = current_date.replace(day=1)
+        elif time_range == 'all':
+            start_date = None  # Set start_date to None to get all reports
         else:
             # Handle other cases or set a default behavior
             start_date = current_date
 
-        queryset = Assignments.objects.filter(
-            is_valid=True,
-            item__received_date__gte=start_date,
-            item__received_date__lte=current_date
-        ).order_by('-item__received_date')
+        # Adjust the queryset based on start_date
+        if start_date is not None:
+            queryset = Assignments.objects.filter(
+                is_valid=True,
+                item__received_date__gte=start_date,
+                item__received_date__lte=current_date
+            ).order_by('-item__received_date')
+        else:
+            queryset = Assignments.objects.filter(
+                is_valid=True
+            ).order_by('-item__received_date')
 
         return queryset
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
