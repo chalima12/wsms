@@ -5,29 +5,38 @@
     <title>Item List</title>
 {% endblock title %}
 
-{% block content %}
-    <div class="container mt-1">
-
-        {% if user.add_item %}
+{% block content1 %}
+<div class="container mt-1">
+   
+    
+ {% if user.add_item %}
             <a class="btn btn-warning" href="{% url 'workshop:create-item' %}">
                 <span class="fa fa-plus">
                     &nbsp;&nbsp; Add Item
                 </span>
             </a>
         {% endif %}
+ 
+</div>
+<div class="container">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'warning' %}alert-warning{% endif %} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
+{% endblock content1 %}
+{% block content %}
+    <div class="container mt-1">
 
-        <div class="container">
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'warning' %}alert-warning{% endif %} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                {% endfor %}
-            {% endif %}
-        </div>
+       
+
+      
 
         <div class="card m-3">
             <div class="card-header">
@@ -38,14 +47,22 @@
 
                     <thead class="dataTables_info">
                     <tr>
-                        <th>ID</th>
+                        <th>Ws ID</th>
                         <th>Received Date</th>
                         <th>Stock Id</th>
+                        <th>Description</th>
                         <th>Serial Number</th>
                         <th>Status</th>
-                        <th>Is Accepted</th>
-                        {% if user.delete_item %}
+                        
+                            <th>View</th>
+                            
+                            {% if user.add_assignment %}
                             <th>Action</th>
+                            {% endif %}
+                                
+                         
+                            {% if user.delete_item %}
+                            <th>Delete</th>
                         {% endif %}
                     </tr>
                     </thead>
@@ -54,139 +71,141 @@
                     <tr>
                         <td>{{ data.id }}</td>
                         <td>{{ data.received_date }}</td>
-                        <td>{{ data.stock_id }}</td>
+                        <td>{{ data.stock_id.number }}</td>
+                        <td>{{ data.stock_id.description }}</td>
                         <td>{{ data.Serial_no }}</td>
                         <td 
                         {% if data.status == 'completed' %}style="color:#49FB09;" {% elif data.status == 'pending' %}style="color:red;" 
-                        {% else %}style="color:orange;" {% endif %}
-                            
-                            ><i><b>{{ data.status }}</b></i></td>
-                        <td>
-                        {% if data.is_accepted %}Yes {% else %}No{% endif %}
+                        {% else %}style="color:orange;" {% endif %}><i><b>{{ data.status }}</b></i></td>
+                       
+                        
+                            <td>
+                                <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#itemDetailsModal{{ data.id }}">
+                                    <span class="fas fa-eye">detail</span>
+                                </button>
                             </td>
-                        {% if user.delete_item %}
-                        <td>
-                            <button type="button" class="btn btn-info btn-sm btn" data-toggle="modal" data-target="#itemDetailsModal{{ data.id }}">
-                                <span class="fas fa-eye">Detail</span>
-                            </button>
-
-                            {% if data.status == 'pending' %}
-                            <a class='btn btn-secondary btn-sm'
-                               style='border-radius:10%'
-                               href="{% url 'workshop:create-assignment' data.id %}">
-                                <span class="fa fa-address-book">
-                                    Assign
-                                </span>
-                            </a>
-                            {% else %}
-                            <a class='btn btn-secondary btn-sm btn disabled' style='border-radius:10%' href="#">
-                                <span class="fa fa-address-book">
-                                    Assigned
-                                </span>
-                            </a>
+                            
+                            {% if user.add_assignment %}
+                            <td>
+                                {% if data.status == 'pending' %}
+                                    <a class='btn btn-secondary btn-sm' style='border-radius:10%' href="{% url 'workshop:create-assignment' data.id %}">
+                                        <span>
+                                            Assign
+                                        </span>
+                                    </a>
+                                {% else %}
+                                    <a class='btn btn-secondary btn-sm btn disabled' style='border-radius:10%' href="#">
+                                        <span>
+                                            Assigned
+                                        </span>
+                                    </a>
+                                {% endif %}
+                            </td>
+                                
                             {% endif %}
-
-                            <a style='border-radius:10%' class="btn btn-danger btn-sm" href="javascript:void(0)"
-                               data-toggle="modal"
-                               class="confirm-accept"
-                               data-url="{% url 'workshop:item_delete' data.id %}"
-                               data-target="#acceptItemModal"
-                               data-message="Are you Sure to delete {{ data.Serial_no }}  ?">
-                                <i class="far fa-trash-alt"></i>
-                                <span>Delete</span>
-                            </a>
-                        </td>
+                                
+                           
+                            {% if user.delete_item %}
+                            <td>
+                                <a style='border-radius:10%' class="btn btn-danger btn-sm" href="javascript:void(0)"
+                                   data-toggle="modal"
+                                   class="confirm-accept"
+                                   data-url="{% url 'workshop:item_delete' data.id %}"
+                                   data-target="#acceptItemModal"
+                                   data-message="Are you Sure to delete {{ data.Serial_no }}  ?">
+                                    <i class="far fa-trash-alt">delete</i>
+                                    
+                                </a>
+                            </td>
                         {% endif %}
                     </tr>
 
-<!-- Item Details Modal -->
-<div class="modal fade" id="itemDetailsModal{{ data.id }}" tabindex="-1" role="dialog" aria-labelledby="itemDetailsModalLabel{{ data.id }}" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-          <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-              </button>
-          </div>
-          <div class="modal-body">
-              <div class="container mt-3">
-                  <div class="card">
-                      <div class="card-header">
-                          <h3 class="card-title">Item Details</h3>
-                      </div>
-                      <div class="card-body">
-                          <div class="row">
-                              <div class="col-md-6">
-                                  <p><strong>WS ID:</strong> {{ data.ws_id }}</p>
-                                  <p><strong>Received Date:</strong> {{ data.received_date }}</p>
-                                  <p><strong>Stock ID:</strong> {{ data.stock_id }}</p>
-                                  <p><strong>Serial No:</strong> {{ data.Serial_no }}</p>
+                    <!-- Item Details Modal -->
+                    <div class="modal fade" id="itemDetailsModal{{ data.id }}" tabindex="-1" role="dialog" aria-labelledby="itemDetailsModalLabel{{ data.id }}" aria-hidden="true">
+                      <div class="modal-dialog modal-lg" role="document">
+                          <div class="modal-content">
+                              <div class="modal-header">
+                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                      <span aria-hidden="true">&times;</span>
+                                  </button>
                               </div>
-                              <div class="col-md-6">
-                                  <p><strong>Status:</strong> {{ data.status }}</p>
-                                  <p><strong>Delivered By:</strong> {{ data.delivered_by }}</p>
-                                  <p><strong>Received By:</strong> {{ data.received_by }}</p>
-                                  <p><strong>Is Accepted:</strong> {% if data.is_accepted %}Accepted{% else %}Not Accepted{% endif %}</p>
+                              <div class="modal-body">
+                                  <div class="container mt-3">
+                                      <div class="card">
+                                          <div class="card-header">
+                                              <h3 class="card-title">Item Details</h3>
+                                          </div>
+                                          <div class="card-body">
+                                              <div class="row">
+                                                  <div class="col-md-6">
+                                                      <p><strong>WS ID:</strong> {{ data.id }}</p>
+                                                      <p><strong>Received Date:</strong> {{ data.received_date }}</p>
+                                                      <p><strong>Stock ID:</strong> {{ data.stock_id.number }}</p>
+                                                      <p><strong>Serial No:</strong> {{ data.Serial_no }}</p>
+                                                  </div>
+                                                  <div class="col-md-6">
+                                                      <p><strong>Status:</strong> {{ data.status }}</p>
+                                                      <p><strong>Delivered By:</strong> {{ data.delivered_by }}</p>
+                                                      <p><strong>Received By:</strong> {{ data.received_by }}</p>
+                                                      <p><strong>Is Accepted:</strong> {% if data.is_accepted %}Accepted{% else %}Not Accepted{% endif %}</p>
+                                                  </div>
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div>
+                              <div class="modal-footer">
+                                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                               </div>
                           </div>
                       </div>
-                  </div>
-              </div>
-          </div>
-          <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          </div>
-      </div>
-  </div>
-</div>
-
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
                     </div>
-                 
-                    {% if messages.warning %}
-                        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-                        <script>
-                            // create a modal popup with the warning message
-                            Swal.fire({
-                                icon: 'warning',
-                                title: 'Warning',
-                                text: '{{ messages.warning }}',
-                                confirmButtonText: 'Close'
-                            });
-                        </script>
-                    {% endif %}
-                    <!-- Add this script at the end of your HTML file or in a separate JavaScript file -->
-                    <script>
-                        // Use JavaScript to periodically check for the presence of the success message
-                        setInterval(function () {
-                            var successMessage = document.querySelector('.alert-success');
-                 
-                            if (successMessage) {
-                                // Update the navbar content here
-                                // You can use DOM manipulation or make an AJAX request to get updated data
-                                // For simplicity, let's assume the updated data is available in a JavaScript variable 'userData'
-                                updateNavbar(userData);
-                 
-                                // Remove the success message
-                                successMessage.remove();
-                            }
-                        }, 1000);  // Check every 1 second (adjust the interval as needed)
-                 
-                        function updateNavbar(userData) {
-                            // Update the navbar content based on the userData
-                            // Use DOM manipulation or any other method that suits your implementation
-                            // For example, you can update the user's name and profile picture
-                            document.querySelector('.profile-user-name').innerText = userData.user_name;
-                 
-                            if (userData.profile_picture_url) {
-                                document.querySelector('.profile-user-img').src = userData.profile_picture_url;
-                            }
-                        }
-                    </script>
-                 
-                    {% endblock content %}
-                 
+
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    {% if messages.warning %}
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            // create a modal popup with the warning message
+            Swal.fire({
+                icon: 'warning',
+                title: 'Warning',
+                text: '{{ messages.warning }}',
+                confirmButtonText: 'Close'
+            });
+        </script>
+    {% endif %}
+    <!-- Add this script at the end of your HTML file or in a separate JavaScript file -->
+    <script>
+        // Use JavaScript to periodically check for the presence of the success message
+        setInterval(function () {
+            var successMessage = document.querySelector('.alert-success');
+
+            if (successMessage) {
+                // Update the navbar content here
+                // You can use DOM manipulation or make an AJAX request to get updated data
+                // For simplicity, let's assume the updated data is available in a JavaScript variable 'userData'
+                updateNavbar(userData);
+
+                // Remove the success message
+                successMessage.remove();
+            }
+        }, 1000);  // Check every 1 second (adjust the interval as needed)
+
+        function updateNavbar(userData) {
+            // Update the navbar content based on the userData
+            // Use DOM manipulation or any other method that suits your implementation
+            // For example, you can update the user's name and profile picture
+            document.querySelector('.profile-user-name').innerText = userData.user_name;
+
+            if (userData.profile_picture_url) {
+                document.querySelector('.profile-user-img').src = userData.profile_picture_url;
+            }
+        }
+    </script>
+{% endblock content %}

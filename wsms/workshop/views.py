@@ -13,6 +13,8 @@ from django.db.models import Count
 from django.utils import timezone
 from datetime import timedelta, datetime
 from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.http import require_POST
+from django.db.models import Count, Q  # Add this line
 
 from .forms import *
 
@@ -23,8 +25,46 @@ from django.contrib.auth import authenticate, login
 from workshop import signals  # If signals is a custom module
 
 # You might want to reorganize your import statements based on your project structure
+#"ATMSP-3"	"Paper Low Sensor"
 
 
+# workshop/views.py
+
+from django.shortcuts import render
+from django.db.models import Count
+from .models import User, Item
+
+def user_dashboard(request):
+    # Fetch data for the user dashboard
+    user_count = User.objects.count()
+    item_count = Item.objects.count()
+    component_count = Component.objects.count()
+    section_count = Section.objects.count()
+
+    # Fetch item status counts
+    item_status_counts = Item.objects.values('status').annotate(count=Count('id'))
+
+    # Fetch user type counts
+    user_type_counts = User.objects.values('user_type').annotate(count=Count('id'))
+
+    # Fetch items per section counts with status
+    section_item_counts = Section.objects.annotate(
+        item_count=Count('sections__id'),
+        pending_count=Count('sections__id', filter=Q(sections__status='pending')),
+        on_progress_count=Count('sections__id', filter=Q(sections__status='on_progress')),
+        completed_count=Count('sections__id', filter=Q(sections__status='completed')),
+    ).values('name', 'item_count', 'pending_count', 'on_progress_count', 'completed_count')
+
+    context = {
+        'user_count': user_count,
+        'item_count': item_count,
+        'component_count': component_count,
+        'section_count': section_count,
+        'item_status_counts': item_status_counts,
+        'user_type_counts': user_type_counts,
+        'section_item_counts': section_item_counts,
+    }
+    return render(request, 'workshop/home.html', context)
 
 @login_required(login_url='workshop:custom_login')
 def assignment_chart_view(request):
@@ -80,7 +120,7 @@ def assignment_chart_view(request):
 
     return render(request, 'workshop/home.html', context)
 
-@csrf_protect
+
 def custom_login(request):
     if request.method == 'POST':
         username = request.POST['username']
@@ -218,19 +258,45 @@ class ItemListView(LoginRequiredMixin,ListView):
     login_url='workshop:custom_login'
     # paginate_by = 10 # if pagination is desired
     def get_queryset(self):
-    # return only valid item
-        return Item.objects.filter(is_valid=True).order_by('id')
-   
-class ComponentListView(LoginRequiredMixin,ListView):
-    model = Component
-    context_object_name='components'
-    template_name="workshop/component.html"
-    login_url='workshop:custom_login'
-    # paginate_by = 4 # if pagination is desired
-    def get_queryset(self):
-# return only valid item
-        return Component.objects.filter(is_valid=True)
+        user_type = self.request.user.user_type
+        
 
+        if user_type == 'Registeror':
+            return Item.objects.filter(is_valid=True).order_by('-received_date')
+        elif user_type == 'Manager':
+            assigned_items = Section.objects.filter(manager=self.request.user, is_valid=True)
+            sections_ids = assigned_items.values_list('id', flat=True)
+            return Item.objects.filter(Section_id__in=sections_ids, is_valid=True).order_by('-id')
+        elif user_type == 'Engineer':
+            return Item.objects.filter(engineer=self.request.user, is_valid=True)
+            
+        else:
+            return Item.objects.none()
+        
+   
+class ComponentListView(LoginRequiredMixin, ListView):
+    model = Component
+    context_object_name = 'components'
+    template_name = "workshop/component.html"
+    login_url = 'workshop:custom_login'
+
+    def get_queryset(self):
+        user_type = self.request.user.user_type
+
+        if user_type == 'Registeror':
+            return Component.objects.filter(is_valid=True).order_by('-recived_date')
+        elif user_type == 'Engineer':
+            assigned_items = Assignments.objects.filter(engineer=self.request.user, is_valid=True)
+            assigned_item_ids = assigned_items.values_list('item_id', flat=True)
+            return Component.objects.filter(item_id__in=assigned_item_ids, is_valid=True).order_by('-recived_date')
+        elif user_type == 'Manager':
+            assigned_items = Section.objects.filter(manager=self.request.user, is_valid=True)
+            sections_ids = assigned_items.values_list('id', flat=True)
+            item_id=Item.objects.filter(Section_id__in=sections_ids, is_valid=True).order_by('-id')
+            return Component.objects.filter(item_id__in=item_id, is_valid=True).order_by('-id')
+        else:
+            return Component.objects.none()
+  
 class SectionListView(LoginRequiredMixin,ListView):
     model = Section
     context_object_name='sections'
@@ -250,10 +316,16 @@ class AssignmentListView(LoginRequiredMixin,ListView):
         user = self.request.user
         user_type = user.user_type
 
-        if user_type == 'Manager':
+        if user_type == 'Registeror':
             # If the user is a manager, retrieve all assignments
             return Assignments.objects.filter(is_valid=True).order_by('-id')
+        elif user_type == 'Manager':
+            assigned_items = Section.objects.filter(manager=self.request.user, is_valid=True)
+            sections_ids = assigned_items.values_list('id', flat=True)
+            item_id=Item.objects.filter(Section_id__in=sections_ids, is_valid=True).order_by('-id')
+            return Assignments.objects.filter(item_id__in=item_id, is_valid=True).order_by('-id')
         else:
+        
             # If the user is not a manager, retrieve assignments for the specific engineer
             return Assignments.objects.filter(is_valid=True, engineer=user).order_by('-id')
 
@@ -266,6 +338,8 @@ class ReporttListView(LoginRequiredMixin, ListView):
     login_url = 'workshop:custom_login'
 
     def get_queryset(self):
+        user = self.request.user
+
         time_range = self.request.GET.get('time_range', 'daily')
         current_date = timezone.now().date()
 
@@ -281,26 +355,55 @@ class ReporttListView(LoginRequiredMixin, ListView):
             # Handle other cases or set a default behavior
             start_date = current_date
 
-        # Adjust the queryset based on start_date
         if start_date is not None:
             queryset = Assignments.objects.filter(
                 is_valid=True,
                 item__received_date__gte=start_date,
                 item__received_date__lte=current_date
-            ).order_by('-item__received_date')
+            ).order_by('-id')
         else:
             queryset = Assignments.objects.filter(
                 is_valid=True
-            ).order_by('-item__received_date')
+            ).order_by('-id')
+
+        # Filter by report type
+        report_type = self.request.GET.get('report_type', 'all')
+
+        if report_type == 'damage':
+            queryset = queryset.filter(
+                is_valid=True,
+                item__is_maintainable=False
+            )
+        elif report_type == 'completed':
+            queryset = queryset.filter(
+                is_valid=True,
+                item__status='completed'
+            )
+        elif report_type == 'remaining':
+            queryset = queryset.filter(
+                is_valid=True,
+                item__status__in=['pending', 'on_progress'],
+                item__is_maintainable=True
+            )
+
+        # Customize queryset based on user's role
+        if user.user_type == 'Registeror':
+            # Display all reports for 'Registeror' users
+            pass
+        elif user.user_type == 'Manager':
+            # Display reports related to the manager's section
+            queryset = queryset.filter(item__Section__manager=user)
+        elif user.user_type == 'Engineer':
+            # Display reports where the engineer is assigned
+            queryset = queryset.filter(engineer=user)
 
         return queryset
-
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['time_range'] = self.request.GET.get('time_range', 'daily')
+        context['report_type'] = self.request.GET.get('report_type', 'all')
         return context
-
     
 @login_required(login_url='/login')
 def delete_user(request,pk):
@@ -491,27 +594,32 @@ def edit_profile_picture(request):
 
 
 
-"""
-Completed Task
-1.Add User and display List of then as table
-2.Add Item  and display List of then as table
-3.Add Section and display List of then as table
-4.Add Component and display List of then as table
-5.Assign Item to Engineer and display List of then as table
 
-If accidentally error data added the system allow them to delete
-1.Delete user : Change is_active to false(deactivate)
-2.Delete Item : Change is_valid to false(invalidate)
-3.Delete Section : Change is_valid to false(invalidate)
-4.Delete Assignment : Change is_valid to false(invalidate)
-1.Accept an Assignment 
-2.Complete Assignment 
-3.genarate Report
-
-Remaing Task
+@require_POST
 
 
-4.Usre Authantication
-5.Middleware (give access and role to Users)
-6.Dashboard
-"""
+def autocomplete_view(request):
+    user_input = request.GET.get('user_input', '')
+    
+    # Query your Stock model based on the user input
+    try:
+        stock = Stock.objects.get(name__icontains=user_input)
+        stock_id = stock.id  # Replace with the actual field you want to use
+    except Stock.DoesNotExist:
+        stock_id = None
+
+    return JsonResponse({'stock_id': stock_id})
+
+
+from django.views import View
+
+class StockSearchView(View):
+    def get(self, request, *args, **kwargs):
+        input_text = request.GET.get('q', '')
+        
+        # Query the Stock model to find a match
+        stocks = Stock.objects.filter(number__icontains=input_text)
+        
+        data = [{'id': stock.number, 'text': stock.number} for stock in stocks]
+
+        return JsonResponse({'results': data})

@@ -1,3 +1,4 @@
+import django
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
@@ -15,7 +16,7 @@ class User(AbstractBaseUser,PermissionsMixin):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     user_name = models.EmailField(max_length=50,unique=1)
-    pass_word= models.CharField(max_length=15)
+    pass_word= models.CharField(max_length=50)
     user_type = models.CharField(choices=user_type,default="Engineer")
     is_active=models.BooleanField(auto_created=True,default=True)
     is_staff = models.BooleanField(default=True,null=True,auto_created=True,blank=True)
@@ -24,7 +25,7 @@ class User(AbstractBaseUser,PermissionsMixin):
     # for role and permision
     is_admin = models.BooleanField(default=False,null=True,auto_created=True,blank=True)
     view_user = models.BooleanField(default=False,null=True,auto_created=True,blank=True)
-    view_item = models.BooleanField(default=True,null=True,auto_created=True,blank=True)
+    view_item = models.BooleanField(default=False,null=True,auto_created=True,blank=True)
     view_component = models.BooleanField(default=False,null=True,auto_created=True,blank=True)
     view_assignment = models.BooleanField(default=False,null=True,auto_created=True,blank=True)
     view_section = models.BooleanField(default=False,null=True,auto_created=True,blank=True)
@@ -51,19 +52,29 @@ class User(AbstractBaseUser,PermissionsMixin):
    
     def __str__(self) -> str:
         return f"{self.first_name.upper()} {self.last_name.upper()}"
-    # def get_absolute_url (self):
-    #     return reverse("workshop:index")
+class Stock(models.Model):
+    number = models.CharField(max_length=200)
+    description = models.CharField(max_length=200)
 
+    def __str__(self) -> str:
+        return f" {self.id}. {self.number} ({self.description})"
+
+class Section(models.Model):
+    name = models.CharField(max_length=100)
+    manager = models.ForeignKey(User, on_delete=models.CASCADE,related_name='manage_sections')
+    is_valid=models.BooleanField(default=True)
+    def __str__(self) -> str:
+        return self.name
 class Item(models.Model):
     """
     This is the item model  has five fields name,stock_id,serial_no,
     status(pending,accepted,completed,not maintable),remark
     """
-    ws_id = models.CharField(max_length=15)
-    received_date = models.DateField(auto_created=True, null=True)
-
+    
+    received_date = models.DateField(auto_created=True, default=django.utils.timezone.now)
+    Section= models.ForeignKey(Section, on_delete=models.CASCADE,related_name='sections')
     engineer= models.ForeignKey(User, on_delete=models.CASCADE,null=True,blank=True)
-    stock_id = models.CharField(max_length=15)
+    stock_id = models.ForeignKey(Stock,on_delete=models.CASCADE, related_name='stocks')
     Serial_no =models.CharField(max_length=15)
     delivered_by = models.CharField(max_length=100)
     received_by= models.CharField(max_length=100)
@@ -102,18 +113,13 @@ class Component(models.Model):
     def get_absolute_url (self):
         return reverse("workshop:component")
 
-class Section(models.Model):
-    name = models.CharField(max_length=100)
-    manager = models.ForeignKey(User, on_delete=models.CASCADE)
-    is_valid=models.BooleanField(default=True)
 
-   
-    def __str__(self) -> str:
-        return self.name
+class AssignmentsManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().order_by('-Assigned_date')
 class Assignments(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     engineer= models.ForeignKey(User, on_delete=models.CASCADE)
-    Section= models.ForeignKey(Section, on_delete=models.CASCADE)
     remark= models.TextField(blank=True)
     Assigned_date=models.DateField(auto_now=True)
     completed_date=models.DateField(blank=True,null=True)

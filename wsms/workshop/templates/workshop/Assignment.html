@@ -31,6 +31,7 @@
             <table id="example1" class="table table-bordered table-striped">
                 <thead class="dataTables_info">
                     <tr>
+                        <th>ID</th>
                         <th>Section</th>
                         <th>Item</th>
                         <th>Engineer</th>
@@ -40,7 +41,8 @@
                 <tbody>
                     {% for data in assignments %}
                     <tr>
-                        <td>{{ data.Section }}</td>
+                        <td>{{ data.item.id }}</td>
+                        <td>{{ data.item.Section }}</td>
                         <td>{{ data.item }}</td>
                         <td>{{ data.engineer }}</td>
                         <td>
@@ -48,30 +50,32 @@
                                 <span class="fas fa-eye">Detail</span>
                             </button>
                              
-                            {% if request.user.user_type == 'Engineer' %}
-                            {% if not data.item.is_accepted %}
-                                <a style='border-radius:10%' class="btn btn-success btn-sm" href="javascript:void(0)"
-                                    data-toggle="modal" class="confirm-accept" data-url="{% url 'workshop:accept' data.id %}"
-                                    data-target="#acceptItemModal" data-message="Are you Sure to accept this Assignment  ?">
-                                    <span>Accept</span>
-                                </a>
-                            {% else %}
-                                <a style='border-radius:10%' class="btn btn-success btn-sm btn disabled" href='#'>
-                                    <span class="fa">Accepted</span>
-                                </a>
-                                {% if data.item.status == 'completed' %}
-                                    <a style='border-radius:10%' class="btn btn-primary btn-sm btn disabled" href='#'>
-                                        <span class="fa">Completed</span>
-                                    </a>
+                        {% if not request.user.user_type == "Registeror"%}
+                                {% if not data.item.is_accepted %}
+                                        <a style='border-radius:10%' class="btn btn-success btn-sm" href="javascript:void(0)"
+                                            data-toggle="modal" class="confirm-accept" data-url="{% url 'workshop:accept' data.id %}"
+                                            data-target="#acceptItemModal" data-message="Are you Sure to accept this Assignment  ?">
+                                            <span>Accept</span>
+                                        </a>
                                 {% else %}
-                                    <a href="#" class="btn btn-primary btn-sm" data-toggle="modal"
-                                        data-target="#completeModal{{ data.id }}">Complete</a>
-                                    <a style='border-radius:10%' class="btn btn-warning btn-sm "
-                                        href="{% url 'workshop:create-component' data.id %}">
-                                        <span class="fa fa-plus"> component</span>
-                                    </a>
-                                {% endif %}
-                            {% endif %}
+                                        <a style='border-radius:10%' class="btn btn-success btn-sm btn disabled" href='#'>
+                                            <span class="fa">Accepted</span>
+                                        </a>
+                                    
+
+                                    {% if data.item.status == 'completed' %}
+                                        <a style='border-radius:10%' class="btn btn-primary btn-sm btn disabled" href='#'>
+                                            <span class="fa">Completed</span>
+                                        </a>
+                                    {% else %}
+                                        <a href="#" class="btn btn-primary btn-sm" data-toggle="modal"
+                                            data-target="#completeModal{{ data.id }}">Complete</a>
+                                        <a style='border-radius:10%' class="btn btn-warning btn-sm "
+                                            href="{% url 'workshop:create-component' data.id %}">
+                                            <span class="fa fa-plus"> component</span>
+                                        </a>
+                                    {% endif %}
+                                    {% endif %}
                         {% endif %}
                         
                                 

@@ -3,15 +3,26 @@ from django.urls import path,include
 from django.contrib.auth import views as auth_views
 from .import views
 app_name = 'workshop'
+from .views import autocomplete_view
+
+# urls.py
+from django.urls import path
+from .views import ItemCreateView, StockSearchView
+
+
+
+
 
 urlpatterns = [
     # view
+     path('stock-search/', StockSearchView.as_view(), name='stock_search'),
+     path('autocomplet', autocomplete_view, name='autocomplete_view'),
     path('', views.index,name='index'),
     path('home', views.index,name='index'),
     
     #  path("register-item", views.register_item, name="register-item"),
      path("user",views.UserListView.as_view()  ,name="user"),
-     path("chart",views.assignment_chart_view  ,name="chart"),
+     path("chart",views.user_dashboard  ,name="chart"),
      path("item",views.ItemListView.as_view() , name="item"),
      path("component",views.ComponentListView.as_view() , name="component"),
      path('section', views.SectionListView.as_view(), name='section'),

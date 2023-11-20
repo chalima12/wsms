@@ -1,117 +1,131 @@
 {% extends "./base1.html" %}
 {% load static %}
 {% block title %}
-<title>{% if time_range == "daily" %}Daily Reports{% endif %}</title>
-<title>{% if time_range == "weekly" %}Weekly Reports{% endif %}</title>
-<title>{% if time_range == "monthly" %}Monthly Reports{% endif %}</title>
-<title>{% if time_range == "all" %}All Reports{% endif %}</title>
+    <title>{% if time_range == "daily"  and  report_type == "damage" %} Daily Damage Items Report{% endif %}</title>
+    <title>{% if time_range == "weekly" %}Weekly Reports{% endif %}</title>
+    <title>{% if time_range == "monthly" %}Monthly Reports{% endif %}</title>
+    <title>{% if time_range == "all" %}All Reports{% endif %}</title>
 {% endblock title %}
 
 {% block content %}
-<!-- Content Wrapper. Contains page content -->
-<div class="content-wrapper">
-  <!-- Content Header (Page header) -->
-  <section class="content-header">
-    <div class="container-fluid">
-      <div class="row mb-2">
-        <div class="col-sm-6">
-          <h1>{% if time_range == "daily" %}Daily Reports{% endif %}</h1>
-          <h1>{% if time_range == "weekly" %}Weekly Reports{% endif %}</h1>
-          <h1>{% if time_range == "monthly" %}Monthly Reports{% endif %}</h1>
-          <h1>{% if time_range == "all" %}All Reports{% endif %}</h1>
-        </div>
-        <div class="col-sm-6">
-          
-          <form method="get" class="float-right">
-            <label for="time_range">Select Time Range: </label>
-            <select name="time_range" id="time_range">
-              <option value="daily" {% if time_range == "daily" %}selected{% endif %}>Daily</option>
-              <option value="weekly" {% if time_range == "weekly" %}selected{% endif %}>Weekly</option>
-              <option value="monthly" {% if time_range == "monthly" %}selected{% endif %}>Monthly</option>
-              <option value="all" {% if time_range == "all" %}selected{% endif %}>All</option> <!-- Add this line -->
-   
-            </select>
-            <button style='border-radius:10%' class='btn btn-primary btn-sm' type="submit">Apply</button>
-          </form>
-        </div>
-      </div>
-    </div>
-    <!-- /.container-fluid -->
-  </section>
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1>{% if time_range == "daily"  and  report_type == "damage" %} Daily Damage Items Report{% endif %}</h1>
+                        <h1>{% if time_range == "weekly" %}Weekly Reports{% endif %}</h1>
+                        <h1>{% if time_range == "monthly" %}Monthly Reports{% endif %}</h1>
+                        <h1>{% if time_range == "all" %}All Reports{% endif %}</h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <form method="get" class="float-right">
+                            <label for="time_range">Select Time Range: </label>
+                            <select name="time_range" id="time_range">
+                                <option value="daily" {% if time_range == "daily" %}selected{% endif %}>Daily</option>
+                                <option value="weekly" {% if time_range == "weekly" %}selected{% endif %}>Weekly</option>
+                                <option value="monthly" {% if time_range == "monthly" %}selected{% endif %}>Monthly
+                                </option>
+                                <option value="all" {% if time_range == "all" %}selected{% endif %}>All</option>
+                            </select>
 
-  <!-- Main content -->
-  <section class="content">
-  
-<div class="container-fluid">
-  <div class="row">
-    <div class="col-12">
-      <div class="card">
-        <div class="card-body">
-          <table id="example1" class="table table-bordered table-striped">
-            <thead class="dataTables_info">
-              <tr>
-                <th>#</th>
-                <th>Workshop Id</th>
-                <th>Received Date</th>
-                <th>Stock Id</th>
-                <th>Serial Number</th>
-                <th>Delivered By</th>
-                <th>Received By</th>
-                <th>Maintained Date</th>
-                <th>Maintained By</th>
-                <th>Components</th>
-                <th>Received Item Issue</th>
-                <th>Delivered Item Issue</th>
-                <th>Is Maintainable</th>
-                <th>Could fixed on the field</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for assignment in assignments %}
-              <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>{{ assignment.item.ws_id }}</td>
-                <td>{{ assignment.item.received_date }}</td>
-                <td>{{ assignment.item.stock_id }}</td>
-                <td>{{ assignment.item.Serial_no }}</td>
-                <td>{{ assignment.item.delivered_by }}</td>
-                <td>{{ assignment.item.received_by }}</td>
-                <td>{{ assignment.completed_date }}</td>
-                <td>{{ assignment.engineer }}</td>
-                <td>
-                  <ul>
-                      {% for component in assignment.item.components.all %}
-                          <li style='list-style:none'>{{ component.Serial_no }}</li><br>
-                      {% endfor %}
-                  </ul>
-              </td>              
-              <td>{{ assignment.item.remark }}</td>
-                <td>{{ assignment.item.comment }}</td>
-                
-                <td></strong> {% if assignment.item.is_maintainable %}Yes{% else %}No{% endif %}</td>
-                <td></strong> {% if assignment.item.is_right_to_here %}No{% else %}Yes{% endif %}</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-        <!-- /.card-body -->
-      </div>
-      <!-- /.card -->
+                            <!-- Add this block inside the form element -->
+                            <label for="report_type">Select Report Type: </label>
+                            <select name="report_type" id="report_type">
+                                <option value="all" {% if report_type == "all" %}selected{% endif %}>All</option>
+                                <option value="damage" {% if report_type == "damage" %}selected{% endif %}>Damage</option>
+                                <option value="completed" {% if report_type == "completed" %}selected{% endif %}>Completed
+                                </option>
+                                <option value="remaining" {% if report_type == "remaining" %}selected{% endif %}>Remaining
+                                </option>
+                            </select>
+
+                            <button style='border-radius:10%' class='btn btn-primary btn-sm' type="submit">Apply
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!-- /.container-fluid -->
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <table id="example1" class="table table-bordered table-striped">
+                                    <thead class="dataTables_info">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>WS Id</th>
+                                        <th>Section</th>
+                                        <th>Received Date</th>
+                                        <th>Stock Id</th>
+                                        <th>Description</th>
+                                        <th>Serial Number</th>
+                                        <th>Delivered By</th>
+                                        <th>Received By</th>
+                                        <th>{% if assignments.item.status == "on_progress"%}
+                                            Assigned to
+                                        
+                                        {% else %}
+                                        {% endif %}
+                                         Maintained Date</th>
+                                        <th>Maintained By</th>
+                                        <th>Components</th>
+                                        <th>Received Item Issue</th>
+                                        <th>Delivered Item Issue</th>
+                                        <th>Is Maintainable</th>
+                                        <th>Could fixed on the field</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for assignment in assignments %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ assignment.item.id }}</td>
+                                        <td>{{ assignment.item.Section }}</td>
+                                        <td>{{ assignment.item.received_date }}</td>
+                                        <td>{{ assignment.item.stock_id.number }}</td>
+                                        <td>{{ assignment.item.stock_id.description }}</td>
+                                        <td>{{ assignment.item.Serial_no }}</td>
+                                        <td>{{ assignment.item.delivered_by }}</td>
+                                        <td>{{ assignment.item.received_by }}</td>
+                                        <td>{{ assignment.completed_date }}</td>
+                                        <td>{{ assignment.engineer }}</td>
+                                        <td>
+                                            <ul>
+                                                {% for component in assignment.item.components.all %}
+                                                    <li style='list-style:none'>{{ component.Serial_no }}</li><br>
+                                                {% endfor %}
+                                            </ul>
+                                        </td>
+                                        <td>{{ assignment.item.remark }}</td>
+                                        <td>{{ assignment.item.comment }}</td>
+                                        <td></strong> {% if assignment.item.is_maintainable %}Yes{% else %}No{% endif %}</td>
+                                        <td></strong> {% if assignment.item.is_right_to_here %}No{% else %}Yes{% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- /.card-body -->
+                        </div>
+                        <!-- /.card -->
+                    </div>
+                    <!-- /.col -->
+                </div>
+                <!-- /.row -->
+            </div>
+            <!-- /.container-fluid -->
+        </section>
+        <!-- /.content -->
     </div>
-    <!-- /.col -->
-  </div>
-  <!-- /.row -->
-</div>
-<!-- /.container-fluid -->
-</section>
-<!-- /.content -->
-</div>
-<!-- /.content-wrapper -->
+    <!-- /.content-wrapper -->
 {% endblock content %}
-
-  </section>
-  <!-- /.content -->
-</div>
-<!-- /.content-wrapper -->
-

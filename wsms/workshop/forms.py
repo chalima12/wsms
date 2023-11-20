@@ -14,7 +14,7 @@ class UserForm(ModelForm):
                                                  ,'placeholder':'Enter First Name'}),
              'last_name':forms.TextInput(attrs={'class':"form-control form-control",'placeholder':'Enter Last Name' }),
              'user_name':forms.EmailInput(attrs={'class':"form-control form-control",'placeholder':'Enter user Email'}),
-             'pass_word':forms.PasswordInput(attrs={'class':"form-control form-control",'placeholder':'Enter user password'}),
+             'pass_word':forms.PasswordInput(attrs={'class':"form-control form-control",'placeholder':'Enter user Email'}),
              "user_type": forms.Select(attrs={"class": "form-control",'placeholder':'Enter user Email'}),
         }
 class UserPermissionsForm(forms.ModelForm):
@@ -43,19 +43,19 @@ class UserPermissionsForm(forms.ModelForm):
         'delete_assignment': forms.CheckboxInput(),
         }
 class ItemForm(forms.ModelForm):
-    # specify the fields and widgets for the form
+    Section = forms.ModelChoiceField(queryset=Section.objects.filter(is_valid=True), 
+            label="Section",widget=forms.Select(attrs={"class":"form-control"}))
     class Meta:
         model = Item
-        fields = ["ws_id", "stock_id", "Serial_no", "delivered_by", "received_by", "remark"]
+        fields = [ "Section","stock_id", "Serial_no", "delivered_by", "received_by", "remark"]
         widgets = {
-        "ws_id": forms.TextInput(attrs={"class": "form-control"}),
-        "stock_id": forms.TextInput(attrs={"class": "form-control"}),
-        "Serial_no": forms.TextInput(attrs={"class": "form-control"}),
-        "delivered_by": forms.TextInput(attrs={"class": "form-control"}),
-        "received_by": forms.TextInput(attrs={"class": "form-control"}),
-        "remark": forms.Textarea(attrs={"class": "form-control"}),
+             "Section": forms.Select(attrs={"class": "form-control"}),
+            "stock_id": forms.Select(attrs={"class": "form-control select2"}),
+            "Serial_no": forms.TextInput(attrs={"class": "form-control"}),
+            "delivered_by": forms.TextInput(attrs={"class": "form-control"}),
+            "received_by": forms.TextInput(attrs={"class": "form-control"}),
+            "remark": forms.Textarea(attrs={"class": "form-control"}),
         }
-        
             
 
 from django import forms
@@ -93,19 +93,17 @@ class SectionForm(forms.ModelForm):
 
 
 class AssignmentForm(forms.ModelForm):
-    
     engineer = forms.ModelChoiceField(queryset=User.objects.filter(user_type='Engineer'
                 ,is_active=True), label="Engineer",
                 widget=forms.Select(attrs={"class":"form-control"})) # assume user_type 3 is engineer
-    Section = forms.ModelChoiceField(queryset=Section.objects.filter(is_valid=True), 
-            label="Section",widget=forms.Select(attrs={"class":"form-control"}))
+    
     class Meta:
         model=Assignments
-        fields = ["item", "engineer",'Section',"remark"]
+        fields = ["item", "engineer","remark"]
         widgets = {
         "item": forms.HiddenInput(attrs={"class": "form-control"}),
         "engineer":forms.Select(attrs={"class":"form-control"}),
-        "Section": forms.Select(attrs={"class": "form-control"}),
+       
         "remark": forms.Textarea(attrs={"class": "form-control"}),
         }
 

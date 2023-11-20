@@ -1,268 +1,216 @@
-{% include "workshop/dashboard.html" %} 
+<!-- workshop/templates/workshop/user_dashboard.html -->
+
+{% extends 'workshop/base1.html' %}
 
 {% block content %}
-
-        
-        {% if not user.view_dashboard %}
-        {% block dashbord %}
-        <!-- Content Wrapper. Contains page content -->
-        {% load static %}
-        <div class="content-wrapper">
-            <!-- Content Header (Page header) -->
-            <div class="content-header">
-            <div class="container-fluid">
-                <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1 class="m-0">Dashboard</h1>
-                </div><!-- /.col -->
-                        </div><!-- /.row -->
-            </div><!-- /.container-fluid -->
-            </div>
-            <!-- /.content-header -->
-
-            {% if messages %}
-            <ul class="messages alert-success float-right">
-            {% for message in messages %}
-            <li style='List-style:none' class="{{ message.tags }}">{{ message }}</li>
-            {% endfor %}
-            </ul>
-            {% endif %}
-            <!-- Main content -->
-            <section class="content">
-                <!-- Small boxes (Stat box) -->
-                <div class="row">
-                <div class="col-lg-3 col-6">
-                    <!-- small box -->
-                    <div class="small-box bg-info">
+    <div class="container">
+        <h1>User Dashboard</h1>
+        <div class="row">
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-info">
                     <div class="inner">
-                        <h3>{{item}}</h3>
-
+                        <h3>{{ item_count }}</h3>
                         <p>Items</p>
                     </div>
                     <div class="icon">
                         <i class="ion ion-bag"></i>
                     </div>
-                    
-                    </div>
                 </div>
-                <!-- ./col -->
-                <div class="col-lg-3 col-6">
-                    <!-- small box -->
-                    <div class="small-box bg-success">
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-success">
                     <div class="inner">
-                        <h3>{{section}}<sup style="font-size: 20px"></sup></h3>
-
-                        <p>sections</p>
+                        <h3>{{ section_count }}<sup style="font-size: 20px"></sup></h3>
+                        <p>Sections</p>
                     </div>
                     <div class="icon">
                         <i class="ion ion-stats-bars"></i>
                     </div>
-                    
-                    </div>
                 </div>
-                <!-- ./col -->
-                <div class="col-lg-3 col-6">
-                    <!-- small box -->
-                    <div class="small-box bg-warning">
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-warning">
                     <div class="inner">
-                        <h3>{{user}}</h3>
-
+                        <h3>{{ user_count }}</h3>
                         <p>Users</p>
                     </div>
                     <div class="icon">
                         <i class="ion ion-person-add"></i>
                     </div>
-                    
-                    </div>
                 </div>
-                <!-- ./col -->
-                <div class="col-lg-3 col-6">
-                    <!-- small box -->
-                    <div class="small-box bg-danger">
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-danger">
                     <div class="inner">
-                        <h3>{{component}}</h3>
-
+                        <h3>{{ component_count }}</h3>
                         <p>Components</p>
                     </div>
                     <div class="icon">
                         <i class="ion ion-pie-graph"></i>
                     </div>
-                    
-                    </div>
                 </div>
-                <!-- ./col -->
-                </div>
-                
-          <!-- Content Wrapper. Contains page content -->
-  
-    <!-- Content Header (Page header) -->
-    
-
-    <!-- Main content -->
-    <section class="content">
-      <div class="container-fluid">
-        <div class="row">
-          <div class="col-md-6">
-            <!-- AREA CHART -->
-            <div class="card card-primary">
-              <div class="card-header">
-                <h3 class="card-title">Area Chart</h3>
-
-                <div class="card-tools">
-                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                    <i class="fas fa-minus"></i>
-                  </button>
-                  <button type="button" class="btn btn-tool" data-card-widget="remove">
-                    <i class="fas fa-times"></i>
-                  </button>
-                </div>
-              </div>
-              <div class="card-body">
-                <div class="chart">
-                  <canvas id="areaChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
-                </div>
-              </div>
-              <!-- /.card-body -->
             </div>
-            <!-- /.card -->
-
-            <!-- DONUT CHART -->
-            <div class="card card-danger">
-              <div class="card-header">
-                <h3 class="card-title">Item Status</h3>
-
-                <div class="card-tools">
-                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                    <i class="fas fa-minus"></i>
-                  </button>
-                  <button type="button" class="btn btn-tool" data-card-widget="remove">
-                    <i class="fas fa-times"></i>
-                  </button>
-                </div>
-              </div>
-              <div class="card-body">
-                <canvas id="donutChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
-              </div>
-              <!-- /.card-body -->
-            </div>
-            <!-- /.card -->
-
-            <!-- PIE CHART -->
-            <div class="card card-danger">
-              <div class="card-header">
-                <h3 class="card-title">User Type</h3>
-
-                <div class="card-tools">
-                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                    <i class="fas fa-minus"></i>
-                  </button>
-                  <button type="button" class="btn btn-tool" data-card-widget="remove">
-                    <i class="fas fa-times"></i>
-                  </button>
-                </div>
-              </div>
-              <div class="card-body">
-                <canvas id="pieChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
-              </div>
-              <!-- /.card-body -->
-            </div>
-            <!-- /.card -->
-
-          </div>
-          <!-- /.col (LEFT) -->
-          <div class="col-md-6">
-            <!-- LINE CHART -->
-            <div class="card card-info">
-              <div class="card-header">
-                <h3 class="card-title">Line Chart</h3>
-
-                <div class="card-tools">
-                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                    <i class="fas fa-minus"></i>
-                  </button>
-                  <button type="button" class="btn btn-tool" data-card-widget="remove">
-                    <i class="fas fa-times"></i>
-                  </button>
-                </div>
-              </div>
-              <div class="card-body">
-                <div class="chart">
-                  <canvas id="lineChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
-                </div>
-              </div>
-              <!-- /.card-body -->
-            </div>
-            <!-- /.card -->
-
-            <!-- BAR CHART -->
-            <div class="card card-success">
-              <div class="card-header">
-                <h3 class="card-title">Bar Chart</h3>
-
-                <div class="card-tools">
-                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                    <i class="fas fa-minus"></i>
-                  </button>
-                  <button type="button" class="btn btn-tool" data-card-widget="remove">
-                    <i class="fas fa-times"></i>
-                  </button>
-                </div>
-              </div>
-              <div class="card-body">
-                <div class="chart">
-                  <canvas id="barChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
-                </div>
-              </div>
-              <!-- /.card-body -->
-            </div>
-            <!-- /.card -->
-
-            <!-- STACKED BAR CHART -->
-            <div class="card card-success">
-              <div class="card-header">
-                <h3 class="card-title">Stacked Bar Chart</h3>
-
-                <div class="card-tools">
-                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                    <i class="fas fa-minus"></i>
-                  </button>
-                  <button type="button" class="btn btn-tool" data-card-widget="remove">
-                    <i class="fas fa-times"></i>
-                  </button>
-                </div>
-              </div>
-              <div class="card-body">
-                <div class="chart">
-                  <canvas id="stackedBarChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
-                </div>
-              </div>
-              <!-- /.card-body -->
-            </div>
-            <!-- /.card -->
-
-          </div>
-          <!-- /.col (RIGHT) -->
+            <!-- ./col -->
         </div>
-        <!-- /.row -->
-      </div><!-- /.container-fluid -->
-    </section>
-    <!-- /.content -->
- 
-  
-
-  <!-- Control Sidebar -->
-  <aside class="control-sidebar control-sidebar-dark">
-    <!-- Add Content Here -->
-  </aside>
-  <!-- /.control-sidebar -->
+        <div class="row">
+        <div class="col-md-6">
+          <div class="card">
+              <div class="card-header">
+                  <h3 class="card-title">Item Status</h3>
+              </div>
+              <div class="card-body">
+                  <canvas id="itemStatusCanvas" width="200" height="200"></canvas>
+              </div>
+          </div>
+      </div>
+      <div class="col-md-6">
+          <div class="card">
+              <div class="card-header">
+                  <h3 class="card-title">User Type</h3>
+              </div>
+              <div class="card-body">
+                  <canvas id="userTypeCanvas" width="200" height="200"></canvas>
+              </div>
+          </div>
+      </div>
+    </div>
+      <div class="col-md-12">
+          <div class="card">
+              <div class="card-header">
+                  <h3 class="card-title">Items per Section and Status</h3>
+              </div>
+              <div class="card-body">
+                  <canvas id="sectionItemCanvas" width="400" height="200"></canvas>
+              </div>
+          </div>
+      </div>
+  </div>
 </div>
-<!-- ./wrapper -->
 
+<!-- ... (unchanged code) -->
 
-               
-    {% endblock dashbord %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Sample data for the charts
+    var itemStatusData = {
+        labels: ['Pending', 'On Progress', 'Completed'],
+        datasets: [{
+            data: [{% for status_count in item_status_counts %}{{ status_count.count }},{% endfor %}],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.5)',
+                'rgba(54, 162, 235, 0.5)',
+                'rgba(75, 192, 192, 0.5)',
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(75, 192, 192, 1)',
+            ],
+            borderWidth: 1,
+        }],
+    };
 
-        {% endif %}
-          
-            
-{% endblock content %}
+    var userTypeData = {
+        labels: [{% for user_type_count in user_type_counts %}"{{ user_type_count.user_type }}",{% endfor %}],
+        datasets: [{
+            data: [{% for user_type_count in user_type_counts %}{{ user_type_count.count }},{% endfor %}],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.5)',
+                'rgba(54, 162, 235, 0.5)',
+                'rgba(255, 205, 86, 0.5)',
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 205, 86, 1)',
+            ],
+            borderWidth: 1,
+        }],
+    };
+
+    var sectionItemData = {
+        labels: [{% for section_item_count in section_item_counts %}"{{ section_item_count.name }}",{% endfor %}],
+        datasets: [
+            {
+                label: 'Total Items',
+                data: [{% for section_item_count in section_item_counts %}{{ section_item_count.item_count }},{% endfor %}],
+                backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1,
+            },
+            {
+                label: 'Pending Items',
+                data: [{% for section_item_count in section_item_counts %}{{ section_item_count.pending_count }},{% endfor %}],
+                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1,
+            },
+            {
+                label: 'On Progress Items',
+                data: [{% for section_item_count in section_item_counts %}{{ section_item_count.on_progress_count }},{% endfor %}],
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1,
+            },
+            {
+                label: 'Completed Items',
+                data: [{% for section_item_count in section_item_counts %}{{ section_item_count.completed_count }},{% endfor %}],
+                backgroundColor: 'rgba(255, 205, 86, 0.5)',
+                borderColor: 'rgba(255, 205, 86, 1)',
+                borderWidth: 1,
+            },
+        ],
+    };
+
+    // Item Status Chart
+    var itemStatusCtx = document.getElementById('itemStatusCanvas').getContext('2d');
+    var itemStatusChart = new Chart(itemStatusCtx, {
+        type: 'pie',
+        data: itemStatusData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+        },
+    });
+
+    // User Type Chart
+    var userTypeCtx = document.getElementById('userTypeCanvas').getContext('2d');
+    var userTypeChart = new Chart(userTypeCtx, {
+        type: 'doughnut',
+        data: userTypeData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+        },
+    });
+
+    // Section Item Chart
+    var sectionItemCtx = document.getElementById('sectionItemCanvas').getContext('2d');
+    var sectionItemChart = new Chart(sectionItemCtx, {
+        type: 'bar',
+        data: sectionItemData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    stacked: false,
+                },
+                y: {
+                    stacked: false,
+                },
+            },
+        },
+    });
+</script>
+
+<!-- ... (unchanged code) -->
+
+{% endblock %}

@@ -6,16 +6,16 @@
 <div class="container mt-3">
   <form method="post" autocomplete='off' class='card p-3 mt-5 bg-light'>
 
-    <div class="container card p-1 mt-0 text-center border-primary bg-gray" >
-      <h3>  Add Item </h3>
+    <div class="container card p-1 mt-0 text-center border-primary bg-gray">
+      <h3> Add Item </h3>
     </div>
 
     {% csrf_token %}
-    <!-- display the input fields for the item's attributes -->
+    
     <div class="row">
       <div class="col-4">
         <div class="form-floating mb-3 mt-3">
-           {{form.ws_id|as_crispy_field }}
+          {{ form.Section|as_crispy_field }}
         </div>
       </div>
       <div class="col-4">
@@ -30,6 +30,7 @@
         </div>
       </div>
     </div>
+
     <div class="row">
       <div class="col-6">
         <div class="form-floating mb-3 mt-3">
@@ -42,6 +43,7 @@
         </div>
       </div>
     </div>
+    
     <div class="row">
       <div class="col-12">
         <div class="form-floating mb-3 mt-3"> {{form.remark|as_crispy_field}} </div>
@@ -52,8 +54,26 @@
       <button type="submit" class="btn btn-primary btn-md" style='border-radius:10%'>Add The Item</button>
     </div>
 
-  </div>
   </form>
 </div>
+
+<script>
+  $(document).ready(function(){
+    $('.select2').select2({
+      ajax: {
+        url: '{% url "workshop:stock_search" %}',
+        dataType: 'json',
+        delay: 250,
+        processResults: function(data){
+          return {
+            results: data.results
+          };
+        },
+        cache: true
+      },
+      minimumInputLength: 1
+    });
+  });
+</script>
 
 {% endblock content %}

@@ -60,6 +60,11 @@
      
        {% include './component/navbar.html' %}
          
+       
+       {% block content1 %}
+        
+       {% endblock content1 %}
+        
          {% block content %}
 
      <!-- Add this code to your base template or any template where you want to display messages -->
@@ -87,5 +92,7 @@
          {% include "workshop/confirm_modal.html" %}
          {% include "workshop/data.html" %}      
 
+
+         
 </body>
 </html>
