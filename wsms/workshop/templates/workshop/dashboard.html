@@ -1,433 +1,292 @@
-<!DOCTYPE html>
-{% load static %}
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    {% block title %}
-    <title>Workshop Management System</title>
-    {% endblock title %}
-    {% block css %}
-     <!-- Google Font: Source Sans Pro -->
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+<!-- workshop/templates/workshop/user_dashboard.html -->
 
-<!-- Font Awesome -->
-<link rel="stylesheet" href="/static/plugins/fontawesome-free/css/all.min.css">
+{% extends 'workshop/base1.html' %}
 
-<!-- Ionicons -->
-
-
-<!-- Tempusdominus Bootstrap 4 -->
-<link rel="stylesheet" href="/static/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
-
-<!-- iCheck -->
-<link rel="stylesheet" href="/static/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
-<link rel="stylesheet" href="{% static 'adminlte/plugins/chart.js/Chart.min.css' %}">
-
-
-<!-- JQVMap -->
-<link rel="stylesheet" href="/static/plugins/jqvmap/jqvmap.min.css">
-
-<!-- Theme style -->
-<link rel="stylesheet" href="/static/dist/css/adminlte.min.css">
-
-<!-- overlayScrollbars -->
-<link rel="stylesheet" href="/static/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
-
-<!-- Daterange picker -->
-<link rel="stylesheet" href="/static/plugins/daterangepicker/daterangepicker.css">
-
-<!-- summernote -->
-<link rel="stylesheet" href="/static/plugins/summernote/summernote-bs4.min.css">
-
-     <link
- 
-     rel="stylesheet"
-      
-     href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
-      
-     integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
-      
-     crossorigin="anonymous">
-     <link rel="stylesheet" href="{% static 'adminlte/plugins/chart.js/Chart.min.css' %}">
-{% endblock css %}
-</head>
-  
-<body>
-
-
-    {% load static %}
-    <!-- Site wrapper -->
-  <div class="wrapper">
-    <nav class="main-header navbar navbar-expand navbar-navy navbar-light layout-fixed">
-      {% block leftnav %}
-      <ul class="navbar-nav">
-        {% comment %} {% comment %} <li class="nav-item">
-          <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
-        </li> {% endcomment %} 
-        <li class="nav-item d-none d-sm-inline-block">
-          
-            {% block project %}
-            <div class="container m-auto my-2 ">
-              <h1  style='font-size:36'>Workshop Management System </h1>
-            </div> 
-            {% endblock project %}
-        
-        </li>     
-      </ul>
-      {% endblock leftnav %}
-        {% block rightnav %}
-          <ul class="navbar-nav ml-auto">
-          <!-- Navbar Search -->
-                {% if not  user.is_authenticated %}
-              <section class="ftco-section">
-              <div class="container ml-3">
-              <div class="row justify-content-center">
-              <div class="col-md-6 d-flex justify-content-center">
-              <div class="btn-group">
-                <a href="#" class="btn-img img dropdown-toggle rounded-circle" 
-                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
-                {% if user.profile_picture %}
-                  <img class='profile-user-img rounded-circle sm' src="{{ user.profile_picture.url }}" class="img-circle elevation-2">
-                  {% endif %}
-   
-           
-               
-                  <div class='btn text-white'>{{ user.first_name }} {{ user.last_name }}</div>
-               
-                  
-                
-                </a>            <div class="dropdown-menu">
-              <a class="dropdown-item d-flex align-items-center" href="{% url 'workshop:change_password' %}">
-              <div class="icon d-flex align-items-center justify-content-center mr-3">
-              </div>
-              Change Password
-              <section class="ftco-section"></a>
-              <a class="dropdown-item d-flex align-items-center" href="#">
-              <div class="icon d-flex align-items-center justify-content-center mr-3">
-              </div> 
-              Edit profile
-              </a>
-              <a class="dropdown-item d-flex align-items-center" href="{% url 'workshop:logout' %}">
-              <div class="icon d-flex align-items-center justify-content-center mr-3">
-  
-              </div> 
-              Logout
-              </a>
-              </div>
-              </div>
-              </div>
-              </div>
-              </div>
-              </section>
-              
-              {% else %}
-              <a style='border-radius:15% ' href="{% url 'workshop:custom_login' %}"  class="btn-block btn-lg btn-secondary"> Login</a>
-              {% endif %}
-              <li class="nav-item dropdown">
-                <a class="nav-link position-relative" data-toggle="dropdown" href="#">
-                    <div style="font-size: 24px; color: #3498db;"> <!-- Adjust the color of the bell icon here -->
-                        <i class="far fa-bell"></i>
-                        <!-- Check if count_1 is greater than zero before displaying -->
-                     
-                            <span style="position: absolute; top: 0; right: 1; font-size: 20px; color: white;" class="badge badge-cyan navbar-badge" id="message-count_1">{{ count_1 }}</span> <!-- Adjust the color of the badge here -->
-                       
+{% block content %}
+    <div class="container">
+        <h1>User Dashboard</h1>
+        <div class="row">
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-info">
+                    <div class="inner">
+                        <h3>{{ item_count }}</h3>
+                        <p>Items</p>
                     </div>
-                </a>
-                <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                    <span class="dropdown-item dropdown-header" id="message-count_2"></span>
-                    <div class="dropdown-divider"></div>
+                    <div class="icon">
+                        <i class="ion ion-bag"></i>
+                    </div>
                 </div>
-            </li>
-            
-          <li class="nav-item">
-            <a class="nav-link" data-widget="fullscreen" href="#" role="button">
-              <i class="fas fa-expand-arrows-alt"></i>
-            </a>
-          </li>
-          </ul>
-      </nav>
-    </div>
-        {% endblock rightnav %}
-      
-
-       
-        {% load static %}
-        {% block sidebar %}
-        <body class="hold-transition sidebar-mini layout-fixed">
-          <div class="wrapper">
-            {% comment %} <div class="preloader flex-column justify-content-center align-items-center">
-              <img class="animation__shake" src="{% static 'dist/img/logoM.png' %}" alt="AdminLTELogo" height="60" width="60">
-            </div> {% endcomment %}
-          
-              
-        
-            
-        <aside class="main-sidebar sidebar-dark-primary elevation-4 fixed">
-           <!-- Brand Logo -->
-           
-           <a href="{% url 'workshop:index' %}" class="brand-link">
-            <img src="{% static 'dist/img/logoM.png' %}" alt="MOTI Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-            <span class="brand-text font-weight-light">MOTI ENGINEERING</span>
-          </a>
-        
-          <!-- Sidebar -->
-          <div class="sidebar">
-            <!-- Sidebar Menu -->
-            <nav class="mt-2">
-              <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                <!-- Add icons to the links using the .nav-icon class
-                     with font-awesome or any other icon font library -->
-                <li class="nav-item menu-open">
-                  <a href="#" class="nav-link ">
-                    <i class="nav-icon fas fa-home"></i>
-                    <p>
-                      WSMS
-                      <i class="right fas fa-angle-left"></i>
-                    </p>
-                  </a>
-                  <ul class="nav nav-treeview">
-                    
-                    
-                    {% if  user.view_dashboard %}
-                    {% url 'workshop:chart' as chart_url %}
-                    <li class="nav-item">
-                    <a href="{{ chart_url }}" 
-                    class="nav-link {% if request.path == chart_url %}active{% endif %}">
-                    <i class="far fa-circle nav-icon"></i>
-                   <p> Dashboard</P>
-                    </a>
-                    </li>
-                  
-                    {% endif %}
-                      
-                     
-                      
-                      {% if not user.view_user %}
-                      {% url 'workshop:user' as user_url %}
-                      <li class="nav-item">
-                        <a href="{{ user_url }}"
-                         class="nav-link {% if request.path == user_url %}active{% endif %}"> 
-                          <i class="far fa-circle nav-icon"></i>
-                          <p>users</p>
-                        </a>
-                      </li>
-                      {% endif %}
-                        
-                      
-                     
-                      
-                     
-                     {% if not user.view_item %}
-                     {% url 'workshop:item' as item_url %}
-                     <li class="nav-item">
-                       <a href="{{ item_url }}" 
-                       class="nav-link {% if request.path == item_url %}active{% endif %}"> 
-                         <i class="far fa-circle nav-icon"></i>
-                         <p>Items</p>
-                       </a>
-                     </li>
-                     {% endif %}
-                         
-                     
-                     
-                    
-                     
-                      
-                    
-                    {% if not user.view_component %}
-                       
-                    {% url 'workshop:component' as component_url %}
-                    <li class="nav-item">
-                      <a href="{{ component_url }}" 
-                      class="nav-link {% if request.path == component_url %}active{% endif %}">  
-                        <i class="far fa-circle nav-icon"></i>
-                        <p>Components</p>
-                      </a>
-                    </li>
-                    {% endif %}
-                      
-                   
-                    
-                      
-                    
-                    
-                    {% if not user.view_section %}
-                    {% url 'workshop:section' as section_url %}
-                    <li class="nav-item">
-                      <a href="{{ section_url }}" 
-                      class="nav-link {% if request.path == section_url %}active{% endif %}">  
-                        <i class="far fa-circle nav-icon"></i>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-success">
+                    <div class="inner">
+                        <h3>{{ section_count }}<sup style="font-size: 20px"></sup></h3>
                         <p>Sections</p>
-                      </a>
-                    </li>
-                  
-                    {% endif %}
-                      
-                   
-                      
-                      
-                      
-                      {% if  user.view_assignment %}
-                      {% url 'workshop:assignment' as assignment_url %}
-                      <li class="nav-item">
-                        <a href="{{ assignment_url }}"
-                        class="nav-link {% if request.path == assignment_url %}active{% endif %}"> 
-                          <i class="far fa-circle nav-icon"></i>
-                          <p>Assignments</p>
-                        </a>
-                      </li>
-                      {% endif %}
-                        
-                        
-                     
-                      
-                        
-                  </ul>
-                  
-                  
-                  <li class="nav-item menu-open">
-                    <a href="#" class="nav-link ">
-                      <i class="nav-icon fas fa-repeat"></i>
-                      <p>
-                        Reports
-                        
-                        <i class="right fas fa-angle-left"></i>
-                      </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                      
-                      {% if not user.view_report %}
-                      {% url 'workshop:report' as report_url %}
-                      <li class="nav-item">
-                        <a href="{{ report_url }}"
-                        class="nav-link {% if request.path == report_url %}active{% endif %}"> 
-                          <i class="far fa-circle nav-icon"></i>
-                          <p>Report</p>
-                        </a> 
-                </li>
-                      {% endif %}
-                        
-                      
-                  
-                    
-                      
-                    </ul>
-                </li> 
-               
-        </aside>
-        
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-stats-bars"></i>
+                    </div>
+                </div>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-warning">
+                    <div class="inner">
+                        <h3>{{ user_count }}</h3>
+                        <p>Users</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-person-add"></i>
+                    </div>
+                </div>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-danger">
+                    <div class="inner">
+                        <h3>{{ component_count }}</h3>
+                        <p>Components</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-pie-graph"></i>
+                    </div>
+                </div>
+            </div>
+            <!-- ./col -->
         </div>
-        </body>
-        
-        {% endblock sidebar %}
-          
-        
 
-         {% block js %}
-         = <!-- jQuery -->
-         <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
-         <!-- jQuery UI 1.11.4 -->
-         <script src="{% static 'plugins/jquery-ui/jquery-ui.min.js' %}"></script>
-         <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
-         <script>
-           $.widget.bridge('uibutton', $.ui.button)
-         </script>
-         <!-- Bootstrap 4 -->
-         <script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
-         <!-- ChartJS -->
-         <script src="{% static 'plugins/chart.js/Chart.min.js' %}"></script>
-         <!-- Sparkline -->
-         <script src="{% static 'plugins/sparklines/sparkline.js' %}"></script>
-         <!-- JQVMap -->
-         <script src="{% static 'plugins/jqvmap/jquery.vmap.min.js' %}"></script>
-         <script src="{% static 'plugins/jqvmap/maps/jquery.vmap.usa.js' %}"></script>
-         <!-- jQuery Knob Chart -->
-         <script src="{% static 'plugins/jquery-knob/jquery.knob.min.js' %}"></script>
-         <!-- daterangepicker -->
-         <script src="{% static 'plugins/moment/moment.min.js' %}"></script>
-         <script src="{% static 'plugins/daterangepicker/daterangepicker.js' %}"></script>
-         <!-- Tempusdominus Bootstrap 4 -->
-         <script src="{% static 'plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js' %}"></script>
-         <!-- Summernote -->
-         <script src="{% static 'plugins/summernote/summernote-bs4.min.js' %}"></script>
-         <!-- overlayScrollbars -->
-         <script src="{% static 'plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js' %}"></script>
-         <!-- AdminLTE App -->
-         <script src="{% static 'dist/js/adminlte.js' %}"></script>
-         <script src="{% static 'adminlte/plugins/chart.js/Chart.min.js' %}"></script>
-         <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
-         <script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}"></script>
-         <script src="{% static 'plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
-         <script src="{% static 'plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
-         <script src="{% static 'plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
-         <script src="{% static 'plugins/datatables-buttons/js/dataTables.buttons.min.js' %}"></script>
-         <script src="{% static 'plugins/datatables-buttons/js/buttons.bootstrap4.min.js' %}"></script>
-         <script src="{% static 'plugins/jszip/jszip.min.js' %}"></script>
-         <script src="{% static 'plugins/pdfmake/pdfmake.min.js' %}"></script>
-         <script src="{% static 'plugins/pdfmake/vfs_fonts.js' %}"></script>
-         <script src="{% static 'plugins/datatables-buttons/js/buttons.html5.min.js' %}"></script>
-         <script src="{% static 'plugins/datatables-buttons/js/buttons.print.min.js' %}"></script>
-         <script src="{% static 'plugins/datatables-buttons/js/buttons.colVis.min.js' %}"></script>
-         <script src="{% static 'dist/js/adminlte.min.js' %}"></script>
-         <!-- Page specific script -->
-          <!-- DataTables  & Plugins -->
-<script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}"></script>
-<script src="{% static 'plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
-<script src="{% static 'plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
-<script src="{% static 'plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
-<script src="{% static 'plugins/datatables-buttons/js/dataTables.buttons.min.js' %}"></script>
-<script src="{% static 'plugins/datatables-buttons/js/buttons.bootstrap4.min.js' %}"></script>
-<script src="{% static 'plugins/jszip/jszip.min.js' %}"></script>
-<script src="{% static 'plugins/pdfmake/pdfmake.min.js' %}"></script>
-<script src="{% static 'plugins/datatables-buttons/js/buttons.html5.min.js' %}"></script>
-<script src="{% static 'plugins/datatables-buttons/js/buttons.print.min.js' %}"></script>
-<script src="{% static 'plugins/datatables-buttons/js/buttons.colVis.min.js' %}"></script>
+        <!-- Item Status Chart -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            Item Status
+                            <button class="btn btn-link float-right" onclick="toggleChart('itemStatusChart', 'itemStatusIcon')">
+                                <i id="itemStatusIcon" class="fa fa-minus"></i>
+                            </button>
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="itemStatusCanvas" width="200" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
 
+        <!-- User Type Chart -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            User Type
+                            <button class="btn btn-link float-right" onclick="toggleChart('userTypeChart', 'userTypeIcon')">
+                                <i id="userTypeIcon" class="fa fa-minus"></i>
+                            </button>
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="userTypeCanvas" width="200" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Item Chart -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            Items per Section and Status
+                            <button class="btn btn-link float-right" onclick="toggleChart('sectionItemChart', 'sectionItemIcon')">
+                                <i id="sectionItemIcon" class="fa fa-minus"></i>
+                            </button>
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="sectionItemCanvas" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+   
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-  $(function () {
-    $("#example1").DataTable({
-      "responsive": true, "lengthChange": false, "autoWidth": false,
-      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-    }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-    $('#example2').DataTable({
-      "paging": true,
-      "lengthChange": false,
-      "searching": false,
-      "ordering": true,
-      "info": true,
-      "autoWidth": false,
-      "responsive": true,
-    });
-  });
-</script>
-        
-        
+    // Sample data for the charts
+    var itemStatusData = {
+        labels: ['On Progress','Completed' ,'Pending'],
+        datasets: [{
+            data: [{% for status_count in item_status_counts %}{{ status_count.count }},{% endfor %}],
+            backgroundColor: [
+                ' rgb(255, 255, 1) ',
+                'rgba(0, 255, 0, 1)',
+                'rgba(255, 0, 0, 1)',
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(75, 192, 192, 1)',
+            ],
+            borderWidth: 1,
+        }],
+    };
 
-        <script>
-            $(document).ready(function() {
-              function getMessageCount_1() {
-                $.ajax({
-                    url: '/message-count_1/',
-                    success: function(data) {
-                        $('#message-count_1').html(data.message_count_1);
-                        $('#message-count_2').html(data.notify);
-            
-                    }
-                });
-              }
-              
-              
-            getMessageCount_1();
-            setInterval(getMessageCount_1, 30000);
+    var userTypeData = {
+        labels: [{% for user_type_count in user_type_counts %}"{{ user_type_count.user_type }}",{% endfor %}],
+        datasets: [{
+            data: [{% for user_type_count in user_type_counts %}{{ user_type_count.count }},{% endfor %}],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.5)',
+                'rgba(54, 162, 235, 0.5)',
+                'rgba(255, 205, 86, 0.5)',
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 205, 86, 1)',
+            ],
+            borderWidth: 1,
+        }],
+    };
+
+    var sectionItemData = {
+        labels: [{% for section_item_count in section_item_counts %}"{{ section_item_count.name }}",{% endfor %}],
+        datasets: [
+            {
+                label: 'Total Items',
+                data: [{% for section_item_count in section_item_counts %}{{ section_item_count.item_count }},{% endfor %}],
+                backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1,
+            },
+            {
+                label: 'Pending Items',
+                data: [{% for section_item_count in section_item_counts %}{{ section_item_count.pending_count }},{% endfor %}],
+                backgroundColor: 'rgba(255, 0, 0, 1)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1,
+            },
+            {
+                label: 'On Progress Items',
+                data: [{% for section_item_count in section_item_counts %}{{ section_item_count.on_progress_count }},{% endfor %}],
+                backgroundColor: ' rgb(255, 255, 1) ',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1,
+            },
+            {
+                label: 'Completed Items',
+                data: [{% for section_item_count in section_item_counts %}{{ section_item_count.completed_count }},{% endfor %}],
+                backgroundColor: 'rgba(0, 255, 0, 1)',
+                borderColor: 'rgba(255, 205, 86, 1)',
+                borderWidth: 1,
+            },
+        ],
+    };
+
+    var itemStatusCtx = document.getElementById('itemStatusCanvas').getContext('2d');
+    var itemStatusChart = new Chart(itemStatusCtx, {
+        type: 'pie',
+        data: itemStatusData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            onClick: function (event, elements) {
+                handleDismissal('Item Status', elements);
+            },
+        },
+    });
+
+    // User Type Chart
+    var userTypeCtx = document.getElementById('userTypeCanvas').getContext('2d');
+    var userTypeChart = new Chart(userTypeCtx, {
+        type: 'doughnut',
+        data: userTypeData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            onClick: function (event, elements) {
+                handleDismissal('User Type', elements);
+            },
+        },
+    });
+
+    // Section Item Chart
+    var sectionItemCtx = document.getElementById('sectionItemCanvas').getContext('2d');
+    var sectionItemChart = new Chart(sectionItemCtx, {
+        type: 'bar',
+        data: sectionItemData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    stacked: false,
+                },
+                y: {
+                    stacked: false,
+                },
+            },
+            onClick: function (event, elements) {
+                handleDismissal('Section Item', elements);
+            },
+        },
+    });
+
+
+
+        var itemStatusChart = new Chart(document.getElementById('itemStatusCanvas').getContext('2d'), {
+            type: 'pie',
+            data: itemStatusData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+            },
         });
 
+        var userTypeChart = new Chart(document.getElementById('userTypeCanvas').getContext('2d'), {
+            type: 'doughnut',
+            data: userTypeData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+            },
+        });
+
+        var sectionItemChart = new Chart(document.getElementById('sectionItemCanvas').getContext('2d'), {
+            type: 'bar',
+            data: sectionItemData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { stacked: false },
+                    y: { stacked: false },
+                },
+            },
+        });
+
+        function toggleChart(chartName, iconId) {
+            var chart = window[chartName];
+            if (chart) {
+                var chartCanvas = chart.canvas;
+                var icon = document.getElementById(iconId);
+                if (chartCanvas.style.display === 'none') {
+                    chartCanvas.style.display = 'block';
+                    icon.className = 'fa fa-minus';
+                } else {
+                    chartCanvas.style.display = 'none';
+                    icon.className = 'fa fa-plus';
+                }
+            }
+        }
     </script>
-        
-           
-            
-    {% include "workshop/data.html" %} 
-     
-     {% endblock js %}     
-</body>
-</html>
+{% endblock %}

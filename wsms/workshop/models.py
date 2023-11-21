@@ -41,6 +41,7 @@ class User(AbstractBaseUser,PermissionsMixin):
     delete_section = models.BooleanField(default=False,null=True,auto_created=True,blank=True)
     delete_assignment = models.BooleanField(default=False,null=True,auto_created=True,blank=True)
     profile_picture = models.ImageField(upload_to='profile_pics/', null=True, blank=True)
+    
 
     date_joined = models.DateTimeField(default=timezone.now)
     USERNAME_FIELD = "user_name"

@@ -39,7 +39,7 @@ def user_dashboard(request):
     user_count = User.objects.count()
     item_count = Item.objects.count()
     component_count = Component.objects.count()
-    section_count = Section.objects.count()
+    section_count = Section.objects.filter(is_valid=True).count()
 
     # Fetch item status counts
     item_status_counts = Item.objects.values('status').annotate(count=Count('id'))
@@ -48,12 +48,15 @@ def user_dashboard(request):
     user_type_counts = User.objects.values('user_type').annotate(count=Count('id'))
 
     # Fetch items per section counts with status
-    section_item_counts = Section.objects.annotate(
+    section_item_counts = Section.objects.filter(is_valid=True).annotate(
         item_count=Count('sections__id'),
         pending_count=Count('sections__id', filter=Q(sections__status='pending')),
         on_progress_count=Count('sections__id', filter=Q(sections__status='on_progress')),
         completed_count=Count('sections__id', filter=Q(sections__status='completed')),
     ).values('name', 'item_count', 'pending_count', 'on_progress_count', 'completed_count')
+
+    # Fetch items and their components
+    items = Item.objects.prefetch_related('components').all()
 
     context = {
         'user_count': user_count,
@@ -63,8 +66,10 @@ def user_dashboard(request):
         'item_status_counts': item_status_counts,
         'user_type_counts': user_type_counts,
         'section_item_counts': section_item_counts,
+        'items': items,  # Include items in the context
     }
     return render(request, 'workshop/home.html', context)
+
 
 @login_required(login_url='workshop:custom_login')
 def assignment_chart_view(request):
