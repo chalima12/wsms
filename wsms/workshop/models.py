@@ -1,4 +1,5 @@
 import django
+import uuid 
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
@@ -43,6 +44,7 @@ class User(AbstractBaseUser,PermissionsMixin):
     profile_picture = models.ImageField(upload_to='profile_pics/', null=True, blank=True)
     
 
+
     date_joined = models.DateTimeField(default=timezone.now)
     USERNAME_FIELD = "user_name"
     REQUIRED_FIELDS = []
@@ -81,7 +83,7 @@ class Item(models.Model):
     received_by= models.CharField(max_length=100)
     status = models.CharField(choices=(
           ('pending', "pending"),
-          ('on_progress', "On_progress"),
+          ('Damage', "Damage"),
            ('completed', "Completed"),
           ),default='pending' ,
           auto_created=True

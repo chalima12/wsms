@@ -8,6 +8,8 @@ from .views import autocomplete_view
 # urls.py
 from django.urls import path
 from .views import ItemCreateView, StockSearchView
+from .views import send_password_reset_email, password_reset, reset_expired
+
 
 
 
@@ -59,4 +61,7 @@ path('login/', views.custom_login, name='custom_login'),
 # path('mark_as_read/<int:notification_id>/', views.mark_notification_as_read, name='mark_notification_as_read'),
 path('message-count_1/', views.get_message_count_1, name='message_count_1'),
 
+ path('send_reset_email/', send_password_reset_email, name='send_password_reset_email'),
+    path('password_reset/<uuid:token>/', password_reset, name='password_reset'),
+    path('reset_expired/', reset_expired, name='reset_expired'),
 ]

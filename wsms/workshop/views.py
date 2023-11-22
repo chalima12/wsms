@@ -30,16 +30,16 @@ from workshop import signals  # If signals is a custom module
 
 # workshop/views.py
 
-from django.shortcuts import render
-from django.db.models import Count
-from .models import User, Item
+# views.py
+
+from django.db.models import Count, Q
 
 def user_dashboard(request):
     # Fetch data for the user dashboard
-    user_count = User.objects.count()
+    user_count = Item.objects.filter(is_valid=True, status="pending").count()
     item_count = Item.objects.count()
-    component_count = Component.objects.count()
-    section_count = Section.objects.filter(is_valid=True).count()
+    component_count = Item.objects.filter(is_valid=True, status='Damage').count()
+    section_count = Item.objects.filter(is_valid=True, status='completed').count()
 
     # Fetch item status counts
     item_status_counts = Item.objects.values('status').annotate(count=Count('id'))
@@ -51,12 +51,19 @@ def user_dashboard(request):
     section_item_counts = Section.objects.filter(is_valid=True).annotate(
         item_count=Count('sections__id'),
         pending_count=Count('sections__id', filter=Q(sections__status='pending')),
-        on_progress_count=Count('sections__id', filter=Q(sections__status='on_progress')),
+        Damage_count=Count('sections__id', filter=Q(sections__status='Damage')),
         completed_count=Count('sections__id', filter=Q(sections__status='completed')),
-    ).values('name', 'item_count', 'pending_count', 'on_progress_count', 'completed_count')
+    ).values('name', 'item_count', 'pending_count', 'Damage_count', 'completed_count').order_by('id')
 
     # Fetch items and their components
     items = Item.objects.prefetch_related('components').all()
+    item_status_labels = Item.objects.values('status').distinct()
+
+    # Fetch user type labels dynamically
+    user_type_labels = User.objects.values('user_type').distinct()
+
+    # Fetch section item labels dynamically
+    section_item_labels = Section.objects.filter(is_valid=True).values('name').distinct()
 
     context = {
         'user_count': user_count,
@@ -66,8 +73,12 @@ def user_dashboard(request):
         'item_status_counts': item_status_counts,
         'user_type_counts': user_type_counts,
         'section_item_counts': section_item_counts,
-        'items': items,  # Include items in the context
+        'items': items,
+        'item_status_labels': [label['status'] for label in item_status_labels],
+        'user_type_labels': [label['user_type'] for label in user_type_labels],
+        'section_item_labels': [label['name'] for label in section_item_labels],
     }
+
     return render(request, 'workshop/home.html', context)
 
 
@@ -225,14 +236,14 @@ class AssignmentCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         initial['item'] = item
         return initial
 
-    def form_valid(self, form):
-        assignment = form.save()
-        item = assignment.item
-        item.status = 'on_progress'
-        item.engineer = assignment.engineer
-        item.save()
+    # def form_valid(self, form):
+    #     assignment = form.save()
+    #     item = assignment.item
+    #     item.status = 'pending'
+    #     item.engineer = assignment.engineer
+    #     item.save()
 
-        return super().form_valid(form)
+    #     return super().form_valid(form)
     
 
 
@@ -506,9 +517,11 @@ def complete_assignment(request, pk):
         assign.completed_date = timezone.now()
         assign.save()
         if 'is_maintainable' in request.POST:
+            
             item.is_maintainable = True
         else:
             item.is_maintainable = False
+            item.status='Damage'
         if 'is_right_to_here' in request.POST:
             item.is_right_to_here = True
         else:
@@ -628,3 +641,50 @@ class StockSearchView(View):
         data = [{'id': stock.number, 'text': stock.number} for stock in stocks]
 
         return JsonResponse({'results': data})
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth import get_user_model
+from django.core.mail import send_mail
+from django.urls import reverse
+from django.utils import timezone
+from django.http import HttpResponseRedirect
+
+User = get_user_model()
+
+def send_password_reset_email(user):
+    # Generate a unique reset token and set the expiration time
+    user.reset_token = uuid.uuid4()
+    user.reset_token_expires_at = timezone.now() + timezone.timedelta(hours=1)
+    user.save()
+
+    # Create a reset link using the reverse function to get the URL
+    reset_url = reverse('password_reset', kwargs={'token': str(user.reset_token)})
+
+    # Send the reset email
+    send_mail(
+        'Password Reset',
+        f'Click the following link to reset your password: {reset_url}',
+        'from@example.com',
+        [user.user_name],
+        fail_silently=False,
+    )
+
+def password_reset(request, token):
+    user = get_object_or_404(User, reset_token=token)
+
+    # Check if the reset token has expired
+    if user.reset_token_expires_at < timezone.now():
+        return render(request, 'workshop/reset_expired.html')
+
+    if request.method == 'POST':
+        # Update the user's password and clear the reset token
+        new_password = request.POST['new_password']
+        user.set_password(new_password)
+        user.reset_token = None
+        user.reset_token_expires_at = None
+        user.save()
+
+        return HttpResponseRedirect(reverse('login'))
+
+    return render(request, 'workshop/password_reset.html', {'user': user})
+def reset_expired(request):
+    return render(request, 'workshop/reset_expired.html')

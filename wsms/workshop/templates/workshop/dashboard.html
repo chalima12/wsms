@@ -3,145 +3,177 @@
 {% extends 'workshop/base1.html' %}
 
 {% block content %}
-    <div class="container">
-        <h1>User Dashboard</h1>
-        <div class="row">
-            <div class="col-lg-3 col-6">
-                <!-- small box -->
-                <div class="small-box bg-info">
-                    <div class="inner">
-                        <h3>{{ item_count }}</h3>
-                        <p>Items</p>
-                    </div>
-                    <div class="icon">
-                        <i class="ion ion-bag"></i>
-                    </div>
-                </div>
-            </div>
-            <!-- ./col -->
-            <div class="col-lg-3 col-6">
-                <!-- small box -->
-                <div class="small-box bg-success">
-                    <div class="inner">
-                        <h3>{{ section_count }}<sup style="font-size: 20px"></sup></h3>
-                        <p>Sections</p>
-                    </div>
-                    <div class="icon">
-                        <i class="ion ion-stats-bars"></i>
-                    </div>
-                </div>
-            </div>
-            <!-- ./col -->
-            <div class="col-lg-3 col-6">
-                <!-- small box -->
-                <div class="small-box bg-warning">
-                    <div class="inner">
-                        <h3>{{ user_count }}</h3>
-                        <p>Users</p>
-                    </div>
-                    <div class="icon">
-                        <i class="ion ion-person-add"></i>
-                    </div>
-                </div>
-            </div>
-            <!-- ./col -->
-            <div class="col-lg-3 col-6">
-                <!-- small box -->
-                <div class="small-box bg-danger">
-                    <div class="inner">
-                        <h3>{{ component_count }}</h3>
-                        <p>Components</p>
-                    </div>
-                    <div class="icon">
-                        <i class="ion ion-pie-graph"></i>
-                    </div>
-                </div>
-            </div>
-            <!-- ./col -->
-        </div>
 
-        <!-- Item Status Chart -->
-        <div class="row">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">
-                            Item Status
-                            <button class="btn btn-link float-right" onclick="toggleChart('itemStatusChart', 'itemStatusIcon')">
-                                <i id="itemStatusIcon" class="fa fa-minus"></i>
-                            </button>
-                        </h3>
-                    </div>
-                    <div class="card-body">
-                        <canvas id="itemStatusCanvas" width="200" height="200"></canvas>
-                    </div>
+<div class="container">
+    <h1>Dashboard</h1>
+    <div class="row">
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-info">
+                <div class="inner">
+                    <h3>{{ item_count }}</h3>
+                    <p>Items</p>
+                </div>
+                <div class="icon">
+                    <i class="ion ion-bag"></i>
                 </div>
             </div>
         </div>
-
-        <!-- User Type Chart -->
-        <div class="row">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">
-                            User Type
-                            <button class="btn btn-link float-right" onclick="toggleChart('userTypeChart', 'userTypeIcon')">
-                                <i id="userTypeIcon" class="fa fa-minus"></i>
-                            </button>
-                        </h3>
-                    </div>
-                    <div class="card-body">
-                        <canvas id="userTypeCanvas" width="200" height="200"></canvas>
-                    </div>
+        <!-- ./col -->
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-success">
+                <div class="inner">
+                    <h3>{{ section_count }}<sup style="font-size: 20px"></sup></h3>
+                    <p>Total Completed Items</p>
+                </div>
+                <div class="icon">
+                    <i class="ion ion-stats-bars"></i>
                 </div>
             </div>
         </div>
+        <!-- ./col -->
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-warning">
+                <div class="inner">
+                    <h3>{{ user_count }}</h3>
+                    <p>Total Remaining Items</p>
+                </div>
+                <div class="icon">
+                    <i class="ion ion-person-add"></i>
+                </div>
+            </div>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-danger">
+                <div class="inner">
+                    <h3>{{ component_count }}</h3>
+                    <p>Total Damaged Items</p>
+                </div>
+                <div class="icon">
+                    <i class="ion ion-pie-graph"></i>
+                </div>
+            </div>
+        </div>
+        <!-- ./col -->
+    </div>
 
+    <!-- Item Status Chart -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header" style="background-color: blue;">
+                    <h3 class="card-title" style="display: inline-block; color:white">
+                        Item Status
+                    </h3>
+                    <button class="btn btn-link float-right" onclick="toggleChart('itemStatusChart', 'itemStatusIcon')">
+                        <i id="itemStatusIcon" class="fa fa-minus"></i>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <canvas id="itemStatusCanvas" width="200" height="200"></canvas>
+                </div>
+            </div>
+        </div>
         <!-- Section Item Chart -->
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">
-                            Items per Section and Status
-                            <button class="btn btn-link float-right" onclick="toggleChart('sectionItemChart', 'sectionItemIcon')">
-                                <i id="sectionItemIcon" class="fa fa-minus"></i>
-                            </button>
-                        </h3>
-                    </div>
-                    <div class="card-body">
-                        <canvas id="sectionItemCanvas" width="400" height="200"></canvas>
-                    </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header" style="background-color: red;">
+                    <h3 class="card-title" style="display: inline-block; color:white;">
+                        Items per Section and Status
+                    </h3>
+                    <button class="btn btn-link float-right" onclick="toggleChart('sectionItemChart', 'sectionItemIcon')">
+                        <i id="sectionItemIcon" class="fa fa-minus"></i>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <canvas id="sectionItemCanvas" width="400" height="200"></canvas>
                 </div>
             </div>
         </div>
     </div>
 
-   
+    <!-- Components per Item Chart -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header" style="background-color: purple;">
+                    <h3 class="card-title" style="display: inline-block; color:white;">
+                        Components per Item
+                    </h3>
+                    <button class="btn btn-link float-right"
+                        onclick="toggleChart('componentsPerItemChart', 'componentsPerItemIcon')">
+                        <i id="componentsPerItemIcon" class="fa fa-minus"></i>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <canvas id="componentsPerItemCanvas" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+        <!-- ... (rest of your charts) -->
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+    // Sample data for the components per item chart
+    var componentsPerItemData = {
+        labels: [{% for item in items %}"{{ item.Serial_no }}",{% endfor %}],
+        datasets: [{
+            label: 'Number of Components',
+            data: [{% for item in items %}{{ item.components.count }},{% endfor %}],
+            backgroundColor: 'rgba(153, 102, 255, 0.5)',
+            borderColor: 'rgba(153, 102, 255, 1)',
+            borderWidth: 1,
+        }],
+    };
+
+    var componentsPerItemCtx = document.getElementById('componentsPerItemCanvas').getContext('2d');
+    var componentsPerItemChart = new Chart(componentsPerItemCtx, {
+        type: 'bar',
+        data: componentsPerItemData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    stacked: false,
+                },
+                y: {
+                    stacked: false,
+                },
+            },
+            onClick: function (event, elements) {
+                handleDismissal('Components per Item', elements);
+            },
+        },
+    });
+
     // Sample data for the charts
     var itemStatusData = {
-        labels: ['On Progress','Completed' ,'Pending'],
+        labels: {{ item_status_labels|safe }},
         datasets: [{
             data: [{% for status_count in item_status_counts %}{{ status_count.count }},{% endfor %}],
             backgroundColor: [
-                ' rgb(255, 255, 1) ',
-                'rgba(0, 255, 0, 1)',
+                'rgb(0, 255, 1)',
+                'rgba(255, 255, 0, 1)',
                 'rgba(255, 0, 0, 1)',
             ],
             borderColor: [
                 'rgba(255, 99, 132, 1)',
                 'rgba(54, 162, 235, 1)',
-                'rgba(75, 192, 192, 1)',
+                'green',
             ],
             borderWidth: 1,
         }],
     };
 
     var userTypeData = {
-        labels: [{% for user_type_count in user_type_counts %}"{{ user_type_count.user_type }}",{% endfor %}],
+        labels: {{ user_type_labels|safe }},
         datasets: [{
             data: [{% for user_type_count in user_type_counts %}{{ user_type_count.count }},{% endfor %}],
             backgroundColor: [
@@ -159,11 +191,11 @@
     };
 
     var sectionItemData = {
-        labels: [{% for section_item_count in section_item_counts %}"{{ section_item_count.name }}",{% endfor %}],
+        labels: {{ section_item_labels|safe }},
         datasets: [
             {
                 label: 'Total Items',
-                data: [{% for section_item_count in section_item_counts %}{{ section_item_count.item_count }},{% endfor %}],
+                data: [{% for section_item_count in section_item_counts %}{{ section_item_count.total_items }},{% endfor %}],
                 backgroundColor: 'rgba(75, 192, 192, 0.5)',
                 borderColor: 'rgba(75, 192, 192, 1)',
                 borderWidth: 1,
@@ -171,14 +203,14 @@
             {
                 label: 'Pending Items',
                 data: [{% for section_item_count in section_item_counts %}{{ section_item_count.pending_count }},{% endfor %}],
-                backgroundColor: 'rgba(255, 0, 0, 1)',
+                backgroundColor: 'rgba(255, 255, 0, 1)',
                 borderColor: 'rgba(255, 99, 132, 1)',
                 borderWidth: 1,
             },
             {
-                label: 'On Progress Items',
-                data: [{% for section_item_count in section_item_counts %}{{ section_item_count.on_progress_count }},{% endfor %}],
-                backgroundColor: ' rgb(255, 255, 1) ',
+                label: 'Damaged Items',
+                data: [{% for section_item_count in section_item_counts %}{{ section_item_count.Damage_count }},{% endfor %}],
+                backgroundColor: 'rgb(255, 0, 1)',
                 borderColor: 'rgba(54, 162, 235, 1)',
                 borderWidth: 1,
             },
@@ -241,52 +273,7 @@
         },
     });
 
+    // ... (rest of your JavaScript code)
 
-
-        var itemStatusChart = new Chart(document.getElementById('itemStatusCanvas').getContext('2d'), {
-            type: 'pie',
-            data: itemStatusData,
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-            },
-        });
-
-        var userTypeChart = new Chart(document.getElementById('userTypeCanvas').getContext('2d'), {
-            type: 'doughnut',
-            data: userTypeData,
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-            },
-        });
-
-        var sectionItemChart = new Chart(document.getElementById('sectionItemCanvas').getContext('2d'), {
-            type: 'bar',
-            data: sectionItemData,
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    x: { stacked: false },
-                    y: { stacked: false },
-                },
-            },
-        });
-
-        function toggleChart(chartName, iconId) {
-            var chart = window[chartName];
-            if (chart) {
-                var chartCanvas = chart.canvas;
-                var icon = document.getElementById(iconId);
-                if (chartCanvas.style.display === 'none') {
-                    chartCanvas.style.display = 'block';
-                    icon.className = 'fa fa-minus';
-                } else {
-                    chartCanvas.style.display = 'none';
-                    icon.className = 'fa fa-plus';
-                }
-            }
-        }
-    </script>
+</script>
 {% endblock %}
