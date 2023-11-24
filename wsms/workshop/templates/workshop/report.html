@@ -80,8 +80,9 @@
                                         <th>Components</th>
                                         <th>Received Item Issue</th>
                                         <th>Delivered Item Issue</th>
+                                        <th>Is Damage</th>
                                         <th>Is Maintainable</th>
-                                        <th>Could fixed on the field</th>
+                                        
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -107,7 +108,7 @@
                                         </td>
                                         <td>{{ assignment.item.remark }}</td>
                                         <td>{{ assignment.item.comment }}</td>
-                                        <td></strong> {% if assignment.item.is_maintainable %}Yes{% else %}No{% endif %}</td>
+                                        <td></strong> {% if not assignment.item.is_maintainable %}Yes{% else %}No{% endif %}</td>
                                         <td></strong> {% if assignment.item.is_right_to_here %}No{% else %}Yes{% endif %}
                                         </td>
                                     </tr>

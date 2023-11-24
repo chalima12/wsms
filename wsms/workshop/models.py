@@ -94,6 +94,8 @@ class Item(models.Model):
     is_accepted=models.BooleanField(auto_created=True,default=False)
     is_maintainable=models.BooleanField(auto_created=True,default=True)
     is_right_to_here=models.BooleanField(auto_created=True,default=True)
+    assigned=models.BooleanField(auto_created=True,default=False)
+    
 
     def __str__(self) -> str:
         return self.Serial_no

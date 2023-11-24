@@ -36,10 +36,10 @@ from django.db.models import Count, Q
 
 def user_dashboard(request):
     # Fetch data for the user dashboard
-    user_count = Item.objects.filter(is_valid=True, status="pending").count()
     item_count = Item.objects.count()
-    component_count = Item.objects.filter(is_valid=True, status='Damage').count()
-    section_count = Item.objects.filter(is_valid=True, status='completed').count()
+    user_count = round(((Item.objects.filter(is_valid=True, status="pending").count())/item_count)*100,3)
+    component_count = round(((Item.objects.filter(is_valid=True, status='Damage').count())/item_count)*100,3)
+    section_count = round(((Item.objects.filter(is_valid=True, status='completed').count())/item_count)*100,3)
 
     # Fetch item status counts
     item_status_counts = Item.objects.values('status').annotate(count=Count('id'))

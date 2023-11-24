@@ -25,7 +25,7 @@
             <!-- small box -->
             <div class="small-box bg-success">
                 <div class="inner">
-                    <h3>{{ section_count }}<sup style="font-size: 20px"></sup></h3>
+                    <h3>{{ section_count }}%<sup style="font-size: 20px"></sup></h3>
                     <p>Total Completed Item</p>
                 </div>
                 <div class="icon">
@@ -38,7 +38,7 @@
             <!-- small box -->
             <div class="small-box bg-warning">
                 <div class="inner">
-                    <h3>{{ user_count }}</h3>
+                    <h3>{{ user_count }}%</h3>
                     <p>Total Remaining Items</p>
                 </div>
                 <div class="icon">
@@ -51,7 +51,7 @@
             <!-- small box -->
             <div class="small-box bg-danger">
                 <div class="inner">
-                    <h3>{{ component_count }}</h3>
+                    <h3>{{ component_count }}%</h3>
                     <p>Total Damaged Items</p>
                 </div>
                 <div class="icon">
@@ -234,11 +234,11 @@ var itemsPerSectionData = {
     datasets: [{
         data: [{% for section_item_count in section_item_counts %}{{ section_item_count.item_count }},{% endfor %}],
         backgroundColor: [
-            'rgb(0, 255, 1)',
-            'rgba(255, 255, 0, 1)',
-            'rgba(255, 0, 0, 1)',
-            'rgb(200, 155, 200)',
-            'rgba(155, 100, 255, 1)',
+            'rgba(150, 100, 200,1)',
+            'rgba(128, 128, 128, 1)',
+            'rgba(100, 170, 200, 1)',
+            'rgba(255, 200, 190,1)',
+            'rgba(255, 100, 200, 1)',
             'rgba(255, 100, 100, 1)',
         ],
         borderColor: [

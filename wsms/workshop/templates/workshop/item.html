@@ -87,7 +87,7 @@
                             
                             {% if user.add_assignment %}
                             <td>
-                                {% if data.status == 'pending' %}
+                                {% if not data.assigned %}
                                     <a class='btn btn-secondary btn-sm' style='border-radius:10%' href="{% url 'workshop:create-assignment' data.id %}">
                                         <span>
                                             Assign

@@ -51,29 +51,31 @@
                             </button>
                              
                         {% if not request.user.user_type == "Registeror"%}
-                                {% if not data.item.is_accepted %}
-                                        <a style='border-radius:10%' class="btn btn-success btn-sm" href="javascript:void(0)"
-                                            data-toggle="modal" class="confirm-accept" data-url="{% url 'workshop:accept' data.id %}"
-                                            data-target="#acceptItemModal" data-message="Are you Sure to accept this Assignment  ?">
-                                            <span>Accept</span>
-                                        </a>
-                                {% else %}
-                                        <a style='border-radius:10%' class="btn btn-success btn-sm btn disabled" href='#'>
-                                            <span class="fa">Accepted</span>
-                                        </a>
-                                    
+                                     {% if not data.item.is_accepted %}
+                                            <a style='border-radius:10%' class="btn btn-success btn-sm" href="javascript:void(0)"
+                                                data-toggle="modal" class="confirm-accept" data-url="{% url 'workshop:accept' data.id %}"
+                                                data-target="#acceptItemModal" data-message="Are you Sure to accept this Assignment  ?">
+                                                <span>Accept</span>
+                                            </a>
+                                        {% else %}
+                                            <a style='border-radius:10%' class="btn btn-success btn-sm btn disabled" href='#'>
+                                                <span class="fa">Accepted</span>
+                                            </a>
+                                         
 
-                                    {% if not data.item.status == 'Pending' %}
-                                        <a style='border-radius:10%' class="btn btn-primary btn-sm btn disabled" href='#'>
-                                            <span class="fa">Completed</span>
-                                        </a>
-                                    {% else %}
-                                        <a href="#" class="btn btn-primary btn-sm" data-toggle="modal"
-                                            data-target="#completeModal{{ data.id }}">Complete</a>
-                                        <a style='border-radius:10%' class="btn btn-warning btn-sm "
-                                            href="{% url 'workshop:create-component' data.id %}">
-                                            <span class="fa fa-plus"> component</span>
-                                        </a>
+                                            {% if  data.item.status == 'pending' %}
+                                            <a href="#" class="btn btn-primary btn-sm" data-toggle="modal"
+                                                    data-target="#completeModal{{ data.id }}">Complete</a>
+                                                {% comment %} <a style='border-radius:10%' class="btn btn-warning btn-sm "
+                                                    href="{% url 'workshop:create-component' data.id %}">
+                                                    <span class="fa fa-plus"> component</span>
+                                                </a> {% endcomment %}
+                                                
+                                            {% else %}
+                                                
+                                            <a style='border-radius:10%' class="btn btn-primary btn-sm btn disabled" href='#'>
+                                                <span class="fa">Completed</span>
+                                            </a>
                                     {% endif %}
                                     {% endif %}
                         {% endif %}
