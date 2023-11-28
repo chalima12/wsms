@@ -79,7 +79,8 @@ class Item(models.Model):
     engineer= models.ForeignKey(User, on_delete=models.CASCADE,null=True,blank=True)
     stock_id = models.ForeignKey(Stock,on_delete=models.CASCADE, related_name='stocks')
     Serial_no =models.CharField(max_length=15)
-    delivered_by = models.CharField(max_length=100)
+    region = models.CharField(max_length=100,null=True,blank=True)
+    district = models.CharField(max_length=100,null=True,blank=True)
     received_by= models.CharField(max_length=100)
     status = models.CharField(choices=(
           ('pending', "pending"),

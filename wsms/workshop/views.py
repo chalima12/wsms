@@ -32,22 +32,40 @@ from workshop import signals  # If signals is a custom module
 
 # views.py
 
-from django.db.models import Count, Q
+import plotly.express as px
+import pandas as pd
+from plotly.offline import plot
+
+
+# Render the HTML in a Django template
+# context = {'chart_html': html_representation}
+# return render(request, 'your_template.html', context)
+
+
+# Include the image in your template?
 
 def user_dashboard(request):
+    item_status_counts = Item.objects.values('status').annotate(count=Count('id'))
+    df = pd.DataFrame(item_status_counts)
+
+    # Create a pie chart with hover-over labels
+    fig = px.pie(df, names='status', values='count',
+    hover_data=['count'], labels={'count': 'items'})
+    fig.update_traces(marker=dict(colors=['red', 'green', 'yellow']))
+    fig.update_layout(title_text='<b>Item Status</b>', title_x=0.5)
+
+    # Convert the Plotly figure to HTML with config option
+    html_representation = fig.to_html(full_html=False, config={'displaylogo': False})
+
+
     # Fetch data for the user dashboard
     item_count = Item.objects.count()
-    user_count = round(((Item.objects.filter(is_valid=True, status="pending").count())/item_count)*100,3)
-    component_count = round(((Item.objects.filter(is_valid=True, status='Damage').count())/item_count)*100,3)
-    section_count = round(((Item.objects.filter(is_valid=True, status='completed').count())/item_count)*100,3)
+    user_count = Item.objects.filter(is_valid=True, status="pending").count()
+    component_count = Item.objects.filter(is_valid=True, status='Damage').count()
+    section_count = Item.objects.filter(is_valid=True, status='completed').count()
 
-    # Fetch item status counts
-    item_status_counts = Item.objects.values('status').annotate(count=Count('id'))
 
-    # Fetch user type counts
-    user_type_counts = User.objects.values('user_type').annotate(count=Count('id'))
-
-    # Fetch items per section counts with status
+     # Fetch items per section counts with status
     section_item_counts = Section.objects.filter(is_valid=True).annotate(
         item_count=Count('sections__id'),
         pending_count=Count('sections__id', filter=Q(sections__status='pending')),
@@ -55,88 +73,54 @@ def user_dashboard(request):
         completed_count=Count('sections__id', filter=Q(sections__status='completed')),
     ).values('name', 'item_count', 'pending_count', 'Damage_count', 'completed_count').order_by('id')
 
-    # Fetch items and their components
-    items = Item.objects.prefetch_related('components').all()
-    item_status_labels = Item.objects.values('status').distinct()
+    # Create a DataFrame from the queryset
+    df = pd.DataFrame(section_item_counts)
 
-    # Fetch user type labels dynamically
-    user_type_labels = User.objects.values('user_type').distinct()
+    # Create a bar chart using Plotly Express
+    fig = px.bar(df, x='name', y=['item_count', 'pending_count', 'Damage_count', 'completed_count'],
+                 labels={'value': 'Count', 'variable': 'Status'},
+                 
+                 color_discrete_map={'item_count': 'blue', 'pending_count': 'yellow', 'Damage_count': 'red', 'completed_count': 'green'})
 
-    # Fetch section item labels dynamically
-    section_item_labels = Section.objects.filter(is_valid=True).values('name').distinct()
+    # Update layout for better visualization
+    fig.update_layout(barmode='group', xaxis_title='Section', yaxis_title='Count')
+    fig.update_layout(title_text='<b>Items per Section with Status</b>', title_x=0.5)
+
+    # Convert the figure to HTML
+    plot_div = plot(fig, output_type='div', include_plotlyjs=False,config={'displaylogo': False})
+
+
+
+    
+    section_item_count = Section.objects.filter(is_valid=True).annotate(
+        item_count=Count('sections__id'),
+        
+    ).values('name', 'item_count').order_by('id')
+    
+    
+    
+    df = pd.DataFrame(section_item_count)
+    fig = px.pie(df, names='name', values='item_count',
+                hover_data=['item_count'], labels={'count': 'items'})
+    fig.update_traces(marker=dict(colors=['lime', 'Orange', 'purple','blue','pink'])),
+    fig.update_layout(title_text='<b>Items per Section</b>', title_x=0.5)
+
+    # Convert the Plotly figure to HTML
+    html_representation1 = fig.to_html(full_html=False, config={'displaylogo': False})
+
+
 
     context = {
+        'plot_div': plot_div,
+        'chart_html': html_representation,
+        'chart_html1': html_representation1,
         'user_count': user_count,
         'item_count': item_count,
         'component_count': component_count,
         'section_count': section_count,
-        'item_status_counts': item_status_counts,
-        'user_type_counts': user_type_counts,
-        'section_item_counts': section_item_counts,
-        'items': items,
-        'item_status_labels': [label['status'] for label in item_status_labels],
-        'user_type_labels': [label['user_type'] for label in user_type_labels],
-        'section_item_labels': [label['name'] for label in section_item_labels],
     }
 
     return render(request, 'workshop/home.html', context)
-
-
-@login_required(login_url='workshop:custom_login')
-def assignment_chart_view(request):
-    # Get the count of assignments grouped by status
-    assignments = Item.objects.values('Serial_no', 'is_accepted').annotate(count=Count('id'))
-
-    item = Item.objects.all().count()
-    section = Section.objects.all().count()
-    user = User.objects.all().count()
-    component = Component.objects.all().count()
-
-    data = Item.objects.values('status').annotate(count=Count('status'))
-    users = User.objects.values('user_type').annotate(count=Count('user_type'))
-
-    label3 = [user['user_type'] for user in users]
-    count3 = [user['count'] for user in users]
-
-    items = Item.objects.values('Serial_no').annotate(count=Count('id'))
-    label2 = [item['Serial_no'] for item in items]
-    count = [item['count'] for item in items]
-
-    label = [d['status'] for d in data]
-    counts = [d['count'] for d in data]
-
-    labels = []
-    valid_counts = []
-    invalid_counts = []
-
-    for assignment in assignments:
-        labels.append(assignment['Serial_no'])
-        if assignment['is_accepted']:
-            valid_counts.append(assignment['count'])
-            invalid_counts.append(0)
-        else:
-            valid_counts.append(0)
-            invalid_counts.append(assignment['count'])
-
-    context = {
-        'item': item,
-        'section': section,
-        'user': user,
-        'component': component,
-        'labels': labels,
-        'label': label,
-        'counts': counts,
-        'valid_counts': valid_counts,
-        'invalid_counts': invalid_counts,
-        'label2': label2,
-        'count': count,
-        'label3': label3,
-        'count3': count3,
-    }
-
-    return render(request, 'workshop/home.html', context)
-
-
 def custom_login(request):
     if request.method == 'POST':
         username = request.POST['username']
@@ -353,34 +337,40 @@ class ReporttListView(LoginRequiredMixin, ListView):
     template_name = "workshop/report.html"
     login_url = 'workshop:custom_login'
 
-    def get_queryset(self):
+    def get_queryset(self, start_date, end_date, time_range):
         user = self.request.user
-
-        time_range = self.request.GET.get('time_range', 'daily')
         current_date = timezone.now().date()
 
-        if time_range == 'daily':
-            start_date = current_date
-        elif time_range == 'weekly':
-            start_date = current_date - timedelta(days=current_date.weekday())
-        elif time_range == 'monthly':
-            start_date = current_date.replace(day=1)
-        elif time_range == 'all':
-            start_date = None  # Set start_date to None to get all reports
+        if start_date and end_date:
+            start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+            end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
         else:
-            # Handle other cases or set a default behavior
-            start_date = current_date
+            if time_range == 'daily':
+                start_date = current_date
+            elif time_range == 'weekly':
+                start_date = current_date - timedelta(days=(current_date.weekday() - 4) % 7)
+            elif time_range == 'monthly':
+                start_date = current_date.replace(day=1)
+            elif time_range == 'quarterly':
+                quarter_start_month = ((current_date.month - 1) // 3) * 3 + 1
+                start_date = current_date.replace(month=quarter_start_month, day=1)
+            elif time_range == 'yearly':
+                start_date = current_date.replace(month=1, day=1)
+            elif time_range == 'all':
+                start_date = None
 
         if start_date is not None:
             queryset = Assignments.objects.filter(
                 is_valid=True,
                 item__received_date__gte=start_date,
-                item__received_date__lte=current_date
+                item__received_date__lte=end_date or current_date
             ).order_by('-id')
         else:
             queryset = Assignments.objects.filter(
                 is_valid=True
             ).order_by('-id')
+
+
 
         # Filter by report type
         report_type = self.request.GET.get('report_type', 'all')
@@ -415,11 +405,22 @@ class ReporttListView(LoginRequiredMixin, ListView):
 
         return queryset
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['time_range'] = self.request.GET.get('time_range', 'daily')
-        context['report_type'] = self.request.GET.get('report_type', 'all')
-        return context
+    def get(self, request, *args, **kwargs):
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        time_range = request.GET.get('time_range', 'daily')
+
+        assignments = self.get_queryset(start_date, end_date, time_range)
+
+        context = {
+            'assignments': assignments,
+            'time_range': time_range,
+            'report_type': request.GET.get('report_type', 'all'),
+            'start_date': start_date,
+            'end_date': end_date,
+        }
+
+        return render(request, self.template_name, context)
     
 @login_required(login_url='/login')
 def delete_user(request,pk):

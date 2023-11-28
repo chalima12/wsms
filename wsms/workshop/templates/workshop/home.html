@@ -25,7 +25,7 @@
             <!-- small box -->
             <div class="small-box bg-success">
                 <div class="inner">
-                    <h3>{{ section_count }}%<sup style="font-size: 20px"></sup></h3>
+                    <h3>{{ section_count }}<sup style="font-size: 20px"></sup></h3>
                     <p>Total Completed Item</p>
                 </div>
                 <div class="icon">
@@ -38,7 +38,7 @@
             <!-- small box -->
             <div class="small-box bg-warning">
                 <div class="inner">
-                    <h3>{{ user_count }}%</h3>
+                    <h3>{{ user_count }}</h3>
                     <p>Total Remaining Items</p>
                 </div>
                 <div class="icon">
@@ -51,7 +51,7 @@
             <!-- small box -->
             <div class="small-box bg-danger">
                 <div class="inner">
-                    <h3>{{ component_count }}%</h3>
+                    <h3>{{ component_count }}</h3>
                     <p>Total Damaged Items</p>
                 </div>
                 <div class="icon">
@@ -63,207 +63,134 @@
     </div>
 
     <!-- Item Status Chart -->
+    <!-- Item Status Chart -->
     <div class="row">
+        <!-- Item Status Chart -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header" style="background-color: lime;">
+                    <h3 class="card-title" style="display: inline-block; color:white">
+                        Item Status
+                    </h3>
+                    <!-- Add the plus/minus sign icons -->
+                    <div style="float: right; cursor: pointer;" class="toggle-chart">
+                        <i class="fa fa-minus"></i> <!-- You can replace this with your minus icon -->
+                    </div>
+                </div>
+                <div class="card-body chart-container">
+                    {{ chart_html|safe }}
+                </div>
+            </div>
+        </div>
+    
+        <!-- Number of Items per Section Chart -->
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header" style="background-color: blue;">
                     <h3 class="card-title" style="display: inline-block; color:white">
-                        Item Status
+                        Number of Item per Section
                     </h3>
-                    <button class="btn btn-link float-right" onclick="toggleChart('itemStatusCanvas', 'itemStatusIcon')">
-                        <i id="itemStatusIcon" class="fa fa-minus"></i>
-                    </button>
+                    <!-- Add the plus/minus sign icons -->
+                    <div style="float: right; cursor: pointer;" class="toggle-chart1">
+                        <i class="fa fa-minus"></i> <!-- You can replace this with your minus icon -->
+                    </div>
                 </div>
-                <div class="card-body">
-                    <canvas id="itemStatusCanvas" width="200" height="200"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- Number of Items per Section Chart -->
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header" style="background-color: #ffc107;">
-                    <h3 class="card-title" style="display: inline-block; color:white; ">
-                        Number of Items per Section
-                    </h3>
-                    <button class="btn btn-link float-right" onclick="toggleChart('itemsPerSectionCanvas', 'itemsPerSectionIcon')">
-                        <i id="itemsPerSectionIcon" class="fa fa-minus"></i>
-                    </button>
-                </div>
-                <div class="card-body">
-                    <canvas id="itemsPerSectionCanvas" width="200" height="200"></canvas>
+                <div class="card-body chart-container1">
+                    {{ chart_html1|safe }}
                 </div>
             </div>
         </div>
     </div>
+    
 
+    
+  
+    
     <!-- Section Item Chart -->
     <div class="row">
         <div class="col-md-12">
             <div class="card">
-                <div class="card-header" style="background-color: purple;">
+                <div class="card-header" style="background-color: pink;">
                     <h3 class="card-title" style="display: inline-block; color:white;">
                         Items per Section and Status
                     </h3>
-                    <button class="btn btn-link float-right" onclick="toggleChart('sectionItemCanvas', 'sectionItemIcon')">
-                        <i id="sectionItemIcon" class="fa fa-minus"></i>
-                    </button>
+                    <div style="float: right; cursor: pointer;" class="toggle-chart2">
+                        <i class="fa fa-minus"></i> <!-- You can replace this with your minus icon -->
+                    </div>
                 </div>
-                <div class="card-body">
-                    <canvas id="sectionItemCanvas" width="400" height="200"></canvas>
+                <div class="card-body chart-container2">
+                    {{ plot_div|safe }}
                 </div>
             </div>
         </div>
     </div>
 
+
+
+
 </div>
-
-
-  
-    
 
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
-function toggleChart(chartId, iconId) {
-    var chart = document.getElementById(chartId);
-    var icon = document.getElementById(iconId);
-
-    if (chart.style.display === 'none' || chart.style.display === '') {
-        chart.style.display = 'block';
-        icon.className = 'fa fa-minus';
-    } else {
-        chart.style.display = 'none';
-        icon.className = 'fa fa-plus';
+    function toggleChart(canvasId, iconId) {
+        // Your toggle chart logic here
     }
-}
-
-// Sample data for the item status chart
-var itemStatusData = {
-    labels: {{ item_status_labels|safe }},
-    datasets: [{
-        data: [{% for status_count in item_status_counts %}{{ status_count.count }},{% endfor %}],
-        backgroundColor: [
-            'rgb(0, 255, 1)',
-            'rgba(255, 255, 0, 1)',
-            'rgba(255, 0, 0, 1)',
-        ],
-        borderColor: [
-            'rgba(255, 99, 132, 1)',
-            'rgba(54, 162, 235, 1)',
-            'green',
-        ],
-        borderWidth: 1,
-    }],
-};
-
-var itemStatusCtx = document.getElementById('itemStatusCanvas').getContext('2d');
-var itemStatusChart = new Chart(itemStatusCtx, {
-    type: 'pie',
-    data: itemStatusData,
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        onClick: function (event, elements) {
-            handleDismissal('Item Status', elements);
-        },
-    },
-});
-
-
-// Section Item Chart
-var sectionItemData = {
-    labels: ['section_A','section_B','section_C','section_D','section_E'],
-    datasets: [
-        {
-            label: 'Total Items',
-            data: [{% for section_item_count in section_item_counts %}{{ section_item_count.item_count }},{% endfor %}],
-            backgroundColor: 'rgba(75, 192, 192, 0.5)',
-            borderColor: 'rgba(75, 192, 192, 1)',
-            borderWidth: 1,
-        },
-        {
-            label: 'Pending Items',
-            data: [{% for section_item_count in section_item_counts %}{{ section_item_count.pending_count }},{% endfor %}],
-            backgroundColor: 'rgba(255, 255, 0, 1)',
-            borderColor: 'rgba(255, 99, 132, 1)',
-            borderWidth: 1,
-        },
-        {
-            label: 'Damaged Items',
-            data: [{% for section_item_count in section_item_counts %}{{ section_item_count.Damage_count }},{% endfor %}],
-            backgroundColor: 'rgb(255, 0, 1)',
-            borderColor: 'rgba(54, 162, 235, 1)',
-            borderWidth: 1,
-        },
-        {
-            label: 'Completed Items',
-            data: [{% for section_item_count in section_item_counts %}{{ section_item_count.completed_count }},{% endfor %}],
-            backgroundColor: 'rgba(0, 255, 0, 1)',
-            borderColor: 'rgba(255, 205, 86, 1)',
-            borderWidth: 1,
-        },
-    ],
-};
-
-var sectionItemCtx = document.getElementById('sectionItemCanvas').getContext('2d');
-var sectionItemChart = new Chart(sectionItemCtx, {
-    type: 'bar',
-    data: sectionItemData,
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-            x: {
-                stacked: false,
-            },
-            y: {
-                stacked: false,
-            },
-        },
-        onClick: function (event, elements) {
-            handleDismissal('Section Item', elements);
-        },
-    },
-});
-// Number of Items per Section Chart
-var itemsPerSectionData = {
-    labels: ['section_A','section_B','section_C','section_D','section_E'],
-    datasets: [{
-        data: [{% for section_item_count in section_item_counts %}{{ section_item_count.item_count }},{% endfor %}],
-        backgroundColor: [
-            'rgba(150, 100, 200,1)',
-            'rgba(128, 128, 128, 1)',
-            'rgba(100, 170, 200, 1)',
-            'rgba(255, 200, 190,1)',
-            'rgba(255, 100, 200, 1)',
-            'rgba(255, 100, 100, 1)',
-        ],
-        borderColor: [
-            'rgba(255, 99, 132, 1)',
-            'rgba(54, 162, 235, 1)',
-            'green',
-        ],
-        borderWidth: 1,
-    }],
-};
-
-var itemsPerSectionCtx = document.getElementById('itemsPerSectionCanvas').getContext('2d');
-var itemsPerSectionChart = new Chart(itemsPerSectionCtx, {
-    type: 'doughnut',
-    data: itemsPerSectionData,
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        onClick: function (event, elements) {
-            handleDismissal('Number of Items per Section', elements);
-        },
-    },
-});
-
-// ... (rest of your JavaScript code)
-
 </script>
+<script>
+    $(document).ready(function () {
+        // Show the chart initially
+        $(".chart-container").show();
+
+        // Toggle the chart visibility on plus/minus sign click
+        $(".toggle-chart").click(function () {
+            $(".chart-container").toggle();
+            // Change the icon based on visibility
+            if ($(".chart-container").is(":visible")) {
+                $(this).html('<i class="fa fa-minus"></i>'); 
+            } else {
+                $(this).html('<i class="fa fa-plus"></i>'); 
+            }
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        // Show the chart initially
+        $(".chart-container1").show();
+
+        // Toggle the chart visibility on plus/minus sign click
+        $(".toggle-chart1").click(function () {
+            $(".chart-container1").toggle();
+            // Change the icon based on visibility
+            if ($(".chart-container1").is(":visible")) {
+                $(this).html('<i class="fa fa-minus"></i>'); 
+            } else {
+                $(this).html('<i class="fa fa-plus"></i>'); 
+            }
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        // Show the chart initially
+        $(".chart-container2").show();
+
+        // Toggle the chart visibility on plus/minus sign click
+        $(".toggle-chart2").click(function () {
+            $(".chart-container2").toggle();
+            // Change the icon based on visibility
+            if ($(".chart-container2").is(":visible")) {
+                $(this).html('<i class="fa fa-minus"></i>'); 
+            } else {
+                $(this).html('<i class="fa fa-plus"></i>'); 
+            }
+        });
+    });
+</script>
+
+
 {% endblock %}

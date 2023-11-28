@@ -47,13 +47,14 @@ class ItemForm(forms.ModelForm):
             label="Section",widget=forms.Select(attrs={"class":"form-control"}))
     class Meta:
         model = Item
-        fields = [ "Section","stock_id", "Serial_no", "delivered_by", "received_by", "remark"]
+        fields = [ "Section","stock_id", "Serial_no",'region','district', "received_by", "remark"]
         widgets = {
              "Section": forms.Select(attrs={"class": "form-control"}),
             "stock_id": forms.Select(attrs={"class": "form-control select2"}),
             "Serial_no": forms.TextInput(attrs={"class": "form-control"}),
-            "delivered_by": forms.TextInput(attrs={"class": "form-control"}),
             "received_by": forms.TextInput(attrs={"class": "form-control"}),
+            "region": forms.TextInput(attrs={"class": "form-control"}),
+            "district": forms.TextInput(attrs={"class": "form-control"}),
             "remark": forms.Textarea(attrs={"class": "form-control"}),
         }
             
