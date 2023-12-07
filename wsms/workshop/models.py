@@ -80,8 +80,8 @@ class Item(models.Model):
     stock_id = models.ForeignKey(Stock,on_delete=models.CASCADE, related_name='stocks')
     Serial_no =models.CharField(max_length=15)
     region = models.CharField(max_length=100,null=True,blank=True)
-    district = models.CharField(max_length=100,null=True,blank=True)
-    received_by= models.CharField(max_length=100)
+    branch = models.CharField(max_length=100,null=True,blank=True)
+    delivered_by= models.CharField(max_length=100)
     status = models.CharField(choices=(
           ('pending', "pending"),
           ('Damage', "Damage"),
@@ -93,10 +93,10 @@ class Item(models.Model):
     comment= models.TextField(blank=True)
     is_valid=models.BooleanField(auto_created=True,default=True)
     is_accepted=models.BooleanField(auto_created=True,default=False)
-    is_maintainable=models.BooleanField(auto_created=True,default=True)
-    is_right_to_here=models.BooleanField(auto_created=True,default=True)
+    is_damage=models.BooleanField(auto_created=True,default=False)
+    is_maintainable_onfield=models.BooleanField(auto_created=True,default=False)
     assigned=models.BooleanField(auto_created=True,default=False)
-    
+    completed_date=models.DateField(blank=True,null=True)
 
     def __str__(self) -> str:
         return self.Serial_no
@@ -124,7 +124,7 @@ class AssignmentsManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().order_by('-Assigned_date')
 class Assignments(models.Model):
-    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE,related_name='items')
     engineer= models.ForeignKey(User, on_delete=models.CASCADE)
     remark= models.TextField(blank=True)
     Assigned_date=models.DateField(auto_now=True)

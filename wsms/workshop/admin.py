@@ -15,12 +15,15 @@ class ItemsAdmin(admin.ModelAdmin):
     list_filter=['is_valid','status']
 class StocksAdmin(admin.ModelAdmin):
     list_display=['id','number','description']
+class SectionsAdmin(admin.ModelAdmin):
+    list_display=['id','name','manager']
+    list_editable=['name']
   
 # Register your models here.
 admin.site.register(User,UsersAdmin)
 admin.site.register(Item,ItemsAdmin)
 admin.site.register(Assignments)
-admin.site.register(Section)
+admin.site.register(Section,SectionsAdmin)
 admin.site.register(Component)
 admin.site.register(Notification)
 admin.site.register(Stock,StocksAdmin)

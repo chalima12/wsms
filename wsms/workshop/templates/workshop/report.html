@@ -8,62 +8,50 @@
 {% block content %}
 <div class="content-wrapper">
 <div class="card">
-<div class="row m-2">
-    <div class="col-sm-6">
-        <form method="get" class="float-right">
-            <label for="report_type">Select Report Type: </label>
-            <select name="report_type" id="report_type">
-                <option value="all" {% if report_type == "all" %}selected{% endif %}>All</option>
-                <option value="damage" {% if report_type == "damage" %}selected{% endif %}>Damage</option>
-                <option value="completed" {% if report_type == "completed" %}selected{% endif %}>Completed
-                </option>
-                <option value="remaining" {% if report_type == "remaining" %}selected{% endif %}>Remaining
-                </option>
-            </select>
-            
-            <label for="start_date">Start Date:</label>
-            <input type="date" name="start_date" id="start_date" value="{{ start_date }}">
-            
-
-            <label for="end_date">End Date:</label>
-            <input type="date" name="end_date" id="end_date" value="{{ end_date }}">
-            <button style='border-radius:10%' class='btn btn-primary btn-sm' type="submit">Genarate
-            </button>
-        </form>
-
-    </div>
-
-    <div class="col-sm-6">
-        <form method="get" class="float-right">
-            
-            <label for="time_range">Select Time Range: </label>
-            <select name="time_range" id="time_range">
-                <option value="daily" {% if time_range == "daily" %}selected{% endif %}>Daily</option>
-                <option value="weekly" {% if time_range == "weekly" %}selected{% endif %}>Weekly</option>
-                <option value="monthly" {% if time_range == "monthly" %}selected{% endif %}>Monthly
-                </option>
-                <option value="quarterly" {% if time_range == "quarterly" %}selected{% endif %}>Quarterly
-                </option>
-                <option value="yearly" {% if time_range == "yearly" %}selected{% endif %}>Yearly
-                </option>
-                <option value="all" {% if time_range == "all" %}selected{% endif %}>All</option>
-            </select>
-
-            <!-- Add this block inside the form element -->
-            <label for="report_type">Select Report Type: </label>
-            <select name="report_type" id="report_type">
-                <option value="all" {% if report_type == "all" %}selected{% endif %}>All</option>
-                <option value="damage" {% if report_type == "damage" %}selected{% endif %}>Damage</option>
-                <option value="completed" {% if report_type == "completed" %}selected{% endif %}>Completed
-                </option>
-                <option value="remaining" {% if report_type == "remaining" %}selected{% endif %}>Remaining
-                </option>
-            </select>
-
-            <button style='border-radius:10%' class='btn btn-primary btn-sm' type="submit">Genarate</button>
-            </button>
-        </form>
-    </div>
+    <div class="row m-2">
+        <div class="col-sm-6">
+            <form method="get" class="float-right" id="reportForm1">
+                <label for="report_type">Select Report Type: </label>
+                <select name="report_type" id="report_type">
+                    <option value="all" {% if report_type == "all" %}selected{% endif %}>All</option>
+                    <option value="damage" {% if report_type == "damage" %}selected{% endif %}>Damage</option>
+                    <option value="completed" {% if report_type == "completed" %}selected{% endif %}>Completed</option>
+                    <option value="remaining" {% if report_type == "remaining" %}selected{% endif %}>Remaining</option>
+                </select>
+                
+                <label for="start_date">Start Date:</label>
+                <input type="date" name="start_date" id="start_date" value="{{ start_date }}">
+                
+                <label for="end_date">End Date:</label>
+                <input type="date" name="end_date" id="end_date" value="{{ end_date }}">
+                
+                <button style='border-radius:10%' class='btn btn-primary btn-sm' type="submit">Generate</button>
+            </form>
+        </div>
+    
+        <div class="col-sm-6">
+            <form method="get" class="float-right" id="reportForm2">
+                <label for="time_range">Select Time Range: </label>
+                <select name="time_range" id="time_range">
+                    <option value="daily" {% if time_range == "daily" %}selected{% endif %}>Daily</option>
+                    <option value="weekly" {% if time_range == "weekly" %}selected{% endif %}>Weekly</option>
+                    <option value="monthly" {% if time_range == "monthly" %}selected{% endif %}>Monthly</option>
+                    <option value="quarterly" {% if time_range == "quarterly" %}selected{% endif %}>Quarterly</option>
+                    <option value="yearly" {% if time_range == "yearly" %}selected{% endif %}>Yearly</option>
+                    <option value="all" {% if time_range == "all" %}selected{% endif %}>All</option>
+                </select>
+    
+                <label for="report_type">Select Report Type: </label>
+                <select name="report_type" id="report_type2">
+                    <option value="all" {% if report_type == "all" %}selected{% endif %}>All</option>
+                    <option value="damage" {% if report_type == "damage" %}selected{% endif %}>Damage</option>
+                    <option value="completed" {% if report_type == "completed" %}selected{% endif %}>Completed</option>
+                    <option value="remaining" {% if report_type == "remaining" %}selected{% endif %}>Remaining</option>
+                </select>
+    
+                <button style='border-radius:10%' class='btn btn-primary btn-sm' type="submit">Generate</button>
+            </form>
+            </div>
 </div>
 </div>
 
@@ -100,53 +88,70 @@
                                         <th>Stock Id</th>
                                         <th>Description</th>
                                         <th>Serial Number</th>
-                                        <th>Region</th>
-                                        <th>District</th>
-                                        <th>Received By</th>
-                                        <th>{% if assignments.item.status == "on_progress"%}
-                                            Assigned to
+                                        <th>Delivered By</th>
+                                        <th>Delivered Branch</th>
+                                        <th>Delivered Region</th>
+                                        <th>Delivered Item problem</th>
+                                        <th>Workshop Tested problem</th>
                                         
-                                        {% else %}
-                                        {% endif %}
-                                         Maintained Date</th>
+                                        <th> Maintained Date</th>
                                         <th>Maintained By</th>
-                                        <th>Components</th>
-                                        <th>Received Item Issue</th>
-                                        <th>Delivered Item Issue</th>
-                                        <th>Is Damage</th>
-                                        <th>Is Maintainable</th>
+                                       
+                                        <th>Maintained Solution given</th>
+                                        
+                                        <th>Damage</th>
+                                        <th>Maintainable on Site</th>
                                         
                                     </tr>
                                     </thead>
-                                    <tbody>
-                                    {% for assignment in assignments %}
-                                    <tr>
-                                        <td>{{ forloop.counter }}</td>
-                                        <td>{{ assignment.item.id }}</td>
-                                        <td>{{ assignment.item.Section }}</td>
-                                        <td>{{ assignment.item.received_date }}</td>
-                                        <td>{{ assignment.item.stock_id.number }}</td>
-                                        <td>{{ assignment.item.stock_id.description }}</td>
-                                        <td>{{ assignment.item.Serial_no }}</td>
-                                        <td>{{ assignment.item.region }}</td>
-                                        <td>{{ assignment.item.district }}</td>
-                                        <td>{{ assignment.item.received_by }}</td>
-                                        <td>{{ assignment.completed_date }}</td>
-                                        <td>{{ assignment.engineer }}</td>
-                                        <td>
-                                            <ul>
-                                                {% for component in assignment.item.components.all %}
-                                                    <li style='list-style:none'>{{ component.Serial_no }}</li><br>
+                                    <tbody> 
+                                        {% for assignment in assignments %}
+                                        <tr {% if assignment.status == 'completed' %}style="background-color:#49FB09;" {% elif assignment.status == 'pending' %}style="background-color:orange;" 
+                                        {% else %}style="background-color:red;" {% endif %}>
+                                       
+                                            <td style="color:white; font-style:bold;">{{ forloop.counter }}</td>
+                                            <td style="color:white;">{{ assignment.id }}</td>
+                                            <td style="color:white;">{{ assignment.Section }}</td>
+                                            <td style="color:white;">{{ assignment.received_date }}</td>
+                                            <td style="color:white;">{{ assignment.stock_id.number }}</td>
+                                            <td style="color:white;">{{ assignment.stock_id.description }}</td>
+                                            <td style="color:white;">{{ assignment.Serial_no }}</td>
+                                            <td style="color:white;">{{ assignment.received_by }}</td>
+                                            
+                                    
+                                            <td style="color:white;">{{ assignment.district }}</td>
+                                            <td style="color:white;">{{ assignment.region }}</td>
+                                            <td style="color:white;">{{ assignment.remark }}</td>
+                                            <td style="color:white;">
+                                                {% for item_assignment in assignment.items.all %}
+                                                    {{ item_assignment.remark }}
                                                 {% endfor %}
-                                            </ul>
-                                        </td>
-                                        <td>{{ assignment.item.remark }}</td>
-                                        <td>{{ assignment.item.comment }}</td>
-                                        <td></strong> {% if not assignment.item.is_maintainable %}Yes{% else %}No{% endif %}</td>
-                                        <td></strong> {% if assignment.item.is_right_to_here %}No{% else %}Yes{% endif %}
-                                        </td>
-                                    </tr>
+                                            </td>
+                                    
+                                            <!-- Displaying completed_date for each assignment -->
+                                            <td style="color: white;">
+                                                {% for item_assignment in assignment.items.all %}
+                                                    {% if item_assignment.completed_date %}
+                                                        {{ item_assignment.completed_date.first }}
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </td>
+                                            
+                                    
+                                            <td style="color:white;">
+                                                
+                                                {% if assignment.engineer  %}
+                                                {{ assignment.engineer }}
+                                                {% endif %}
+                                                    
+                                                </td>
+                                            
+                                            <td style="color:white;">{{ assignment.comment }}</td>
+                                            <td style="color:white;">{% if assignment.status == 'Damage' %}Damage{% else %}{% endif %}</td>
+                                            <td style="color:white;">{% if assignment.is_maintainable_onfield %}Yes{% else %}No{% endif %}</td>
+                                        </tr>
                                     {% endfor %}
+                                    
                                     </tbody>
                                 </table>
                             </div>
@@ -163,4 +168,27 @@
         <!-- /.content -->
     </div>
     <!-- /.content-wrapper -->
+    
+    {% block js %}
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Listen for changes in the form elements of Form 1
+            $('#reportForm1 #report_type, #reportForm1 #start_date, #reportForm1 #end_date').on('change', function () {
+                // Trigger form submission for Form 1
+                $('#reportForm1').submit();
+            });
+    
+            // Listen for changes in the form elements of Form 2
+            $('#reportForm2 #time_range, #reportForm2 #report_type2').on('change', function () {
+                // Trigger form submission for Form 2
+                $('#reportForm2').submit();
+            });
+        });
+    </script>    
+        
+    {% endblock js %}
+        
+   
 {% endblock content %}

@@ -78,7 +78,7 @@
              {% endif %}
               
             
-            {% if user.view_component %}
+            {% comment %} {% if user.view_component %}
             {% url 'workshop:component' as component_url %}
             <li class="nav-item">
               <a href="{{ component_url }}" 
@@ -88,7 +88,7 @@
               </a>
             </li>
             
-            {% endif %}
+            {% endif %} {% endcomment %}
               
             
               
@@ -133,33 +133,36 @@
           
           
           <li class="nav-item menu-open">
-            <a href="#" class="nav-link ">
-              <i class="nav-icon fas fa-repeat"></i>
-              <p>
-                Reports
-                
-                <i class="right fas fa-angle-left"></i>
-              </p>
+            <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-repeat"></i>
+                <p>
+                    Reports
+                    <i class="right fas fa-angle-left"></i>
+                </p>
             </a>
             <ul class="nav nav-treeview">
-              
-              {% if user.view_report %}
-              {% url 'workshop:report' as report_url %}
-              <li class="nav-item">
-                <a href="{{ report_url }}"
-                class="nav-link {% if request.path == report_url %}active{% endif %}"> 
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Report</p>
-                </a> 
-        </li>
-              {% endif %}
-                
-              
-          
-            
-              
+                {% if user.view_report %}
+                    {% url 'workshop:report' as report_url %}
+                    <li class="nav-item">
+                        <a href="{{ report_url }}" class="nav-link {% if request.path == report_url %}active{% endif %}">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>Table</p>
+                        </a>
+                    </li>
+                {% endif %}
+        
+                {% if user.view_report %}
+                    {% url 'workshop:analysis' as an_url %}
+                    <li class="nav-item">
+                        <a href="{{ an_url }}" class="nav-link {% if request.path == an_url %}active{% endif %}">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>Chart</p>
+                        </a>
+                    </li>
+                {% endif %}
             </ul>
-        </li> 
+        </li>
+        
         {% endif %}
 </aside>
 

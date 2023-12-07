@@ -1,0 +1,101 @@
+{% extends 'workshop/base1.html' %}
+
+{% block h %}
+    <!-- Include Bootstrap-datepicker CSS and JS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+{% endblock h %}
+
+{% block content %}
+<div class="container">
+    <h1>Report In Charts</h1>
+
+    <div class='row'>
+        <!-- Date Picker Inputs -->
+        <div class='col-5'>
+            <label for="start_date">Start Date:</label>
+            <input type="date" id="start_date" class="form-control datepicker" name="start_date" value="{{ start_date }}">
+        </div>
+        <div class='col-5'>
+            <label for="end_date">End Date:</label>
+            <input type="date" id="end_date" class="form-control datepicker" name="end_date" value="{{ end_date }}">
+        </div>
+        <div class='col-4 m-3'>
+        <button id="apply_date_range" class="btn btn-primary btn-sm">Apply</button>
+        </div>
+</div>
+ 
+    <!-- Section Item Chart -->
+    
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header" style="background-color: pink;">
+                    <h3 class="card-title" style="display: inline-block; color:white;">
+                        Items per Section and Status
+                    </h3>
+                    <div style="float: right; cursor: pointer;" class="toggle-chart2">
+                        <i class="fa fa-minus"></i> <!-- You can replace this with your minus icon -->
+                    </div>
+                </div>
+                <div class="card-body chart-container2">
+                    {{ plot3_html|safe }}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div> 
+
+<script>
+    function toggleChart(canvasId, iconId) {
+        // Your toggle chart logic here
+    }
+</script>
+
+<script>
+    $(document).ready(function () {
+        // show the charts initially
+        $(".chart-container2").show();
+
+        // Toggle the chart visibility on plus/minus sign click
+        $(".toggle-chart2").click(function () {
+            var chartContainer = $(this).closest('.card').find('.chart-container2');
+
+            // Change the icon based on visibility before toggling
+            if (chartContainer.is(":visible")) {
+                $(this).html('<i class="fa fa-plus"></i>'); 
+            } else {
+                $(this).html('<i class="fa fa-minus"></i>'); 
+            }
+
+            chartContainer.toggle();
+        });
+    });
+</script>
+
+<script>
+    // Activate date picker
+    $(document).ready(function () {
+        $('.datepicker').datepicker({
+            format: 'yyyy-mm-dd',
+            autoclose: true,
+        });
+    });
+
+    // Handle Apply button click
+    $('#apply_date_range').on('click', function () {
+        // Get selected start and end dates
+        var start_date = $('#start_date').val();
+        var end_date = $('#end_date').val();
+
+        // Redirect to the analysis view with selected dates
+        window.location.href = '/item_status_chart/?start_date=' + start_date + '&end_date=' + end_date;
+    });
+</script>
+
+{% endblock %}

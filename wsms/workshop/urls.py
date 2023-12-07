@@ -17,6 +17,8 @@ from .views import send_password_reset_email, password_reset, reset_expired
 
 urlpatterns = [
     # view
+     path('item_status_chart/', views.item_status_chart, name='item_status_chart'),
+    path('analysis/', views.analysis_view, name='analysis'),
      path('stock-search/', StockSearchView.as_view(), name='stock_search'),
      path('autocomplet', autocomplete_view, name='autocomplete_view'),
     path('', views.index,name='index'),

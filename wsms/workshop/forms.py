@@ -14,7 +14,7 @@ class UserForm(ModelForm):
                                                  ,'placeholder':'Enter First Name'}),
              'last_name':forms.TextInput(attrs={'class':"form-control form-control",'placeholder':'Enter Last Name' }),
              'user_name':forms.EmailInput(attrs={'class':"form-control form-control",'placeholder':'Enter user Email'}),
-             'pass_word':forms.PasswordInput(attrs={'class':"form-control form-control",'placeholder':'Enter user Email'}),
+             'pass_word':forms.PasswordInput(attrs={'class':"form-control form-control",'placeholder':'Enter user password'}),
              "user_type": forms.Select(attrs={"class": "form-control",'placeholder':'Enter user Email'}),
         }
 class UserPermissionsForm(forms.ModelForm):
@@ -47,7 +47,7 @@ class ItemForm(forms.ModelForm):
             label="Section",widget=forms.Select(attrs={"class":"form-control"}))
     class Meta:
         model = Item
-        fields = [ "Section","stock_id", "Serial_no",'region','district', "received_by", "remark"]
+        fields = [ "Section","stock_id", "Serial_no",'region','branch', "delivered_by", "remark"]
         widgets = {
              "Section": forms.Select(attrs={"class": "form-control"}),
             "stock_id": forms.Select(attrs={"class": "form-control select2"}),
@@ -55,7 +55,7 @@ class ItemForm(forms.ModelForm):
             "received_by": forms.TextInput(attrs={"class": "form-control"}),
             "region": forms.TextInput(attrs={"class": "form-control"}),
             "district": forms.TextInput(attrs={"class": "form-control"}),
-            "remark": forms.Textarea(attrs={"class": "form-control"}),
+            "remark": forms.Textarea(attrs={"class": "form-control",'placeholder':'Write delivered Item Problem'}),
         }
             
 
@@ -81,7 +81,7 @@ ComponentFormSet = inlineformset_factory(Item, Component, form=ComponentForm, ex
 
 class SectionForm(forms.ModelForm):
     manager = forms.ModelChoiceField(queryset=User.objects.filter(user_type='Manager'
-                ,is_active=True), label="Engineer",
+                ,is_active=True), label="Manager",
                 widget=forms.Select(attrs={"class":"form-control"})) 
     class Meta:
         model = Section
@@ -105,7 +105,7 @@ class AssignmentForm(forms.ModelForm):
         "item": forms.HiddenInput(attrs={"class": "form-control"}),
         "engineer":forms.Select(attrs={"class":"form-control"}),
        
-        "remark": forms.Textarea(attrs={"class": "form-control"}),
+        "remark": forms.Textarea(attrs={"class": "form-control",'placeholder':'Write workshop tested Problem'}),
         }
 
 
@@ -134,4 +134,6 @@ class CustomPasswordChangeForm(PasswordChangeForm):
         widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Confirm New Password'}),
         label="Confirm New Password"  # Change the label
     )
-
+class DateRangeForm(forms.Form):
+    start_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+    end_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))

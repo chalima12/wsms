@@ -31,7 +31,7 @@
             <table id="example1" class="table table-bordered table-striped">
                 <thead class="dataTables_info">
                     <tr>
-                        <th>ID</th>
+                        <th>WS ID</th>
                         <th>Section</th>
                         <th>Item</th>
                         <th>Engineer</th>
@@ -51,7 +51,7 @@
                             </button>
                              
                         {% if not request.user.user_type == "Registeror"%}
-                                     {% if not data.item.is_accepted %}
+                                     {% comment %} {% if not data.item.is_accepted %}
                                             <a style='border-radius:10%' class="btn btn-success btn-sm" href="javascript:void(0)"
                                                 data-toggle="modal" class="confirm-accept" data-url="{% url 'workshop:accept' data.id %}"
                                                 data-target="#acceptItemModal" data-message="Are you Sure to accept this Assignment  ?">
@@ -61,7 +61,7 @@
                                             <a style='border-radius:10%' class="btn btn-success btn-sm btn disabled" href='#'>
                                                 <span class="fa">Accepted</span>
                                             </a>
-                                         
+                                          {% endcomment %}
 
                                             {% if  data.item.status == 'pending' %}
                                             <a href="#" class="btn btn-primary btn-sm" data-toggle="modal"
@@ -77,7 +77,7 @@
                                                 <span class="fa">Completed</span>
                                             </a>
                                     {% endif %}
-                                    {% endif %}
+                                    {% comment %} {% endif %} {% endcomment %}
                         {% endif %}
                         
                                 
@@ -109,27 +109,27 @@
             </div>
             <div class="modal-body">
                 <!-- Your existing complete form content goes here -->
-                <form class='card p-3 mt-5 bg-light complete-modal-form'
+                                <form class='card p-3 mt-5 bg-light complete-modal-form'
                     method="POST" action="{% url 'workshop:complete' data.id %}">
                     {% csrf_token %}
                     <div class="form-group m-2">
                         <label for="comment">Comment:</label>
-                        <textarea class="form-control" id="comment" name="comment" rows="3"></textarea>
+                        <textarea class="form-control" id="comment" name="comment" rows="3"
+                         placeholder="Write workshop Maintained solution given  here ......."></textarea>
                     </div>
                     <div class="form-check m-2">
-                        <input type="checkbox" class="form-check-input" id="is_maintainable"
-                            name="is_maintainable">
-                        <label class="form-check-label" for="is_maintainable">Is maintainable?</label>
+                        <input type="checkbox" class="form-check-input" id="is_damage" name="is_damage">
+                        <label class="form-check-label" for="is_damage">Damage? check this if Item is damage</label>
                     </div>
                     <div class="form-check m-2">
-                        <input type="checkbox" class="form-check-input" id="is_right_to_here"
-                            name="is_right_to_here">
-                        <label class="form-check-label" for="is_right_to_here">Is should be here?</label>
+                        <input type="checkbox" class="form-check-input" id="is_maintainable_onfield" name="is_maintainable_onfield">
+                        <label class="form-check-label" for="is_maintainable_onfield">Maintainable On field? check this if Item can Maintainable on Site</label>
                     </div>
                     <div class="col-4 m-3">
                         <button type="submit" class="btn btn-primary">Submit</button>
                     </div>
                 </form>
+
             </div>
         </div>
     </div>

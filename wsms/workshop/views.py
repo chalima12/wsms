@@ -20,39 +20,195 @@ from .forms import *
 
 from .models import *
 from django.contrib.auth import authenticate, login
-
-
-from workshop import signals  # If signals is a custom module
-
-# You might want to reorganize your import statements based on your project structure
-#"ATMSP-3"	"Paper Low Sensor"
-
-
-# workshop/views.py
-
-# views.py
+from plotly import graph_objects as go
 
 import plotly.express as px
 import pandas as pd
 from plotly.offline import plot
 
 
-# Render the HTML in a Django template
-# context = {'chart_html': html_representation}
-# return render(request, 'your_template.html', context)
+
+
+def item_status_chart(request):
+    # Get start_date and end_date from the query parameters
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    # Initialize items as an empty queryset
+    items = Item.objects.all()
+
+    # Retrieve items based on the selected date range
+    if start_date and end_date:
+        items = items.filter(received_date__range=[start_date, end_date])
+
+    # Create a DataFrame from the queryset
+    data = {
+        'Section': [item.Section.name for item in items],
+        'Status': [item.status for item in items],
+    }
+    df = pd.DataFrame(data)
+
+    # Perform data aggregation to get the sum of counts for each status in each section
+    grouped_df = df.groupby(['Section', 'Status']).size().reset_index(name='Count')
+    # Define color map for each status
+    color_discrete_map = {
+        'Damage': 'red',
+        'completed': 'green',
+        'pending': 'yellow',
+    }
+
+    # Create a vertical bar chart using Plotly with barmode='group' and custom colors
+    fig = px.bar(
+        grouped_df,
+        x='Section',
+        y='Count',
+        color='Status',
+        title='Item Status per Section',
+        barmode='group',
+        color_discrete_map=color_discrete_map,
+        labels={'Count': 'Item Count'},  # Optional label customization
+    )
+    total_count_per_section = df.groupby('Section')['Status'].count().reset_index(name='Total Count')
+    fig.add_trace(
+            go.Bar(
+                x=total_count_per_section['Section'],
+                y=total_count_per_section['Total Count'],
+                name='Total Items',
+                marker_color='blue',  # Set your desired color for the total count
+            ))
+    
+
+    # Convert the chart to HTML
+    chart_html = fig.to_html(full_html=False,config={'displaylogo': False})
+
+    return render(
+        request,
+        'workshop/status_chart.html',
+        {
+            'plot3_html': chart_html,
+            'start_date': start_date,
+            'end_date': end_date,
+        },
+    )
 
 
 # Include the image in your template?
+@login_required
+def analysis_view(request):
+    user = request.user
+
+    # Filter items based on user type
+    if user.user_type == 'Registeror':
+        items = Item.objects.all()
+    elif user.user_type == 'Manager':
+        items = Item.objects.filter(Section__manager=user)
+    elif user.user_type == 'Engineer':
+        items = Item.objects.filter(engineer=user)
+
+    # Filter items based on the selected time range
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    if start_date and end_date:
+        items = items.filter(received_date__range=[start_date, end_date])
+
+    # Create a DataFrame for analysis
+    data = {
+        'Status': items.values_list('status', flat=True),
+        'Section': items.values_list('Section__name', flat=True),
+    }
+    df = pd.DataFrame(data)
+    color_discrete_map = {
+        'Damage': 'red',
+        'completed': 'green',
+        'pending': 'yellow',
+    }
+
+    # Generate Pie Chart of Total Items by Status
+    fig1 = px.pie(
+        df,
+        names='Status',
+        title='Total Items by Status',
+        color_discrete_map=color_discrete_map,
+    )
+
+    fig1.update_traces(
+        hoverinfo='label+percent+name',
+        hovertemplate='%{label}: %{value} items',
+    )
+
+    # Generate Pie Chart of Total Items in Each Section
+    fig2 = px.pie(
+        df,
+        names='Section',
+        title='Total Items in Each Section',
+        color_discrete_map=color_discrete_map,
+    )
+
+    fig2.update_traces(
+        hoverinfo='label+percent+name',
+        hovertemplate='%{label}: %{value} items',
+    )
+
+    # Generate Vertical Bar Chart of Status of Items in Each Section
+    fig3 = px.bar(
+        df.groupby(['Section', 'Status']).size().reset_index(name='Count'),
+        x='Section',
+        y='Count',
+        color='Status',
+        barmode='group',
+        title='Status of Items in Each Section',
+        color_discrete_map=color_discrete_map,
+    )
+
+    # Add trace for total count per section
+    total_count_per_section = df.groupby('Section')['Status'].count().reset_index(name='Total Count')
+    fig3.add_trace(
+        go.Bar(
+            x=total_count_per_section['Section'],
+            y=total_count_per_section['Total Count'],
+            name='Total Items',
+            marker_color='blue',  # Set your desired color for the total count
+        )
+    )
+    
+
+   
+
+
+    # Convert plots to HTML
+    plot1_html = fig1.to_html(full_html=False, config={'displaylogo': False})
+    plot2_html = fig2.to_html(full_html=False, config={'displaylogo': False})
+    plot3_html = fig3.to_html(full_html=False, config={'displaylogo': False})
+
+    return render(
+        request,
+        'workshop/data_analysis.html',
+        {
+        
+            'plot1_html': plot1_html,
+            'plot2_html': plot2_html,
+            'plot3_html': plot3_html,
+            
+            'start_date': start_date,
+            'end_date': end_date,
+            
+        },
+    )
+
 
 def user_dashboard(request):
-    item_status_counts = Item.objects.values('status').annotate(count=Count('id'))
+    item_status_counts = Item.objects.values('status').annotate(count=Count('status'))
     df = pd.DataFrame(item_status_counts)
 
+    # Order the dataframe based on the desired sequence
+    status_order = ['pending', 'completed', 'Damage']
+    df['status'] = pd.Categorical(df['status'], categories=status_order, ordered=True)
+    df = df.sort_values('status')
+
     # Create a pie chart with hover-over labels
-    fig = px.pie(df, names='status', values='count',
-    hover_data=['count'], labels={'count': 'items'})
-    fig.update_traces(marker=dict(colors=['red', 'green', 'yellow']))
-    fig.update_layout(title_text='<b>Item Status</b>', title_x=0.5)
+    fig = px.pie(df, names='status', values='count', hover_data=['count'], labels={'count': 'items'})
+    fig.update_traces(marker=dict(colors=['yellow', 'green', 'red']))
 
     # Convert the Plotly figure to HTML with config option
     html_representation = fig.to_html(full_html=False, config={'displaylogo': False})
@@ -90,20 +246,29 @@ def user_dashboard(request):
     plot_div = plot(fig, output_type='div', include_plotlyjs=False,config={'displaylogo': False})
 
 
-
-    
     section_item_count = Section.objects.filter(is_valid=True).annotate(
-        item_count=Count('sections__id'),
-        
+    item_count=Count('sections__id'),
     ).values('name', 'item_count').order_by('id')
-    
-    
-    
+
     df = pd.DataFrame(section_item_count)
-    fig = px.pie(df, names='name', values='item_count',
-                hover_data=['item_count'], labels={'count': 'items'})
-    fig.update_traces(marker=dict(colors=['lime', 'Orange', 'purple','blue','pink'])),
-    fig.update_layout(title_text='<b>Items per Section</b>', title_x=0.5)
+
+    # Define custom colors
+    custom_colors = ['lime', 'orange', 'purple', 'blue', 'pink']
+
+    fig = px.pie(
+        df,
+        names='name',
+        values='item_count',
+        hover_data=['item_count'],
+        title='<b>Items per Section</b>',
+        color_discrete_sequence=custom_colors,
+    )
+
+    # Update the traces to display the count number instead of percentage
+    fig.update_traces(textinfo='value', textfont_size=12)
+
+    # Set the title position using update_layout
+    fig.update_layout(title_x=0.5)
 
     # Convert the Plotly figure to HTML
     html_representation1 = fig.to_html(full_html=False, config={'displaylogo': False})
@@ -220,19 +385,15 @@ class AssignmentCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         initial['item'] = item
         return initial
 
-    # def form_valid(self, form):
-    #     assignment = form.save()
-    #     item = assignment.item
-    #     item.status = 'pending'
-    #     item.engineer = assignment.engineer
-    #     item.save()
+    def form_valid(self, form):
+        assignment = form.save()
+        item = assignment.item
+        item.assigned=True
+        item.engineer = assignment.engineer
+        item.save()
 
-    #     return super().form_valid(form)
+        return super().form_valid(form)
     
-
-
-
-# View for sending notifications
 
 
 class ItemDetailView(DetailView):
@@ -331,8 +492,11 @@ class AssignmentListView(LoginRequiredMixin,ListView):
 
 
 
+from datetime import datetime, timedelta
+from django.utils import timezone
+
 class ReporttListView(LoginRequiredMixin, ListView):
-    model = Assignments
+    model = Item
     context_object_name = 'assignments'
     template_name = "workshop/report.html"
     login_url = 'workshop:custom_login'
@@ -360,47 +524,44 @@ class ReporttListView(LoginRequiredMixin, ListView):
                 start_date = None
 
         if start_date is not None:
-            queryset = Assignments.objects.filter(
-                is_valid=True,
-                item__received_date__gte=start_date,
-                item__received_date__lte=end_date or current_date
+            queryset = Item.objects.filter(
+                received_date__gte=start_date,
+                received_date__lte=end_date or current_date,
+                is_valid=True
             ).order_by('-id')
         else:
-            queryset = Assignments.objects.filter(
+            queryset = Item.objects.filter(
                 is_valid=True
             ).order_by('-id')
 
-
-
-        # Filter by report type
+        # Additional filters based on report_type
         report_type = self.request.GET.get('report_type', 'all')
 
         if report_type == 'damage':
             queryset = queryset.filter(
                 is_valid=True,
-                item__is_maintainable=False
+                status='Damage'
             )
-        elif report_type == 'completed':
+        if report_type == 'completed':
             queryset = queryset.filter(
                 is_valid=True,
-                item__status='completed'
+                status='completed'
             )
-        elif report_type == 'remaining':
+        if report_type == 'remaining':
             queryset = queryset.filter(
                 is_valid=True,
-                item__status__in=['pending', 'on_progress'],
-                item__is_maintainable=True
+                status='pending'
             )
 
         # Customize queryset based on user's role
         if user.user_type == 'Registeror':
-            # Display all reports for 'Registeror' users
+            # Display all items for 'Registeror' users
             pass
         elif user.user_type == 'Manager':
-            # Display reports related to the manager's section
-            queryset = queryset.filter(item__Section__manager=user)
+            # Display items related to the manager's section
+            queryset = queryset.filter(Section__manager=user)
         elif user.user_type == 'Engineer':
-            # Display reports where the engineer is assigned
+            # Display items where the engineer is assigned
             queryset = queryset.filter(engineer=user)
 
         return queryset
@@ -408,7 +569,7 @@ class ReporttListView(LoginRequiredMixin, ListView):
     def get(self, request, *args, **kwargs):
         start_date = request.GET.get('start_date')
         end_date = request.GET.get('end_date')
-        time_range = request.GET.get('time_range', 'daily')
+        time_range = request.GET.get('time_range', 'all')
 
         assignments = self.get_queryset(start_date, end_date, time_range)
 
@@ -516,17 +677,20 @@ def complete_assignment(request, pk):
     if request.method == 'POST':
         item.status = 'completed'
         assign.completed_date = timezone.now()
+        item.completed_date=assign.completed_date
         assign.save()
-        if 'is_maintainable' in request.POST:
+        
+        if 'is_damage' in request.POST:
             
-            item.is_maintainable = True
-        else:
-            item.is_maintainable = False
+            item.is_damage = True
             item.status='Damage'
-        if 'is_right_to_here' in request.POST:
-            item.is_right_to_here = True
         else:
-            item.is_right_to_here = False
+            item.is_damage = False
+            
+        if 'is_maintainable_onfield' in request.POST:
+            item.is_maintainable_onfield = True
+        else:
+            item.is_maintainable_onfield = False
         
         item.comment = request.POST.get('comment', '')
         item.save()
@@ -602,7 +766,7 @@ def edit_profile_picture(request):
             # without the user's awareness
             form.save()
             messages.success(request, 'Profile has updated successfully.')
-            return redirect('workshop:user')  # Redirect to the user's profile page
+            return redirect('workshop:index')  # Redirect to the user's profile page
         else:
             messages.error(request, 'Profile picture update failed. Please try again.')
 

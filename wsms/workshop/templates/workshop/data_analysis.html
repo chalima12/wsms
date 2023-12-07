@@ -1,0 +1,137 @@
+{% extends 'workshop/base1.html' %}
+
+{% block h %}
+    <!-- Include Bootstrap-datepicker CSS and JS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+{% endblock h %}
+
+{% block title %}
+<title>From {{start_date}} to {{end_date}} Report chart</title>
+    
+    
+{% endblock title %}
+    
+{% block content %}
+<div class="container">
+    <h1> From {{start_date}} to {{end_date}}Report Charts</h1>
+
+    <div class='row'>
+        <!-- Date Picker Inputs -->
+        <div class='col-5'>
+            <label for="start_date">Start Date:</label>
+            <input type="date" id="start_date" class="form-control datepicker" name="start_date" value="{{ start_date }}">
+        </div>
+        <div class='col-5'>
+            <label for="end_date">End Date:</label>
+            <input type="date" id="end_date" class="form-control datepicker" name="end_date" value="{{ end_date }}">
+        </div>
+        <div class='col-4 m-3'>
+        <button id="apply_date_range" class="btn btn-primary btn-sm">Apply</button>
+        </div>
+</div>
+
+    <!-- Item Status Chart -->
+    <div class="row">
+        <!-- Item Status Chart -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header" style="background-color: lime;">
+                    <h3 class="card-title" style="display: inline-block; color:white">Item Status</h3>
+                    <!-- Add the plus/minus sign icons -->
+                    <div style="float: right; cursor: pointer;" class="toggle-chart">
+                        <i class="fa fa-minus"></i> <!-- You can replace this with your minus icon -->
+                    </div>
+                </div>
+                <div class="card-body chart-container">
+                    {{ plot1_html|safe }}
+                    <a class='btn btn-sm btn-light' href="#"></a>    
+                </div>
+            </div>
+        </div>
+    
+        <!-- Number of Items per Section Chart -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header" style="background-color: blue;">
+                    <h3 class="card-title" style="display: inline-block; color:white">
+                        Number of Item per Section
+                    </h3>
+                    <!-- Add the plus/minus sign icons -->
+                    <div style="float: right; cursor: pointer;" class="toggle-chart1">
+                        <i class="fa fa-minus"></i> <!-- You can replace this with your minus icon -->
+                    </div>
+                </div>
+                <div class="card-body chart-container1">
+                    
+                    {% if request.user.user_type == "Registeror" %}
+                        
+                    {{ plot2_html|safe }}
+
+                <a class='btn btn-sm btn-primary' href="{% url 'workshop:item_status_chart' %}">View status</a>
+                        {% else %}
+                    
+                        {{ plot3_html|safe }}
+                        <a class='btn btn-sm btn-light' href="#"></a>  
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Section Item Chart -->
+    
+
+</div> 
+
+<script>
+    function toggleChart(canvasId, iconId) {
+        // Your toggle chart logic here
+    }
+</script>
+
+<script>
+    $(document).ready(function () {
+        // show the charts initially
+        $(".chart-container, .chart-container1, .chart-container2").show();
+
+        // Toggle the chart visibility on plus/minus sign click
+        $(".toggle-chart, .toggle-chart1, .toggle-chart2").click(function () {
+            var chartContainer = $(this).closest('.card').find('.chart-container, .chart-container1, .chart-container2');
+
+            // Change the icon based on visibility before toggling
+            if (chartContainer.is(":visible")) {
+                $(this).html('<i class="fa fa-plus"></i>'); 
+            } else {
+                $(this).html('<i class="fa fa-minus"></i>'); 
+            }
+
+            chartContainer.toggle();
+        });
+    });
+</script>
+
+<script>
+    // Activate date picker
+    $(document).ready(function () {
+        $('.datepicker').datepicker({
+            format: 'yyyy-mm-dd',
+            autoclose: true,
+        });
+    });
+
+    // Handle Apply button click
+    $('#apply_date_range').on('click', function () {
+        // Get selected start and end dates
+        var start_date = $('#start_date').val();
+        var end_date = $('#end_date').val();
+
+        // Redirect to the analysis view with selected dates
+        window.location.href = '/analysis/?start_date=' + start_date + '&end_date=' + end_date;
+    });
+</script>
+
+{% endblock %}

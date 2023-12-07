@@ -92,7 +92,7 @@
                     </h3>
                     <!-- Add the plus/minus sign icons -->
                     <div style="float: right; cursor: pointer;" class="toggle-chart1">
-                        <i class="fa fa-minus"></i> <!-- You can replace this with your minus icon -->
+                        <i class="fa fa-plus"></i> <!-- You can replace this with your minus icon -->
                     </div>
                 </div>
                 <div class="card-body chart-container1">
@@ -141,56 +141,25 @@
 </script>
 <script>
     $(document).ready(function () {
-        // Show the chart initially
-        $(".chart-container").show();
+        // show the charts initially
+        $(".chart-container, .chart-container1, .chart-container2").show();
 
         // Toggle the chart visibility on plus/minus sign click
-        $(".toggle-chart").click(function () {
-            $(".chart-container").toggle();
-            // Change the icon based on visibility
-            if ($(".chart-container").is(":visible")) {
-                $(this).html('<i class="fa fa-minus"></i>'); 
-            } else {
-                $(this).html('<i class="fa fa-plus"></i>'); 
-            }
-        });
-    });
-</script>
-<script>
-    $(document).ready(function () {
-        // Show the chart initially
-        $(".chart-container1").show();
+        $(".toggle-chart, .toggle-chart1, .toggle-chart2").click(function () {
+            var chartContainer = $(this).closest('.card').find('.chart-container, .chart-container1, .chart-container2');
 
-        // Toggle the chart visibility on plus/minus sign click
-        $(".toggle-chart1").click(function () {
-            $(".chart-container1").toggle();
-            // Change the icon based on visibility
-            if ($(".chart-container1").is(":visible")) {
-                $(this).html('<i class="fa fa-minus"></i>'); 
-            } else {
+            // Change the icon based on visibility before toggling
+            if (chartContainer.is(":visible")) {
                 $(this).html('<i class="fa fa-plus"></i>'); 
+            } else {
+                $(this).html('<i class="fa fa-minus"></i>'); 
             }
+
+            chartContainer.toggle();
         });
     });
 </script>
 
-<script>
-    $(document).ready(function () {
-        // Show the chart initially
-        $(".chart-container2").show();
-
-        // Toggle the chart visibility on plus/minus sign click
-        $(".toggle-chart2").click(function () {
-            $(".chart-container2").toggle();
-            // Change the icon based on visibility
-            if ($(".chart-container2").is(":visible")) {
-                $(this).html('<i class="fa fa-minus"></i>'); 
-            } else {
-                $(this).html('<i class="fa fa-plus"></i>'); 
-            }
-        });
-    });
-</script>
 
 
 {% endblock %}
