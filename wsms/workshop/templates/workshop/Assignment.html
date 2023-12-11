@@ -113,7 +113,7 @@
                     method="POST" action="{% url 'workshop:complete' data.id %}">
                     {% csrf_token %}
                     <div class="form-group m-2">
-                        <label for="comment">Comment:</label>
+                        <label for="comment">workshop Maintained solution:</label>
                         <textarea class="form-control" id="comment" name="comment" rows="3"
                          placeholder="Write workshop Maintained solution given  here ......."></textarea>
                     </div>

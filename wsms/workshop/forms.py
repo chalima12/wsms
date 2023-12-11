@@ -57,6 +57,10 @@ class ItemForm(forms.ModelForm):
             "district": forms.TextInput(attrs={"class": "form-control"}),
             "remark": forms.Textarea(attrs={"class": "form-control",'placeholder':'Write delivered Item Problem'}),
         }
+        labels = {
+        
+        "remark": "Delivered Item Problem",
+    }
             
 
 from django import forms
@@ -108,7 +112,10 @@ class AssignmentForm(forms.ModelForm):
         "remark": forms.Textarea(attrs={"class": "form-control",'placeholder':'Write workshop tested Problem'}),
         }
 
-
+        labels = {
+        
+        "remark": "Workshop Tested Problem",
+        }
 
 
 

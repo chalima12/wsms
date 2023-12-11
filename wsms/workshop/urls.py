@@ -66,4 +66,6 @@ path('message-count_1/', views.get_message_count_1, name='message_count_1'),
  path('send_reset_email/', send_password_reset_email, name='send_password_reset_email'),
     path('password_reset/<uuid:token>/', password_reset, name='password_reset'),
     path('reset_expired/', reset_expired, name='reset_expired'),
+    path('stock-item-list/', views.StockItemList.as_view(), name='stock_item_list'),
+    path('engineer-item-status/', views.EngineerItemStatusView.as_view(), name='engineer_item_status'),
 ]

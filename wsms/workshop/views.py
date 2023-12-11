@@ -494,6 +494,13 @@ class AssignmentListView(LoginRequiredMixin,ListView):
 
 from datetime import datetime, timedelta
 from django.utils import timezone
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.views.generic import ListView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from .models import Item, Section
+from django.utils import timezone
+from datetime import datetime, timedelta
 
 class ReporttListView(LoginRequiredMixin, ListView):
     model = Item
@@ -501,7 +508,7 @@ class ReporttListView(LoginRequiredMixin, ListView):
     template_name = "workshop/report.html"
     login_url = 'workshop:custom_login'
 
-    def get_queryset(self, start_date, end_date, time_range):
+    def get_queryset(self, start_date, end_date, time_range, selected_section):
         user = self.request.user
         current_date = timezone.now().date()
 
@@ -553,6 +560,9 @@ class ReporttListView(LoginRequiredMixin, ListView):
                 status='pending'
             )
 
+        if selected_section != 'all':
+            queryset = queryset.filter(Section__id=selected_section)
+
         # Customize queryset based on user's role
         if user.user_type == 'Registeror':
             # Display all items for 'Registeror' users
@@ -570,18 +580,35 @@ class ReporttListView(LoginRequiredMixin, ListView):
         start_date = request.GET.get('start_date')
         end_date = request.GET.get('end_date')
         time_range = request.GET.get('time_range', 'all')
+        selected_section = request.GET.get('section', 'all')
 
-        assignments = self.get_queryset(start_date, end_date, time_range)
+        try:
+            items = self.get_queryset(start_date, end_date, time_range, selected_section)
 
-        context = {
-            'assignments': assignments,
-            'time_range': time_range,
-            'report_type': request.GET.get('report_type', 'all'),
-            'start_date': start_date,
-            'end_date': end_date,
-        }
+            sections = Section.objects.filter(is_valid=True)
+            
+            selected_section_name = None
+            if selected_section != 'all':
+                selected_section_name = Section.objects.get(pk=selected_section).name
 
-        return render(request, self.template_name, context)
+            context = {
+                'assignments': items,
+                'time_range': time_range,
+                'report_type': request.GET.get('report_type', 'all'),
+                'start_date': start_date,
+                'end_date': end_date,
+                'sections': sections,
+                'selected_section': selected_section,
+                'selected_section_name': selected_section_name,
+            }
+
+            return render(request, self.template_name, context)
+
+        except Section.DoesNotExist:
+            messages.error(request, 'Selected section does not exist.')
+            return redirect('your_redirect_url')  # Replace 'your_redirect_url' with the appropriate URL
+
+
     
 @login_required(login_url='/login')
 def delete_user(request,pk):
@@ -853,3 +880,81 @@ def password_reset(request, token):
     return render(request, 'workshop/password_reset.html', {'user': user})
 def reset_expired(request):
     return render(request, 'workshop/reset_expired.html')
+
+
+from django.db.models import Count, Sum, Case, When, IntegerField
+
+
+class StockItemList(ListView):
+    model = Stock
+    template_name = 'workshop/stock_item_list.html'
+    context_object_name = 'stocks'
+
+    def get_queryset(self):
+        end_date = datetime.now().date()
+        start_date = end_date - timedelta(days=30)  # Default to one month of data
+
+        # Override default dates if provided in the URL parameters
+        start_date_param = self.request.GET.get('start_date')
+        end_date_param = self.request.GET.get('end_date')
+
+        if start_date_param:
+            start_date = datetime.strptime(start_date_param, '%Y-%m-%d').date()
+
+        if end_date_param:
+            end_date = datetime.strptime(end_date_param, '%Y-%m-%d').date()
+
+        queryset = Stock.objects.annotate(
+            total_items=Count('stocks'),
+            completed_items=Sum(Case(
+                When(stocks__status='completed', stocks__received_date__range=(start_date, end_date), then=1),
+                default=0,
+                output_field=IntegerField()
+            )),
+            damage_items=Sum(Case(
+                When(stocks__status='Damage', stocks__received_date__range=(start_date, end_date), then=1),
+                default=0,
+                output_field=IntegerField()
+            )),
+            pending_items=Sum(Case(
+                When(stocks__status='pending', stocks__received_date__range=(start_date, end_date), then=1),
+                default=0,
+                output_field=IntegerField()
+            )),
+        ).filter(total_items__gt=0)  # Filter out stocks with zero items
+
+        return queryset
+
+
+from datetime import datetime, timedelta
+
+class EngineerItemStatusView(TemplateView):
+    template_name = 'workshop/engineer_item_status.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Default to one month ago for start_date and today for end_date
+        default_start_date = (datetime.now() - timedelta(days=30)).strftime('%Y-%m-%d')
+        default_end_date = datetime.now().strftime('%Y-%m-%d')
+
+        start_date = self.request.GET.get('start_date', default_start_date)
+        end_date = self.request.GET.get('end_date', default_end_date)
+
+        # Annotate the number of items per engineer and per status within the specified date range
+        engineer_items = Item.objects.filter(
+            engineer__isnull=False,
+            received_date__range=(start_date, end_date)
+        ).values(
+            'engineer__id', 'engineer__first_name', 'engineer__last_name'
+        ).annotate(
+            total_items=Count('id'),
+            pending_items=Count('id', filter=Q(status='pending')),
+            damage_items=Count('id', filter=Q(status='Damage')),
+            completed_items=Count('id', filter=Q(status='completed')),
+        )
+
+        context['engineer_items'] = engineer_items
+        context['default_start_date'] = default_start_date
+        context['default_end_date'] = default_end_date
+        return context

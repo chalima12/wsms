@@ -1,14 +1,7 @@
 {% load static %}
 {% block sidebar %}
 <body class="hold-transition sidebar-mini layout-fixed">
-  <div class="wrapper">
-    {% comment %} <div class="preloader flex-column justify-content-center align-items-center">
-      <img class="animation__shake" src="{% static 'dist/img/logoM.png' %}" alt="AdminLTELogo" height="60" width="60">
-    </div> {% endcomment %}
-  
-      
-
-    
+  <div class="wrapper">    
 <aside class="main-sidebar sidebar-dark-primary elevation-4 fixed">
    <!-- Brand Logo -->
    {% if user.is_authenticated %}
@@ -16,7 +9,6 @@
     <img src="{% static 'dist/img/logoM.png' %}" alt="MOTI Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
     <span class="brand-text font-weight-light">MOTI ENGINEERING</span>
   </a>
-
   <!-- Sidebar -->
   <div class="sidebar">
     <!-- Sidebar Menu -->
@@ -45,13 +37,7 @@
               </a>
               </li>  
             {% endif %}
-              
-            
-             
-              
               {% if  user.view_user%}
-                
-              
               {% url 'workshop:user' as user_url %}
               <li class="nav-item">
                 <a href="{{ user_url }}"
@@ -61,10 +47,6 @@
                 </a>
               </li>
               {% endif %}
-                
-              
-                
-             
              {% if user.view_item %}
              {% url 'workshop:item' as item_url %}
              <li class="nav-item">
@@ -74,26 +56,7 @@
                  <p>Items</p>
                </a>
              </li>
-             
              {% endif %}
-              
-            
-            {% comment %} {% if user.view_component %}
-            {% url 'workshop:component' as component_url %}
-            <li class="nav-item">
-              <a href="{{ component_url }}" 
-              class="nav-link {% if request.path == component_url %}active{% endif %}">  
-                <i class="far fa-circle nav-icon"></i>
-                <p>Components</p>
-              </a>
-            </li>
-            
-            {% endif %} {% endcomment %}
-              
-            
-              
-            
-            
             {% if user.view_section %}
             {% url 'workshop:section' as section_url %}
             <li class="nav-item">
@@ -104,14 +67,6 @@
               </a>
             </li>
             {% endif %}
-              
-            
-              
-            
-            
-            
-          
-              
               {% if user.view_assignment %}
               {% url 'workshop:assignment' as assignment_url %}
               <li class="nav-item">
@@ -121,17 +76,8 @@
                   <p>Assignments</p>
                 </a>
               </li>
-              {% endif %}
-                
-              
-              
-                
-             
-              
-                
+              {% endif %}     
           </ul>
-          
-          
           <li class="nav-item menu-open">
             <a href="#" class="nav-link">
                 <i class="nav-icon fas fa-repeat"></i>
@@ -150,7 +96,6 @@
                         </a>
                     </li>
                 {% endif %}
-        
                 {% if user.view_report %}
                     {% url 'workshop:analysis' as an_url %}
                     <li class="nav-item">
@@ -160,14 +105,29 @@
                         </a>
                     </li>
                 {% endif %}
+                {% if user.view_report %}
+                    {% url 'workshop:stock_item_list' as stock_url %}
+                    <li class="nav-item">
+                        <a href="{{ stock_url }}" class="nav-link {% if request.path == stock_url %}active{% endif %}">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>Item per Stock</p>
+                        </a>
+                    </li>
+                {% endif %}
+                {% if user.view_report %}
+                    {% url 'workshop:engineer_item_status' as eng_url %}
+                    <li class="nav-item">
+                        <a href="{{ eng_url }}" class="nav-link {% if request.path == eng_url %}active{% endif %}">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>Item per Engineers</p>
+                        </a>
+                    </li>
+                {% endif %}
             </ul>
         </li>
-        
         {% endif %}
 </aside>
-
 </div>
 </body>
-
 {% endblock sidebar %}
   

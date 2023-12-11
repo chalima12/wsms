@@ -1,0 +1,78 @@
+
+{% extends "./base1.html" %}
+{% block title %}
+    <title>Engineer Item Status</title>
+{% endblock title %}
+
+{% block content1 %}
+<div class="container mt-1">
+        
+<!-- engineer_item_status.html -->
+
+<form method="get" action="{% url 'workshop:engineer_item_status' %}">
+    <label for="start_date">Start Date:</label>
+    <input type="date" id="start_date" name="start_date" value="{{ request.GET.start_date }}" required>
+
+    <label for="end_date">End Date:</label>
+    <input type="date" id="end_date" name="end_date" value="{{ request.GET.end_date }}" required>
+
+    <button type="submit">Filter</button>
+</form>
+
+
+
+</div>
+<div class="container">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'warning' %}alert-warning{% endif %} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
+{% endblock content1 %}
+{% block content %}
+    <div class="container mt-1">
+
+       
+
+      
+
+        <div class="card m-3">
+            <div class="card-header">
+                <h2 class="container mx-5 card-title"> Engineer Item Status </h2>
+            </div>
+            <div class="card-body">
+                <table id="example1" class="table table-bordered table-striped">
+
+                    <thead class="dataTables_info">
+                    <tr>
+                        <th>Engineer</th>
+                        <th>Total Items</th>
+                        <th>Pending Items</th>
+                        <th>Damage Items</th>
+                        <th>Completed Items</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for engineer_item in engineer_items %}
+                    <tr>
+                        <td>{{ engineer_item.engineer__first_name|title }} {{ engineer_item.engineer__last_name|title }}</td>
+                        <td>{{ engineer_item.total_items }}</td>
+                        <td>{{ engineer_item.pending_items }}</td>
+                        <td>{{ engineer_item.damage_items }}</td>
+                        <td>{{ engineer_item.completed_items }}</td>
+                    </tr>
+                {% endfor %}                    
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    
+{% endblock content %}

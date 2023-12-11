@@ -1,0 +1,73 @@
+{% extends "./base1.html" %}
+{% block title %}
+    <title>Number of Item per Stock</title>
+{% endblock title %}
+
+{% block content1 %}
+<div class="container mt-1">
+    <form method="get" action="{% url 'workshop:stock_item_list' %}">
+        <label for="start_date">Start Date:</label>
+        <input type="date" id="start_date" name="start_date" required>
+    
+        <label for="end_date">End Date:</label>
+        <input type="date" id="end_date" name="end_date" required>
+    
+        <button type="submit">Filter</button>
+    </form>
+ 
+</div>
+<div class="container">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'warning' %}alert-warning{% endif %} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
+{% endblock content1 %}
+{% block content %}
+    <div class="container mt-1">
+
+       
+
+      
+
+        <div class="card m-3">
+            <div class="card-header">
+                <h2 class="container mx-5 card-title"> Number of Item per Stock </h2>
+            </div>
+            <div class="card-body">
+                <table id="example1" class="table table-bordered table-striped">
+
+                    <thead class="dataTables_info">
+                    <tr>
+                        <th>Stock</th>
+                        <th>Total </th>
+                        <th>Completed </th>
+                        <th>Damage </th>
+                        <th>Remain </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for stock in stocks %} 
+                    <tr>
+                        <td>{{ stock.number }}</td>
+                        <td>{{ stock.total_items }}</td>
+                        <td>{{ stock.completed_items }}</td>
+                        <td>{{ stock.damage_items }}</td>
+                        <td>{{ stock.pending_items }}</td>
+                    </tr>
+                    {% endfor %}
+                    
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    
+{% endblock content %}

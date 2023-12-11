@@ -18,7 +18,17 @@
                     <option value="completed" {% if report_type == "completed" %}selected{% endif %}>Completed</option>
                     <option value="remaining" {% if report_type == "remaining" %}selected{% endif %}>Remaining</option>
                 </select>
-                
+                <!-- Inside the form for Form 1 -->
+                {% if user.user_type != 'Manager' %}
+                <label for="section">Select Section: </label>
+                <select name="section" id="section">
+                    <option value="all" {% if section == "all" %}selected{% endif %}>All</option>
+                    {% for section in sections %}
+                        <option value="{{ section.id }}" {% if selected_section == section.id %}selected{% endif %}>{{ section.name }}</option>
+                    {% endfor %}
+                </select>
+                {% endif %}
+
                 <label for="start_date">Start Date:</label>
                 <input type="date" name="start_date" id="start_date" value="{{ start_date }}">
                 
@@ -48,7 +58,16 @@
                     <option value="completed" {% if report_type == "completed" %}selected{% endif %}>Completed</option>
                     <option value="remaining" {% if report_type == "remaining" %}selected{% endif %}>Remaining</option>
                 </select>
-    
+                {% if user.user_type != 'Manager' %}
+                <label for="section2">Select Section: </label>
+                <select name="section" id="section2">
+                    <option value="all" {% if section == "all" %}selected{% endif %}>All</option>
+                    {% for section in sections %}
+                        <option value="{{ section.id }}" {% if selected_section == section.id %}selected{% endif %}>{{ section.name }}</option>
+                    {% endfor %}
+                </select>
+                {% endif %}
+
                 <button style='border-radius:10%' class='btn btn-primary btn-sm' type="submit">Generate</button>
             </form>
             </div>
@@ -62,12 +81,14 @@
         <section class="content-header">
             <div class="container-fluid">
 
-                <div class="row mb-2">
-                    <div class="col-sm-6">
-                      
-                        <h1>Reports</h1>
-                    </div>
-               
+                <div class="col-sm-6">
+                    {% if selected_section != 'all' %}
+                        <h1>Reports for {{ selected_section_name }}</h1>
+                    {% else %}
+                        <h1> All Reports</h1>
+                    {% endif %}
+                </div>
+                
             <!-- /.container-fluid -->
         </section>
 
@@ -175,17 +196,18 @@
     <script>
         $(document).ready(function () {
             // Listen for changes in the form elements of Form 1
-            $('#reportForm1 #report_type, #reportForm1 #start_date, #reportForm1 #end_date').on('change', function () {
+            $('#reportForm1 #report_type, #reportForm1 #start_date, #reportForm1 #end_date, #section').on('change', function () {
                 // Trigger form submission for Form 1
                 $('#reportForm1').submit();
             });
-    
+        
             // Listen for changes in the form elements of Form 2
-            $('#reportForm2 #time_range, #reportForm2 #report_type2').on('change', function () {
+            $('#reportForm2 #time_range, #reportForm2 #report_type2, #section2').on('change', function () {
                 // Trigger form submission for Form 2
                 $('#reportForm2').submit();
             });
         });
+        
     </script>    
         
     {% endblock js %}
