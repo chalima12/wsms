@@ -45,8 +45,8 @@
 
                     <thead class="dataTables_info">
                     <tr>
-                        <th>#</th>
-                        <th>Stock</th>
+                        <th>link</th>
+                        <th>Section</th>
                         <th>Total </th>
                         <th>Completed </th>
                         <th>Damage </th>
@@ -54,16 +54,16 @@
                     </tr>
                     </thead>
                     <tbody>
-                    {% for stock in stocks %} 
+                    {% for section in sections %} 
 
                     <tr>
                         <td><a class='btn btn-secondary btn-sm ' style='border-radius:10%'
-                         href="{% url 'workshop:stock_item_detail' stock.id %}"> {{ forloop.counter }}</a></td>
-                        <td>{{ stock.number }}</td>
-                        <td>{{ stock.total_items }}</td>
-                        <td>{{ stock.completed_items }}</td>
-                        <td>{{ stock.damage_items }}</td>
-                        <td>{{ stock.pending_items }}</td>
+                            href="{% url 'workshop:section_item_detail' section.id %}"> list Item</a></td>
+                        <td>{{ section.name }}</td>
+                        <td>{{ section.total_items }}</td>
+                        <td>{{ section.completed_items }}</td>
+                        <td>{{ section.damage_items }}</td>
+                        <td>{{ section.pending_items }}</td>
                     </tr>
                     {% endfor %}
                     

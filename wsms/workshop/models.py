@@ -76,7 +76,7 @@ class Item(models.Model):
     
     received_date = models.DateField(auto_created=True, default=django.utils.timezone.now)
     Section= models.ForeignKey(Section, on_delete=models.CASCADE,related_name='sections')
-    engineer= models.ForeignKey(User, on_delete=models.CASCADE,null=True,blank=True)
+    engineer= models.ForeignKey(User, on_delete=models.CASCADE,null=True,blank=True,related_name='engineers')
     stock_id = models.ForeignKey(Stock,on_delete=models.CASCADE, related_name='stocks')
     Serial_no =models.CharField(max_length=15)
     region = models.CharField(max_length=100,null=True,blank=True)

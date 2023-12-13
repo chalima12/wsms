@@ -51,6 +51,7 @@
 
                     <thead class="dataTables_info">
                     <tr>
+                        <th>View</th>
                         <th>Engineer</th>
                         <th>Total Items</th>
                         <th>Pending Items</th>
@@ -61,6 +62,20 @@
                     <tbody>
                     {% for engineer_item in engineer_items %}
                     <tr>
+                        <td>
+                        
+
+                                <a class='btn btn-secondary btn-sm' style='border-radius:10%' 
+                                href="{% url 'workshop:engineer_item_list' engineer_id=engineer_item.engineer__id %}">
+                                   
+                                    {{ forloop.counter }}
+                                </a>
+                            
+                        </td>
+                        
+                                  
+
+
                         <td>{{ engineer_item.engineer__first_name|title }} {{ engineer_item.engineer__last_name|title }}</td>
                         <td>{{ engineer_item.total_items }}</td>
                         <td>{{ engineer_item.pending_items }}</td>

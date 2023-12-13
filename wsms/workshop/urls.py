@@ -67,5 +67,13 @@ path('message-count_1/', views.get_message_count_1, name='message_count_1'),
     path('password_reset/<uuid:token>/', password_reset, name='password_reset'),
     path('reset_expired/', reset_expired, name='reset_expired'),
     path('stock-item-list/', views.StockItemList.as_view(), name='stock_item_list'),
+    path('stection-item-list/', views.SectionItemList.as_view(), name='section_item_list'),
     path('engineer-item-status/', views.EngineerItemStatusView.as_view(), name='engineer_item_status'),
+    path('stocks/<int:stock_id>/', views.StockItemDetailView.as_view(), name='stock_item_detail'),
+    path('section/<int:section_id>/', views.SectionItemDetailView.as_view(), name='section_item_detail'),
+
+    # path('engineer/<int:pk>/', views.EngineerItemDetailView.as_view(), name='engineer_item_detail'),
+    path('engineer/<int:engineer_id>/items/', views.engineer_item_list, name='engineer_item_list'),
+
+
 ]

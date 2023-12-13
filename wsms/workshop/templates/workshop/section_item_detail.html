@@ -1,0 +1,188 @@
+<!-- workshop/item_list.html -->
+
+{% extends "./base1.html" %}
+{% block title %}
+    <title>Item List</title>
+{% endblock title %}
+
+{% block content1 %}
+<div class="container mt-1">
+   
+    
+ {% if user.add_item %}
+            <a class="btn btn-warning" href="{% url 'workshop:create-item' %}">
+                <span class="fa fa-plus">
+                    &nbsp;&nbsp; Add Item
+                </span>
+            </a>
+        {% endif %}
+ 
+</div>
+<div class="container">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'warning' %}alert-warning{% endif %} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
+{% endblock content1 %}
+{% block content %}
+    <div class="container mt-1">
+
+        <form method="get" action="{% url 'workshop:section_item_detail' section_id=section.id %}">
+            <label for="start_date">Start Date:</label>
+            <input type="date" id="start_date" name="start_date" required>
+        
+            <label for="end_date">End Date:</label>
+            <input type="date" id="end_date" name="end_date" required>
+        
+            <button type="submit">Filter</button>
+        </form>
+        
+
+      
+
+        <div class="card m-3">
+            <div class="card-header">
+                {% if items %}
+                <h2 class="container mx-5 card-title">List of {{ items.0.Section.name }} Items</h2>
+            {% endif %}
+            
+{% comment %}             
+            <p>Start Date: {{ start_date }}</p>
+            <p>End Date: {{ end_date }}</p> {% endcomment %}
+
+            </div>
+            <div class="card-body">
+                <table id="example1" class="table table-bordered table-striped">
+
+                    <thead class="dataTables_info">
+                    <tr>
+                        <th>Ws ID</th>
+                        <th>Received Date</th>
+                        <th>Stock Id</th>
+                        <th>Description</th>
+                        <th>Serial Number</th>
+                        <th>Status</th>
+                        
+                            <th>View</th>
+                            
+                            
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for data in items %}
+                    <tr>
+                        <td>{{ data.id }}</td>
+                        <td>{{ data.received_date }}</td>
+                        <td>{{ data.stock_id.number }}</td>
+                        <td>{{ data.stock_id.description }}</td>
+                        <td>{{ data.Serial_no }}</td>
+                        <td 
+                        {% if data.status == 'completed' %}style="color:#49FB09;" {% elif data.status == 'pending' %}style="color:red;" 
+                        {% else %}style="color:orange;" {% endif %}><i><b>{{ data.status }}</b></i></td>
+                       
+                        
+                            <td>
+                                <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#itemDetailsModal{{ data.id }}">
+                                    <span class="fas fa-eye">detail</span>
+                                </button>
+                            </td>
+                            
+                    </tr>
+
+                    <!-- Item Details Modal -->
+                    <div class="modal fade" id="itemDetailsModal{{ data.id }}" tabindex="-1" role="dialog" aria-labelledby="itemDetailsModalLabel{{ data.id }}" aria-hidden="true">
+                      <div class="modal-dialog modal-lg" role="document">
+                          <div class="modal-content">
+                              <div class="modal-header">
+                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                      <span aria-hidden="true">&times;</span>
+                                  </button>
+                              </div>
+                              <div class="modal-body">
+                                  <div class="container mt-3">
+                                      <div class="card">
+                                          <div class="card-header">
+                                              <h3 class="card-title">Item Details</h3>
+                                          </div>
+                                          <div class="card-body">
+                                              <div class="row">
+                                                  <div class="col-md-6">
+                                                      <p><strong>WS ID:</strong> {{ data.id }}</p>
+                                                      <p><strong>Received Date:</strong> {{ data.received_date }}</p>
+                                                      <p><strong>Stock ID:</strong> {{ data.stock_id.number }}</p>
+                                                      <p><strong>Serial No:</strong> {{ data.Serial_no }}</p>
+                                                  </div>
+                                                  <div class="col-md-6">
+                                                      <p><strong>Status:</strong> {{ data.status }}</p>
+                                                      <p><strong>Delivered By:</strong> {{ data.delivered_by }}</p>
+                                                      <p><strong>Section:</strong> {{ data.Section}}</p>
+                                                      <p><strong>Region:</strong> {{ data.region}}</p>
+                                                  </div>
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div>
+                              <div class="modal-footer">
+                                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                              </div>
+                          </div>
+                      </div>
+                    </div>
+
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    {% if messages.warning %}
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            // create a modal popup with the warning message
+            Swal.fire({
+                icon: 'warning',
+                title: 'Warning',
+                text: '{{ messages.warning }}',
+                confirmButtonText: 'Close'
+            });
+        </script>
+    {% endif %}
+    <!-- Add this script at the end of your HTML file or in a separate JavaScript file -->
+    <script>
+        // Use JavaScript to periodically check for the presence of the success message
+        setInterval(function () {
+            var successMessage = document.querySelector('.alert-success');
+
+            if (successMessage) {
+                // Update the navbar content here
+                // You can use DOM manipulation or make an AJAX request to get updated data
+                // For simplicity, let's assume the updated data is available in a JavaScript variable 'userData'
+                updateNavbar(userData);
+
+                // Remove the success message
+                successMessage.remove();
+            }
+        }, 1000);  // Check every 1 second (adjust the interval as needed)
+
+        function updateNavbar(userData) {
+            // Update the navbar content based on the userData
+            // Use DOM manipulation or any other method that suits your implementation
+            // For example, you can update the user's name and profile picture
+            document.querySelector('.profile-user-name').innerText = userData.user_name;
+
+            if (userData.profile_picture_url) {
+                document.querySelector('.profile-user-img').src = userData.profile_picture_url;
+            }
+        }
+    </script>
+{% endblock content %}
+<!-- workshop/item_list.html -->

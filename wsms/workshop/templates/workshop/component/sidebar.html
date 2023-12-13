@@ -115,6 +115,16 @@
                     </li>
                 {% endif %}
                 {% if user.view_report %}
+                {% url 'workshop:section_item_list' as section_url %}
+                <li class="nav-item">
+                    <a href="{{ section_url }}" class="nav-link {% if request.path == section_url %}active{% endif %}">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Item per Section</p>
+                    </a>
+                </li>
+            {% endif %}
+
+                {% if user.view_report %}
                     {% url 'workshop:engineer_item_status' as eng_url %}
                     <li class="nav-item">
                         <a href="{{ eng_url }}" class="nav-link {% if request.path == eng_url %}active{% endif %}">

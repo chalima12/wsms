@@ -924,9 +924,131 @@ class StockItemList(ListView):
         ).filter(total_items__gt=0)  # Filter out stocks with zero items
 
         return queryset
+class SectionItemList(ListView):
+    model = Section
+    template_name = 'workshop/section_item_list.html'
+    context_object_name = 'sections'
+
+    def get_queryset(self):
+        end_date = datetime.now().date()
+        start_date = end_date - timedelta(days=30)  # Default to one month of data
+
+        # Override default dates if provided in the URL parameters
+        start_date_param = self.request.GET.get('start_date')
+        end_date_param = self.request.GET.get('end_date')
+
+        if start_date_param:
+            start_date = datetime.strptime(start_date_param, '%Y-%m-%d').date()
+
+        if end_date_param:
+            end_date = datetime.strptime(end_date_param, '%Y-%m-%d').date()
+
+        queryset = Section.objects.annotate(
+            total_items=Count('sections'),
+            completed_items=Sum(Case(
+                When(sections__status='completed', sections__received_date__range=(start_date, end_date), then=1),
+                default=0,
+                output_field=IntegerField()
+            )),
+            damage_items=Sum(Case(
+                When(sections__status='Damage', sections__received_date__range=(start_date, end_date), then=1),
+                default=0,
+                output_field=IntegerField()
+            )),
+            pending_items=Sum(Case(
+                When(sections__status='pending', sections__received_date__range=(start_date, end_date), then=1),
+                default=0,
+                output_field=IntegerField()
+            )),
+        ).filter(total_items__gt=0)  # Filter out stocks with zero items
+
+        return queryset
 
 
-from datetime import datetime, timedelta
+class StockItemDetailView(ListView):
+    model = Item
+    template_name = 'workshop/stock_item_detail.html'
+    context_object_name = 'items'
+
+    def get_queryset(self):
+        stock_id = self.kwargs['stock_id']
+        stock = get_object_or_404(Stock, id=stock_id)
+
+        # Get the start and end dates from the query parameters of StockListView
+        start_date_param = self.request.GET.get('start_date')
+        end_date_param = self.request.GET.get('end_date')
+
+        # If the parameters are not provided, use the default one month range
+        if start_date_param and end_date_param:
+            start_date = datetime.strptime(start_date_param, '%Y-%m-%d').date()
+            end_date = datetime.strptime(end_date_param, '%Y-%m-%d').date()
+        else:
+            # Assuming the items are related to the stock through the reverse relation 'stocks'
+            first_item = stock.stocks.first()
+            start_date = first_item.received_date if first_item else datetime.now().date()
+            end_date = start_date + timedelta(days=30)
+
+        # Filter items based on stock and date range
+        queryset = Item.objects.filter(stock_id=stock_id, received_date__range=(start_date, end_date))
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Pass stock information to the template
+        stock_id = self.kwargs['stock_id']
+        stock = get_object_or_404(Stock, id=stock_id)
+        context['stock'] = stock
+        # Assuming the items are related to the stock through the reverse relation 'stocks'
+        context['start_date'] = stock.stocks.first().received_date if stock.stocks.first() else datetime.now().date()
+        context['end_date'] = context['start_date'] + timedelta(days=30)  # Default one month range
+
+        return context
+
+
+class SectionItemDetailView(ListView):
+    model = Item
+    template_name = 'workshop/section_item_detail.html'
+    context_object_name = 'items'
+
+    def get_queryset(self):
+        section_id = self.kwargs['section_id']
+        section = get_object_or_404(Section, id=section_id)
+
+        # Get the start and end dates from the query parameters of StockListView
+        start_date_param = self.request.GET.get('start_date')
+        end_date_param = self.request.GET.get('end_date')
+
+        # If the parameters are not provided, use the default one month range
+        if start_date_param and end_date_param:
+            start_date = datetime.strptime(start_date_param, '%Y-%m-%d').date()
+            end_date = datetime.strptime(end_date_param, '%Y-%m-%d').date()
+        else:
+            # Assuming the items are related to the section through the reverse relation 'sections'
+            first_item = section.sections.first()
+            start_date = first_item.received_date if first_item else datetime.now().date()
+            end_date = start_date + timedelta(days=30)
+
+        # Filter items based on section and date range
+        queryset = Item.objects.filter(Section=section, received_date__range=(start_date, end_date))
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Pass section information to the template
+        section_id = self.kwargs['section_id']
+
+        section = get_object_or_404(Section, id=section_id)
+        context['section'] = section
+        # Assuming the items are related to the section through the reverse relation 'sections'
+        context['start_date'] = section.sections.first().received_date if section.sections.first() else datetime.now().date()
+        context['end_date'] = context['start_date'] + timedelta(days=30)  # Default one month range
+
+        return context
+
 
 class EngineerItemStatusView(TemplateView):
     template_name = 'workshop/engineer_item_status.html'
@@ -958,3 +1080,42 @@ class EngineerItemStatusView(TemplateView):
         context['default_start_date'] = default_start_date
         context['default_end_date'] = default_end_date
         return context
+
+
+
+
+def engineer_item_list(request, engineer_id):
+    engineer = User.objects.get(pk=engineer_id)
+
+    # Get start and end dates from the request parameters
+    start_date_str = request.GET.get('start_date')
+    end_date_str = request.GET.get('end_date')
+
+    # Default to the data of one week if start or end date is not provided
+    if not start_date_str:
+        # Calculate the start date as the current date minus seven days
+        start_date = timezone.now().date() - timedelta(days=7)
+    else:
+        start_date = timezone.datetime.strptime(start_date_str, '%Y-%m-%d').date()
+
+    if not end_date_str:
+        # Default to the current date if end date is not provided
+        end_date = timezone.now().date()
+    else:
+        end_date = timezone.datetime.strptime(end_date_str, '%Y-%m-%d').date()
+
+    # Filter items based on the date range
+    items = Item.objects.filter(
+        engineer=engineer,
+        received_date__range=(start_date, end_date)
+    )
+
+    context = {
+        'engineer': engineer,
+        'items': items,
+        'start_date': start_date,
+        'end_date': end_date,
+    }
+    
+
+    return render(request, 'workshop/engineer_item_detail.html', context)
