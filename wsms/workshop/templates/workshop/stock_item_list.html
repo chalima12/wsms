@@ -45,7 +45,7 @@
 
                     <thead class="dataTables_info">
                     <tr>
-                        <th>#</th>
+                        <th>Link</th>
                         <th>Stock</th>
                         <th>Total </th>
                         <th>Completed </th>
@@ -57,8 +57,8 @@
                     {% for stock in stocks %} 
 
                     <tr>
-                        <td><a class='btn btn-secondary btn-sm ' style='border-radius:10%'
-                         href="{% url 'workshop:stock_item_detail' stock.id %}"> {{ forloop.counter }}</a></td>
+                        <td><a class='btn btn-info btn-sm ' style='border-radius:10%'
+                         href="{% url 'workshop:stock_item_detail' stock.id %}"><span class='fas fa-eye'>list Item</span></a></td>
                         <td>{{ stock.number }}</td>
                         <td>{{ stock.total_items }}</td>
                         <td>{{ stock.completed_items }}</td>

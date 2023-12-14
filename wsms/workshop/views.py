@@ -1025,7 +1025,7 @@ class SectionItemDetailView(ListView):
             start_date = datetime.strptime(start_date_param, '%Y-%m-%d').date()
             end_date = datetime.strptime(end_date_param, '%Y-%m-%d').date()
         else:
-            # Assuming the items are related to the section through the reverse relation 'sections'
+            # The items are related to the section through the reverse relation 'sections'
             first_item = section.sections.first()
             start_date = first_item.received_date if first_item else datetime.now().date()
             end_date = start_date + timedelta(days=30)
@@ -1043,7 +1043,7 @@ class SectionItemDetailView(ListView):
 
         section = get_object_or_404(Section, id=section_id)
         context['section'] = section
-        # Assuming the items are related to the section through the reverse relation 'sections'
+        # The items are related to the section through the reverse relation 'sections'
         context['start_date'] = section.sections.first().received_date if section.sections.first() else datetime.now().date()
         context['end_date'] = context['start_date'] + timedelta(days=30)  # Default one month range
 
