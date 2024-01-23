@@ -10,14 +10,18 @@
 {% endblock h %}
 
 {% block title %}
-<title>From {{start_date}} to {{end_date}} Report chart</title>
+<title>From {{start_date}} to {{end_date}}  Report chart</title>
     
     
 {% endblock title %}
     
 {% block content %}
 <div class="container">
-    <h1> From {{start_date}} to {{end_date}}Report Charts</h1>
+    <h1> 
+    {% if start_date and end_date %}
+    From {{start_date}} to {{end_date}}  
+    {% endif %}
+        Report Charts</h1>
 
     <div class='row'>
         <!-- Date Picker Inputs -->

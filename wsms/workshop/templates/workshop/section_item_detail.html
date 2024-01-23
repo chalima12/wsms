@@ -7,16 +7,7 @@
 
 {% block content1 %}
 <div class="container mt-1">
-   
-    
- {% if user.add_item %}
-            <a class="btn btn-warning" href="{% url 'workshop:create-item' %}">
-                <span class="fa fa-plus">
-                    &nbsp;&nbsp; Add Item
-                </span>
-            </a>
-        {% endif %}
- 
+
 </div>
 <div class="container">
     {% if messages %}

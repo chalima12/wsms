@@ -75,7 +75,7 @@
                         <td>{{ data.stock_id.description }}</td>
                         <td>{{ data.Serial_no }}</td>
                         <td 
-                        {% if data.status == 'completed' %}style="color:#49FB09;" {% elif data.status == 'pending' %}style="color:red;" 
+                        {% if data.status == 'completed' %}style="color:green;" {% elif data.status == 'pending' %}style="color:red;" 
                         {% else %}style="color:orange;" {% endif %}><i><b>{{ data.status }}</b></i></td>
                        
                         
