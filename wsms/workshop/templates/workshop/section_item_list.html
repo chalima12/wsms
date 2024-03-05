@@ -5,7 +5,7 @@
 
 {% block content1 %}
 <div class="container mt-1">
-    <form method="get" action="{% url 'workshop:stock_item_list' %}">
+    <form method="get" action="{% url 'workshop:section_item_list' %}">
         <label for="start_date">Start Date:</label>
         <input type="date" id="start_date" name="start_date" required>
     
@@ -38,7 +38,7 @@
 
         <div class="card m-3">
             <div class="card-header">
-                <h2 class="container mx-5 card-title"> Number of Item per Stock </h2>
+                <h2 class="container mx-5 card-title"> Number of Item per Section</h2>
             </div>
             <div class="card-body">
                 <table id="example1" class="table table-bordered table-striped">

@@ -28,7 +28,7 @@
         
         <!-- /.card-header -->
         <div class="card-body">
-            <table id="example1" class="table table-bordered table-striped">
+            <table id="example3" class="table table-bordered table-striped">
                 <thead class="dataTables_info">
                     <tr>
                         <th>WS ID</th>
@@ -36,6 +36,7 @@
                         <th>Item</th>
                         <th>Engineer</th>
                         <th>Action</th>
+                        <th>component</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -83,6 +84,17 @@
                                 
                             
                         </td>
+                        <td>
+                            
+                                <a class='btn btn-secondary btn-sm' style='border-radius:10%' href="{% url 'workshop:create-component' data.id %}">
+                                    <span>
+                                        Add component
+                                    </span>
+                                </a>
+                           
+                         
+                        </td>
+                        
                     </tr>
                     {% include 'workshop/item_detail.html' %}
                     {% endfor %}
@@ -109,32 +121,43 @@
             </div>
             <div class="modal-body">
                 <!-- Your existing complete form content goes here -->
-                                <form class='card p-3 mt-5 bg-light complete-modal-form'
+                <form class='card p-3 mt-5 bg-light complete-modal-form'
                     method="POST" action="{% url 'workshop:complete' data.id %}">
                     {% csrf_token %}
                     <div class="form-group m-2">
                         <label for="comment">workshop Maintained solution:</label>
                         <textarea class="form-control" id="comment" name="comment" rows="3"
-                         placeholder="Write workshop Maintained solution given  here ......."></textarea>
+                         placeholder="Write workshop Maintained solution given  here ......." required></textarea>
                     </div>
                     <div class="form-check m-2">
-                        <input type="checkbox" class="form-check-input" id="is_damage" name="is_damage">
-                        <label class="form-check-label" for="is_damage">Damage? check this if Item is damage</label>
+                        <input type="checkbox" class="form-check-input is_damage" id="is_damage_{{ data.id }}" name="is_damage">
+                        <label class="form-check-label" for="is_damage_{{ data.id }}">Damage? check this if Item is damage</label>
                     </div>
                     <div class="form-check m-2">
-                        <input type="checkbox" class="form-check-input" id="is_maintainable_onfield" name="is_maintainable_onfield">
-                        <label class="form-check-label" for="is_maintainable_onfield">Maintainable On field? check this if Item can Maintainable on Site</label>
+                        <input type="checkbox" class="form-check-input is_maintainable_onfield" id="is_maintainable_onfield_{{ data.id }}" name="is_maintainable_onfield">
+                        <label class="form-check-label" for="is_maintainable_onfield_{{ data.id }}">Maintainable On field? check this if Item can Maintainable on Site</label>
                     </div>
                     <div class="col-4 m-3">
                         <button type="submit" class="btn btn-primary">Submit</button>
                     </div>
                 </form>
-
             </div>
         </div>
     </div>
 </div>
+<script>
+    $(document).ready(function() {
+        $('#is_damage_{{ data.id }}').change(function() {
+            if ($(this).is(':checked')) {
+                $('#is_maintainable_onfield_{{ data.id }}').prop('checked', false).prop('disabled', true);
+            } else {
+                $('#is_maintainable_onfield_{{ data.id }}').prop('disabled', false);
+            }
+        });
+    });
+</script>
 {% endfor %}
+
 
 <!-- Add this script to the end of your template -->
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>

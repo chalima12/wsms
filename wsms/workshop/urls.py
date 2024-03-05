@@ -34,16 +34,17 @@ urlpatterns = [
      path('report', views.ReporttListView.as_view(), name='report'),
     #  path('delete', views.delete, name='delete'),
    #create
+   
      path('create-item', views.ItemCreateView.as_view(),name='create-item'),
-     path('create-component/<str:id>', views.ComponentCreateView.as_view(),name='create-component'),
-     path("register", views.UserCreateView.as_view(), name="register"),
+     path('create-component/<str:id>', views.component_create_view,name='create-component'),
+     path("user/register", views.UserCreateView.as_view(), name="register"),
      path('create-section', views.SectionCreateView.as_view(),name='create-section'),
      path('create-assignment/<str:id>', views.AssignmentCreateView.as_view(),name='create-assignment'),
     #  path('save_assignment', views.save_assignment_view,name='save_assignment'),
      path('change_password/', views.change_password, name='change_password'),
      path('password_change_done/', views.password_change_done, name='password_change_done'),
      path('accounts/', include('django.contrib.auth.urls')), 
-
+ path('create_material_request/<int:project_id>/', views.create_material_request, name='create_material_request'),
 # delete
 path("delete-user/<str:pk>",views.delete_user ,name="delete-user"),
 path('item_delete/<str:pk>',views.delete_item, name='item_delete'),

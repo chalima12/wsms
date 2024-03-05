@@ -42,25 +42,44 @@ class UserPermissionsForm(forms.ModelForm):
         'delete_section': forms.CheckboxInput(),
         'delete_assignment': forms.CheckboxInput(),
         }
+
+
 class ItemForm(forms.ModelForm):
-    Section = forms.ModelChoiceField(queryset=Section.objects.filter(is_valid=True), 
-            label="Section",widget=forms.Select(attrs={"class":"form-control"}))
+    REGIONS_CHOICES = [
+        ('Central', 'Central'),
+        ('East', 'East'),
+        ('West', 'West'),
+        ('North', 'North'),
+        ('South', 'South'),
+    ]
+
+    Section = forms.ModelChoiceField(
+        queryset=Section.objects.filter(is_valid=True),
+        label="Section",
+        widget=forms.Select(attrs={"class": "form-control"})
+    )
+
+    region = forms.ChoiceField(
+        choices=REGIONS_CHOICES,
+        label="Region",
+        widget=forms.Select(attrs={"class": "form-control"})
+    )
+
     class Meta:
         model = Item
-        fields = [ "Section","stock_id", "Serial_no",'region','branch', "delivered_by", "remark"]
+        fields = ["Section", "stock_id", "Serial_no", 'region', 'branch', "delivered_by", "remark"]
         widgets = {
-             "Section": forms.Select(attrs={"class": "form-control"}),
+            "Section": forms.Select(attrs={"class": "form-control"}),
             "stock_id": forms.Select(attrs={"class": "form-control select2"}),
             "Serial_no": forms.TextInput(attrs={"class": "form-control"}),
             "received_by": forms.TextInput(attrs={"class": "form-control"}),
-            "region": forms.TextInput(attrs={"class": "form-control"}),
+            "branch": forms.TextInput(attrs={"class": "form-control"}),
             "district": forms.TextInput(attrs={"class": "form-control"}),
-            "remark": forms.Textarea(attrs={"class": "form-control",'placeholder':'Write delivered Item Problem'}),
+            "remark": forms.Textarea(attrs={"class": "form-control", 'placeholder': 'Write delivered Item Problem'}),
         }
         labels = {
-        
-        "remark": "Delivered Item Problem",
-    }
+            "remark": "Delivered Item Problem",
+        }
             
 
 from django import forms
@@ -71,17 +90,24 @@ from django import forms
 from django.forms import inlineformset_factory
 from .models import Component
 
+
+
 class ComponentForm(forms.ModelForm):
     class Meta:
         model = Component
-        fields = ["stock_id", "Serial_no"]
+        fields = ["stock_id", "quantity"]
         widgets = {
-            "stock_id": forms.TextInput(attrs={"class": "form-control"}),
-            "Serial_no": forms.TextInput(attrs={"class": "form-control"}),
+            "stock_id": forms.Select(attrs={'class': 'form-control'}),
+            'quantity': forms.NumberInput(attrs={'class': 'form-control'}),
+            'item': forms.TextInput(),  # Hide the item field
         }
 
-ComponentFormSet = inlineformset_factory(Item, Component, form=ComponentForm, extra=1)
-
+    def __init__(self, *args, **kwargs):
+        item_instance = kwargs.pop('item_instance', None)
+        super().__init__(*args, **kwargs)
+        if item_instance:
+            self.fields['item'].initial = item_instance
+            self.fields['item'].widget = forms.HiddenInput()  # Ensure the item field remains hidden
 
 class SectionForm(forms.ModelForm):
     manager = forms.ModelChoiceField(queryset=User.objects.filter(user_type='Manager'

@@ -138,6 +138,35 @@
         {% endif %}
 </aside>
 </div>
+<script>
+  // Wait for the DOM to be ready
+  $(document).ready(function () {
+    // Get the current URL path
+    var currentPath = window.location.pathname;
+
+    // Find the corresponding sidebar link and make it active
+    $('.nav-link').each(function () {
+      var linkPath = $(this).attr('href');
+      // Check if the currentPath starts with linkPath
+      if (currentPath.startsWith(linkPath)) {
+        $(this).addClass('active');
+        // If you want to highlight the parent menu as well, you can uncomment the following line
+        $(this).closest('.nav-item').addClass('menu-open');
+      }
+    });
+
+    // Handle sidebar link clicks
+    $('.nav-link').on('click', function () {
+      // Remove the "active" class from all sidebar links
+      $('.nav-link').removeClass('active');
+      // Add the "active" class to the clicked sidebar link
+      $(this).addClass('active');
+      // If you want to highlight the parent menu as well, you can uncomment the following line
+       $(this).closest('.nav-item').addClass('menu-open');
+    });
+  });
+</script>
 </body>
+
 {% endblock sidebar %}
   

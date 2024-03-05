@@ -66,6 +66,7 @@ class Section(models.Model):
     name = models.CharField(max_length=100)
     manager = models.ForeignKey(User, on_delete=models.CASCADE,related_name='manage_sections')
     is_valid=models.BooleanField(default=True)
+    # created_at = models.DateTimeField(auto_now_add=True,null=True)
     def __str__(self) -> str:
         return self.name
 class Item(models.Model):
@@ -89,8 +90,8 @@ class Item(models.Model):
           ),default='pending' ,
           auto_created=True
           )
-    remark= models.TextField(blank=True)
-    comment= models.TextField(blank=True)
+    remark= models.TextField(blank=False,null=False)
+    comment= models.TextField(blank=False,null=False)
     is_valid=models.BooleanField(auto_created=True,default=True)
     is_accepted=models.BooleanField(auto_created=True,default=False)
     is_damage=models.BooleanField(auto_created=True,default=False)
@@ -106,8 +107,8 @@ class Item(models.Model):
 class Component(models.Model):
     recived_date=models.DateField(auto_now=True)
     item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name='components')
-    stock_id = models.CharField(max_length=15)
-    Serial_no =models.CharField(max_length=15)
+    stock_id = models.ForeignKey(Stock,on_delete=models.CASCADE, related_name='component_stock')
+    quantity =models.IntegerField(default=1)
     is_valid=models.BooleanField(auto_created=True,default=True)
 
     
@@ -126,7 +127,7 @@ class AssignmentsManager(models.Manager):
 class Assignments(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE,related_name='items')
     engineer= models.ForeignKey(User, on_delete=models.CASCADE)
-    remark= models.TextField(blank=True)
+    remark= models.TextField(blank=False,null=False)
     Assigned_date=models.DateField(auto_now=True)
     completed_date=models.DateField(blank=True,null=True)
     is_valid=models.BooleanField(auto_created=True,default=True)

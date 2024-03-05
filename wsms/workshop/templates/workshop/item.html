@@ -43,7 +43,7 @@
                 <h2 class="container mx-5 card-title">List of Items</h2>
             </div>
             <div class="card-body">
-                <table id="example1" class="table table-bordered table-striped">
+                <table id="example3" class="table table-bordered table-striped">
 
                     <thead class="dataTables_info">
                     <tr>
@@ -75,8 +75,8 @@
                         <td>{{ data.stock_id.description }}</td>
                         <td>{{ data.Serial_no }}</td>
                         <td 
-                        {% if data.status == 'completed' %}style="color:green;" {% elif data.status == 'pending' %}style="color:red;" 
-                        {% else %}style="color:orange;" {% endif %}><i><b>{{ data.status }}</b></i></td>
+                        {% if data.status == 'completed' %}style="color:green;" {% elif data.status == 'pending' %}style="color:orange;" 
+                        {% else %}style="color:red;" {% endif %}><i><b>{{ data.status }}</b></i></td>
                        
                         
                             <td>
@@ -113,7 +113,7 @@
                                    data-url="{% url 'workshop:item_delete' data.id %}"
                                    data-target="#acceptItemModal"
                                    data-message="Are you Sure to delete {{ data.Serial_no }}  ?">
-                                    <i class="far fa-trash-alt">delete</i>
+                                    <i class="far fa-trash-alt">Deactivate</i>
                                     
                                 </a>
                             </td>
@@ -144,10 +144,11 @@
                                                       <p><strong>Serial No:</strong> {{ data.Serial_no }}</p>
                                                   </div>
                                                   <div class="col-md-6">
-                                                      <p><strong>Status:</strong> {{ data.status }}</p>
+                                                      <p ><i><b><strong>Status:</strong> <i {% if data.status == 'completed' %}style="color:green;" {% elif data.status == 'pending' %}style="color:orange;" 
+                                                        {% else %}style="color:red;" {% endif %}> {{ data.status }} </i></p>
                                                       <p><strong>Delivered By:</strong> {{ data.delivered_by }}</p>
                                                       <p><strong>Section:</strong> {{ data.Section}}</p>
-                                                      <p><strong>Region:</strong> {{ data.region}}</p>
+                                                      <p ><strong>Region:</strong> {{ data.region}}</p>
                                                   </div>
                                               </div>
                                           </div>

@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from django.views.generic import UpdateView, CreateView, DetailView, ListView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse, reverse_lazy
-from django.http import JsonResponse
+from django.http import Http404, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib import messages
@@ -15,6 +15,7 @@ from datetime import timedelta, datetime
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_POST
 from django.db.models import Count, Q  # Add this line
+from django.forms import BaseFormSet, inlineformset_factory, modelformset_factory
 
 from .forms import *
 
@@ -27,7 +28,12 @@ import pandas as pd
 from plotly.offline import plot
 
 
-
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth import get_user_model
+from django.core.mail import send_mail
+from django.urls import reverse
+from django.utils import timezone
+from django.http import HttpResponseRedirect
 
 def item_status_chart(request):
     # Get start_date and end_date from the query parameters
@@ -93,6 +99,7 @@ def item_status_chart(request):
 
 
 # Include the image in your template?
+
 @login_required
 def analysis_view(request):
     user = request.user
@@ -171,28 +178,41 @@ def analysis_view(request):
             marker_color='blue',  # Set your desired color for the total count
         )
     )
-    
+    # Display Serial numbers and their total count in a Plotly vertical bar chart
+    items_count = Item.objects.values('Serial_no').annotate(count=models.Count('Serial_no'))
+    filtered_items = {item['Serial_no']: item['count'] for item in items_count if item['count'] > 2}
 
-   
+    # Create a vertical bar chart
+    trace = go.Bar(
+        x=list(filtered_items.keys()),  # Serial numbers on x-axis
+        y=list(filtered_items.values()),  # Total count on y-axis
+        text=[f"Repeation Time: {count}" for count in filtered_items.values()],
+        orientation='v'  # Set orientation to 'v' for vertical bars
+    )
+
+    layout = go.Layout(title='Total Count of Items Registered More Than Two Times', xaxis_title='Serial Number', yaxis_title='Total Count')
+
+    fig4 = go.Figure(data=[trace], layout=layout)
+
+
 
 
     # Convert plots to HTML
     plot1_html = fig1.to_html(full_html=False, config={'displaylogo': False})
     plot2_html = fig2.to_html(full_html=False, config={'displaylogo': False})
     plot3_html = fig3.to_html(full_html=False, config={'displaylogo': False})
+    plot4_html = fig4.to_html(full_html=False, config={'displaylogo': False})
 
     return render(
         request,
         'workshop/data_analysis.html',
         {
-        
             'plot1_html': plot1_html,
             'plot2_html': plot2_html,
             'plot3_html': plot3_html,
-            
+            'plot4_html': plot4_html,
             'start_date': start_date,
             'end_date': end_date,
-            
         },
     )
 
@@ -342,26 +362,78 @@ class ItemCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         if count >= 2:
             messages.warning(self.request, f'This item fixed {count} times before may need special attention.')
         return super().form_valid(form)
+    
 
-class ComponentCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
-    model = Component
-    form_class = ComponentForm
-    template_name = "workshop/add_component.html"
-    login_url = 'workshop:custom_login'
-    success_url = reverse_lazy('workshop:assignment')
-    success_message = "Component successfully created."
+from django.contrib.auth.decorators import login_required
+from django.contrib.messages import success, error
+from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
+from django.forms import modelformset_factory
+from .models import Component, Assignments
+from .forms import ComponentForm
 
-    def get_initial(self):
-        initial = super().get_initial()
-        ass = Assignments.objects.get(id=self.kwargs['id'])
-        item = ass.item
-        initial['item'] = item
-        return initial
+@login_required(login_url='workshop:custom_login')
+def component_create_view(request, id):
+    assignment = get_object_or_404(Assignments, id=id)
+    item = assignment.item
 
-    def form_valid(self, form):
-        # Make sure to set the item field before saving
-        form.instance.item = self.get_initial()['item']
-        return super().form_valid(form)
+    ComponentFormSet = modelformset_factory(
+        Component,
+        form=ComponentForm,
+        extra=10
+    )
+
+    if request.method == 'POST':
+        formset = ComponentFormSet(request.POST)
+        if formset.is_valid():
+            instances = formset.save(commit=False)
+            for instance in instances:
+                instance.item = item
+                instance.save()
+            success(request, "Components successfully created.")
+            return redirect(reverse('workshop:assignment'))
+        else:
+            error(request, "Error occurred while creating components.")
+    else:
+        formset = ComponentFormSet(queryset=Component.objects.none())
+
+    context = {
+        'formset': formset,
+        'item': item,
+    }
+
+    return render(request, 'workshop/add_component.html', context)
+
+
+
+
+
+
+
+
+
+@login_required
+def create_material_request(request, project_id):
+    project_id = int(project_id)
+    # Set a higher value for extra to include more empty forms for new rows
+    BoqFormSet = modelformset_factory(Assignments, form=ComponentForm, extra=5)
+
+    if request.method == 'POST':
+        formset = BoqFormSet(request.POST)
+        if formset.is_valid():
+            for form in formset:
+                if form.cleaned_data.get('request_no'):  # Check if request_no is not empty
+                    obj = form.save(commit=False)
+                    obj.id = project_id
+                    
+                    obj.save()
+
+            messages.success(request, "New material request created successfully!")
+            return redirect('request_list')
+    else:
+        formset = BoqFormSet(queryset=Assignments.objects.none())
+
+    return render(request, 'create_material_request.html', {'formset': formset})
 
 class SectionCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = Section
@@ -405,7 +477,7 @@ class UserListView(LoginRequiredMixin, ListView):
     login_url = 'workshop:custom_login'
 
     def get_queryset(self):
-        return User.objects.filter(is_active=True, is_admin=False)
+        return User.objects.filter(is_active=True).order_by('-id')
 
     def get(self, request, *args, **kwargs):
         users = self.get_queryset()
@@ -423,7 +495,7 @@ class ItemListView(LoginRequiredMixin,ListView):
         
 
         if user_type == 'Registeror':
-            return Item.objects.filter(is_valid=True).order_by('-received_date')
+            return Item.objects.filter(is_valid=True).order_by('-id')
         elif user_type == 'Manager':
             assigned_items = Section.objects.filter(manager=self.request.user, is_valid=True)
             sections_ids = assigned_items.values_list('id', flat=True)
@@ -445,7 +517,7 @@ class ComponentListView(LoginRequiredMixin, ListView):
         user_type = self.request.user.user_type
 
         if user_type == 'Registeror':
-            return Component.objects.filter(is_valid=True).order_by('-recived_date')
+            return Component.objects.filter(is_valid=True).order_by('-id')
         elif user_type == 'Engineer':
             assigned_items = Assignments.objects.filter(engineer=self.request.user, is_valid=True)
             assigned_item_ids = assigned_items.values_list('item_id', flat=True)
@@ -492,15 +564,16 @@ class AssignmentListView(LoginRequiredMixin,ListView):
 
 
 
-from datetime import datetime, timedelta
-from django.utils import timezone
+
+from django.db.models import Sum
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.views.generic import ListView
-from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Item, Section
 from django.utils import timezone
 from datetime import datetime, timedelta
+from django.views.generic import ListView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from .models import Item, Section, Component  # Import your relevant models
+
 
 class ReporttListView(LoginRequiredMixin, ListView):
     model = Item
@@ -549,12 +622,12 @@ class ReporttListView(LoginRequiredMixin, ListView):
                 is_valid=True,
                 status='Damage'
             )
-        if report_type == 'completed':
+        elif report_type == 'completed':
             queryset = queryset.filter(
                 is_valid=True,
                 status='completed'
             )
-        if report_type == 'remaining':
+        elif report_type == 'remaining':
             queryset = queryset.filter(
                 is_valid=True,
                 status='pending'
@@ -565,14 +638,18 @@ class ReporttListView(LoginRequiredMixin, ListView):
 
         # Customize queryset based on user's role
         if user.user_type == 'Registeror':
-            # Display all items for 'Registeror' users
             pass
         elif user.user_type == 'Manager':
-            # Display items related to the manager's section
             queryset = queryset.filter(Section__manager=user)
         elif user.user_type == 'Engineer':
-            # Display items where the engineer is assigned
             queryset = queryset.filter(engineer=user)
+
+        queryset = queryset.prefetch_related('components')  # Prefetch related components for performance
+
+        # Calculate total number of components for each item and add to queryset
+        for item in queryset:
+            total_components = item.components.aggregate(total_quantity=Sum('quantity'))['total_quantity']
+            item.total_components = total_components if total_components is not None else 0
 
         return queryset
 
@@ -602,14 +679,21 @@ class ReporttListView(LoginRequiredMixin, ListView):
                 'selected_section_name': selected_section_name,
             }
 
+            # Additional context
+            components_data = {}
+            for item in items:
+                components_data[item.id] = item.components.all()
+            context['components_data'] = components_data
+
             return render(request, self.template_name, context)
 
         except Section.DoesNotExist:
             messages.error(request, 'Selected section does not exist.')
-            return redirect('your_redirect_url')  # Replace 'your_redirect_url' with the appropriate URL
+            return redirect('/')  # Replace 'your_redirect_url' with the appropriate URL
 
 
-    
+
+
 @login_required(login_url='/login')
 def delete_user(request,pk):
     user=User.objects.get(id=pk)
@@ -833,12 +917,7 @@ class StockSearchView(View):
         data = [{'id': stock.number, 'text': stock.number} for stock in stocks]
 
         return JsonResponse({'results': data})
-from django.shortcuts import render, get_object_or_404
-from django.contrib.auth import get_user_model
-from django.core.mail import send_mail
-from django.urls import reverse
-from django.utils import timezone
-from django.http import HttpResponseRedirect
+
 
 User = get_user_model()
 
@@ -892,7 +971,7 @@ class StockItemList(ListView):
 
     def get_queryset(self):
         end_date = datetime.now().date()
-        start_date = end_date - timedelta(days=30)  # Default to one month of data
+        start_date = end_date - timedelta(days=365)  # Default to one month of data
 
         # Override default dates if provided in the URL parameters
         start_date_param = self.request.GET.get('start_date')
@@ -931,7 +1010,7 @@ class SectionItemList(ListView):
 
     def get_queryset(self):
         end_date = datetime.now().date()
-        start_date = end_date - timedelta(days=30)  # Default to one month of data
+        start_date = end_date - timedelta(days=365)  # Default to one month of data
 
         # Override default dates if provided in the URL parameters
         start_date_param = self.request.GET.get('start_date')
@@ -986,7 +1065,7 @@ class StockItemDetailView(ListView):
             # Assuming the items are related to the stock through the reverse relation 'stocks'
             first_item = stock.stocks.first()
             start_date = first_item.received_date if first_item else datetime.now().date()
-            end_date = start_date + timedelta(days=30)
+            end_date = start_date + timedelta(days=365)
 
         # Filter items based on stock and date range
         queryset = Item.objects.filter(stock_id=stock_id, received_date__range=(start_date, end_date))
@@ -1002,7 +1081,7 @@ class StockItemDetailView(ListView):
         context['stock'] = stock
         # Assuming the items are related to the stock through the reverse relation 'stocks'
         context['start_date'] = stock.stocks.first().received_date if stock.stocks.first() else datetime.now().date()
-        context['end_date'] = context['start_date'] + timedelta(days=30)  # Default one month range
+        context['end_date'] = context['start_date'] + timedelta(days=365)  # Default one month range
 
         return context
 
@@ -1016,7 +1095,7 @@ class SectionItemDetailView(ListView):
         section_id = self.kwargs['section_id']
         section = get_object_or_404(Section, id=section_id)
 
-        # Get the start and end dates from the query parameters of StockListView
+          # Get the start and end dates from the query parameters of StockListView
         start_date_param = self.request.GET.get('start_date')
         end_date_param = self.request.GET.get('end_date')
 
@@ -1025,10 +1104,10 @@ class SectionItemDetailView(ListView):
             start_date = datetime.strptime(start_date_param, '%Y-%m-%d').date()
             end_date = datetime.strptime(end_date_param, '%Y-%m-%d').date()
         else:
-            # The items are related to the section through the reverse relation 'sections'
+            # Assuming the items are related to the stock through the reverse relation 'stocks'
             first_item = section.sections.first()
             start_date = first_item.received_date if first_item else datetime.now().date()
-            end_date = start_date + timedelta(days=30)
+            end_date = start_date + timedelta(days=365)
 
         # Filter items based on section and date range
         queryset = Item.objects.filter(Section=section, received_date__range=(start_date, end_date))
@@ -1040,12 +1119,30 @@ class SectionItemDetailView(ListView):
 
         # Pass section information to the template
         section_id = self.kwargs['section_id']
-
         section = get_object_or_404(Section, id=section_id)
+
+        # Use the current date as the default start date
+        default_start_date = datetime.now().date()
+
+        # Get the start and end dates from the query parameters
+        start_date_param = self.request.GET.get('start_date')
+        end_date_param = self.request.GET.get('end_date')
+
+        # If start_date_param is provided, try to parse it; otherwise, use the default_start_date
+        context['start_date'] = (
+            datetime.strptime(start_date_param, '%Y-%m-%d').date()
+            if start_date_param
+            else default_start_date
+        )
+
+        # If end_date_param is provided, try to parse it; otherwise, use the default_start_date + 365 days
+        context['end_date'] = (
+            datetime.strptime(end_date_param, '%Y-%m-%d').date()
+            if end_date_param
+            else context['start_date'] + timedelta(days=365)
+        )
+
         context['section'] = section
-        # The items are related to the section through the reverse relation 'sections'
-        context['start_date'] = section.sections.first().received_date if section.sections.first() else datetime.now().date()
-        context['end_date'] = context['start_date'] + timedelta(days=30)  # Default one month range
 
         return context
 
@@ -1057,7 +1154,7 @@ class EngineerItemStatusView(TemplateView):
         context = super().get_context_data(**kwargs)
 
         # Default to one month ago for start_date and today for end_date
-        default_start_date = (datetime.now() - timedelta(days=30)).strftime('%Y-%m-%d')
+        default_start_date = (datetime.now() - timedelta(days=365)).strftime('%Y-%m-%d')
         default_end_date = datetime.now().strftime('%Y-%m-%d')
 
         start_date = self.request.GET.get('start_date', default_start_date)
@@ -1094,7 +1191,7 @@ def engineer_item_list(request, engineer_id):
     # Default to the data of one week if start or end date is not provided
     if not start_date_str:
         # Calculate the start date as the current date minus seven days
-        start_date = timezone.now().date() - timedelta(days=7)
+        start_date = timezone.now().date() - timedelta(days=365)
     else:
         start_date = timezone.datetime.strptime(start_date_str, '%Y-%m-%d').date()
 

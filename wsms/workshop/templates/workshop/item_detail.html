@@ -22,7 +22,8 @@
                                   <p><strong>Serial No:</strong> {{ data.item.Serial_no }}</p>
                               </div>
                               <div class="col-md-6">
-                                  <p><strong>Status:</strong> {{ data.item.status }}</p>
+                                <p ><i><b><strong>Status:</strong> <i {% if data.item.status == 'completed' %}style="color:green;" {% elif data.item.status == 'pending' %}style="color:orange;" 
+                                    {% else %}style="color:red;" {% endif %}> {{ data.item.status }} </i></p>
                                   <p><strong>Delivered By:</strong> {{ data.item.delivered_by }}</p>
                                   <p><strong>Section:</strong> {{ data.item.Section }}</p>
                                   <p><strong>Region:</strong> {{ data.item.region }}</p>

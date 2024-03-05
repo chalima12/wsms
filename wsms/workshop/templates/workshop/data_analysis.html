@@ -87,7 +87,24 @@
     </div>
     
     <!-- Section Item Chart -->
-    
+    <div class="row">
+        <!-- Item Status Chart -->
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header" style="background-color: red;">
+                    <h3 class="card-title" style="display: inline-block; color:white">Frequently registered Item</h3>
+                    <!-- Add the plus/minus sign icons -->
+                    <div style="float: right; cursor: pointer;" class="toggle-chart">
+                        <i class="fa fa-minus"></i> <!-- You can replace this with your minus icon -->
+                    </div>
+                </div>
+                <div class="card-body chart-container">
+                    {{ plot4_html|safe }}
+                    <a class='btn btn-sm btn-light' href="#"></a>    
+                </div>
+            </div>
+        </div>
+    </div>
 
 </div> 
 

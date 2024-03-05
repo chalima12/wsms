@@ -1,22 +1,36 @@
-
 {% extends "./base1.html" %}
 {% load crispy_forms_tags %}
 {% block content %}
-<  
 <div class="container mt-3">
   <form method="post" autocomplete='off' class='card p-3 mt-5 bg-light'>
-
-<div class="container card p-1 mt-0 text-center border-primary bg-gray" >
-  <h3>  Add The Component </h3>
-
+    <div class="container card p-1 mt-0 text-center border-primary bg-gray">
+      <h3>Add The Component</h3>
+    </div>
+    {% csrf_token %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Number</th>
+          <th>Item WS ID</th>
+          <th>Stock ID</th>
+          <th>Quantity</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{ formset.management_form }}
+        {% for form in formset %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>{{ item.id }}</td>
+          <td>{{ form.stock_id }}</td>
+          <td>{{ form.quantity }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div class="col-4">
+      <button type="submit" class="btn btn-primary btn-md" style='border-radius:10%'>Add The Component</button>
+    </div>
+  </form>
 </div>
-		{% csrf_token %}
-		
-        {{ form|crispy }}
-<div class="col-4">
-	<button type="submit" class="btn btn-primary btn-md" style='border-radius:10%'>Add The Component</button>
-  </div>
-
-	</form>
-  </div>
 {% endblock content %}
