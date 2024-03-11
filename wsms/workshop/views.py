@@ -518,124 +518,122 @@ class AssignmentListView(LoginRequiredMixin,ListView):
             return Assignments.objects.filter(is_valid=True, engineer=user).order_by('-id')
 
 
-class ReporttListView(ListView):
-    model = Item
-    context_object_name = 'assignments'
-    template_name = "workshop/report.html"
+from django.shortcuts import render
+from django.db.models import Sum
+from django.utils import timezone
+from datetime import datetime, timedelta
+from .models import Item, Section
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_GET
 
-    def get_queryset(self):
-        user = self.request.user
-        current_date = timezone.now().date()
 
-        start_date = self.request.GET.get('start_date')
-        end_date = self.request.GET.get('end_date')
-        time_range = self.request.GET.get('time_range', 'all')
-        selected_section = self.request.GET.get('section', 'all')
+@login_required
+@require_GET
+def report_list_view(request):
+    user = request.user
+    current_date = timezone.now().date()
 
-        if start_date and end_date:
-            start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
-            end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
-        else:
-            if time_range == 'daily':
-                start_date = current_date
-            elif time_range == 'weekly':
-                start_date = current_date - timedelta(days=(current_date.weekday() - 4) % 7)
-            elif time_range == 'monthly':
-                start_date = current_date.replace(day=1)
-            elif time_range == 'quarterly':
-                quarter_start_month = ((current_date.month - 1) // 3) * 3 + 1
-                start_date = current_date.replace(month=quarter_start_month, day=1)
-            elif time_range == 'yearly':
-                start_date = current_date.replace(month=1, day=1)
-            elif time_range == 'all':
-                start_date = None
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    time_range = request.GET.get('time_range', 'all')
+    selected_section = request.GET.get('section', 'all')
 
-        if start_date is not None:
-            queryset = Item.objects.filter(
-                received_date__gte=start_date,
-                received_date__lte=end_date or current_date,
-                is_valid=True
-            ).order_by('-id')
-        else:
-            queryset = Item.objects.filter(
-                is_valid=True
-            ).order_by('-id')
+    if start_date and end_date:
+        start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+        end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
+    else:
+        if time_range == 'daily':
+            start_date = current_date
+        elif time_range == 'weekly':
+            start_date = current_date - timedelta(days=(current_date.weekday() - 4) % 7)
+        elif time_range == 'monthly':
+            start_date = current_date.replace(day=1)
+        elif time_range == 'quarterly':
+            quarter_start_month = ((current_date.month - 1) // 3) * 3 + 1
+            start_date = current_date.replace(month=quarter_start_month, day=1)
+        elif time_range == 'yearly':
+            start_date = current_date.replace(month=1, day=1)
+        elif time_range == 'all':
+            start_date = None
 
-        # Additional filters based on report_type
-        report_type = self.request.GET.get('report_type', 'all')
+    if start_date is not None:
+        queryset = Item.objects.filter(
+            received_date__gte=start_date,
+            received_date__lte=end_date or current_date,
+            is_valid=True
+        ).order_by('-id')
+    else:
+        queryset = Item.objects.filter(
+            is_valid=True
+        ).order_by('-id')
 
-        if report_type == 'damage':
-            queryset = queryset.filter(
-                is_valid=True,
-                status='Damage'
-            )
-        elif report_type == 'completed':
-            queryset = queryset.filter(
-                is_valid=True,
-                status='completed'
-            )
-        elif report_type == 'remaining':
-            queryset = queryset.filter(
-                is_valid=True,
-                status='pending'
-            )
+    # Additional filters based on report_type
+    report_type = request.GET.get('report_type', 'all')
 
-        if selected_section != 'all':
-            queryset = queryset.filter(Section__id=selected_section)
+    if report_type == 'damage':
+        queryset = queryset.filter(
+            is_valid=True,
+            status='Damage'
+        )
+    elif report_type == 'completed':
+        queryset = queryset.filter(
+            is_valid=True,
+            status='completed'
+        )
+    elif report_type == 'remaining':
+        queryset = queryset.filter(
+            is_valid=True,
+            status='pending'
+        )
 
-        # Customize queryset based on user's role
-        if user.user_type == 'Registeror':
-            pass
-        elif user.user_type == 'Manager':
-            queryset = queryset.filter(Section__manager=user)
-        elif user.user_type == 'Engineer':
-            queryset = queryset.filter(engineer=user)
+    if selected_section != 'all':
+        queryset = queryset.filter(Section__id=selected_section)
 
-        queryset = queryset.prefetch_related('components')  # Prefetch related components for performance
+    # Customize queryset based on user's role
+    if user.user_type == 'Registeror':
+        pass
+    elif user.user_type == 'Manager':
+        queryset = queryset.filter(Section__manager=user)
+    elif user.user_type == 'Engineer':
+        queryset = queryset.filter(engineer=user)
 
-        return queryset
+    queryset = queryset.prefetch_related('components')  # Prefetch related components for performance
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+    # Additional context
+    sections = Section.objects.filter(is_valid=True)
 
-        start_date = self.request.GET.get('start_date')
-        end_date = self.request.GET.get('end_date')
-        time_range = self.request.GET.get('time_range', 'all')
-        selected_section = self.request.GET.get('section', 'all')
+    selected_section_name = None
+    if selected_section != 'all':
+        selected_section_name = Section.objects.get(pk=selected_section).name
 
-        items = self.get_queryset()  # No need to pass arguments here
-
-        sections = Section.objects.filter(is_valid=True)
-
-        selected_section_name = None
-        if selected_section != 'all':
-            selected_section_name = Section.objects.get(pk=selected_section).name
-
-        context = {
-            'assignments': items,
-            'time_range': time_range,
-            'report_type': self.request.GET.get('report_type', 'all'),
-            'start_date': start_date,
-            'end_date': end_date,
-            'sections': sections,
-            'selected_section': selected_section,
-            'selected_section_name': selected_section_name,
-        }
-
-        # Additional context
+    assignments = []
+    for item in queryset:
         components_data = {}
-        total_components = {}
+        total_quantity = 0
+        components = item.components.all()
+        components_data[item.id] = components
+        total_quantity = components.aggregate(total_quantity=Sum('quantity'))['total_quantity']
+        total_quantity = total_quantity if total_quantity is not None else 0
 
-        for item in items:
-            components = item.components.all()
-            components_data[item.id] = components
-            total_quantity = components.aggregate(total_quantity=Sum('quantity'))['total_quantity']
-            total_components[item.id] = total_quantity if total_quantity is not None else 0
+        assignments.append({
+            'item': item,
+            'components_data': components_data,
+            'total_quantity': total_quantity
+        })
 
-        context['components_data'] = components_data
-        context['total_components'] = total_components
+    context = {
+        'assignments': assignments,
+        'time_range': time_range,
+        'report_type': request.GET.get('report_type', 'all'),
+        'start_date': start_date,
+        'end_date': end_date,
+        'sections': sections,
+        'selected_section': selected_section,
+        'selected_section_name': selected_section_name,
+    }
 
-        return context
+    return render(request, 'workshop/report.html', context)
+
 
 
 

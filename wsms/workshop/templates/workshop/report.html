@@ -150,28 +150,28 @@
                                     {% for assignment in assignments %}
                                         <tr >
                                             <td>{{ forloop.counter }}</td>
-                                            <td>{{ assignment.id }}</td>
-                                            <td>{{ assignment.Section }}</td>
-                                            <td>{{ assignment.received_date }}</td>
-                                            <td>{{ assignment.stock_id.number }}</td>
-                                            <td>{{ assignment.stock_id.description }}</td>
+                                            <td>{{ assignment.item.id }}</td>
+                                            <td>{{ assignment.item.Section }}</td>
+                                            <td>{{ assignment.item.received_date }}</td>
+                                            <td>{{ assignment.item.stock_id.number }}</td>
+                                            <td>{{ assignment.item.stock_id.description }}</td>
                                             <td>{{ assignment.Serial_no }}</td>
                                             
                                             
                                             
-                                            <td>{{ assignment.delivered_by }}</td>
-                                            <td>{{ assignment.branch }}</td>
-                                            <td>{{ assignment.region }}</td>
-                                            <td>{{ assignment.remark }}</td>
+                                            <td>{{ assignment.item.delivered_by }}</td>
+                                            <td>{{ assignment.item.branch }}</td>
+                                            <td>{{ assignment.item.region }}</td>
+                                            <td>{{ assignment.item.remark }}</td>
                                             
                                             <td>
-                                                {% for item in assignment.items.all %}
+                                                {% for item in assignment.item.items.all %}
                                                     {{ item.remark }}
                                                 {% endfor %}
                                             </td>
                                             
                                             <td>
-                                                {% for item in assignment.items.all %}
+                                                {% for item in assignment.item.items.all %}
                                                     {% if item.completed_date %}
                                                         {{ item.completed_date }}
                                                     {% endif %}
@@ -179,7 +179,7 @@
                                             </td>
                                             
                                             <td>
-                                                {% for item in assignment.items.all %}
+                                                {% for item in assignment.item.items.all %}
                                                     {% if item.engineer %}
                                                         {{ item.engineer }}
                                                     {% endif %}
@@ -189,28 +189,31 @@
                                             <td>{{ assignment.comment }}</td>
                                             
                                             <td 
-                                                {% if assignment.status == 'completed' %}style="color:green;" 
+                                                {% if assignment.item.status == 'completed' %}style="color:green;" 
                                                 {% elif assignment.status == 'pending' %}style="color:orange;" 
                                                 {% else %}style="color:red;" {% endif %}>
                                                 <i><b>{{ assignment.status }}</b></i>
-                                            </td>
-                                            
                                             <td>{% if assignment.is_maintainable_onfield %}Yes{% else %}No{% endif %}</td>
                                            
 
+                                           
                                             <td>
                                                 <!-- Link to component details view -->
-                                                
-                                                    
-                                                    {% for item_id, total_quantity in total_components.items.id %}
-                                                    
-                                            {{ total_quantity }}
-                                                {% endfor %}
-                                               
-                                                <a style='border-radius:10%' href="{% url 'workshop:component_detail' assignment.id %}" class="btn btn-info btn-sm">
-                                                    <span class="fas fa-eye">list</span>
-                                                </a>
+                                                {% if assignment.item.id %}
+                                                    {% with components_count=assignment.item.components.all|length %}
+                                                        {% if components_count > 0 %}
+                                                            <a style='border-radius:10%' href="{% url 'workshop:component_detail' assignment.item.id %}" class="btn btn-info btn-sm">
+                                                                <span class="fas fa-eye">list</span> 
+                                                            </a>
+                                                        {% else %}
+                                                            <span>No components</span>
+                                                        {% endif %}
+                                                    {% endwith %}
+                                                {% endif %}
                                             </td>
+                                            
+                                            
+                                            
                                         </tr>
                                    
                                     {% endfor %}

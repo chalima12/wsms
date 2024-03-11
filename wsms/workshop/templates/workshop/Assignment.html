@@ -36,7 +36,8 @@
                         <th>Item</th>
                         <th>Engineer</th>
                         <th>Action</th>
-                        <th>component</th>
+                        {% if user.add_component  %}<th>component</th>{% endif %}
+                        
                     </tr>
                 </thead>
                 <tbody>
@@ -84,17 +85,20 @@
                                 
                             
                         </td>
+                        {% if user.add_component and data.item.status == 'pending' %}
                         <td>
-                            
-                                <a class='btn btn-secondary btn-sm' style='border-radius:10%' href="{% url 'workshop:create-component' data.id %}">
-                                    <span>
-                                        Add component
-                                    </span>
-                                </a>
-                           
-                         
+                            <a class='btn btn-secondary btn-sm' style='border-radius:10%' href="{% url 'workshop:create-component' data.id %}">
+                                <span>Add component</span>
+                            </a>
+                       
+                    {% elif user.add_component and data.item.status != 'pending' %}
+                        <td>
+                            <a class='btn btn-secondary btn-sm disabled' style='border-radius:10%' href="{% url 'workshop:create-component' data.id %}">
+                                <span>Add component</span>
+                            </a>
                         </td>
-                        
+                    {% endif %}
+                    
                     </tr>
                     {% include 'workshop/item_detail.html' %}
                     {% endfor %}

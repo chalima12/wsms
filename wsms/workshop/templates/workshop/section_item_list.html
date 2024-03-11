@@ -5,60 +5,76 @@
 
 {% block content1 %}
 <div class="container mt-1">
-    <form method="get" action="{% url 'workshop:section_item_list' %}">
+    <form id="dateForm" method="get" action="{% url 'workshop:section_item_list' %}">
         <label for="start_date">Start Date:</label>
         <input type="date" id="start_date" name="start_date" required>
     
         <label for="end_date">End Date:</label>
         <input type="date" id="end_date" name="end_date" required>
-    
-        <button type="submit">Filter</button>
     </form>
- 
 </div>
-<div class="container">
+
+<script>
+    // Get the date inputs
+    const startDateInput = document.getElementById('start_date');
+    const endDateInput = document.getElementById('end_date');
+
+    // Add event listeners to detect changes in the date inputs
+    startDateInput.addEventListener('change', handleDateChange);
+    endDateInput.addEventListener('change', handleDateChange);
+
+    function handleDateChange() {
+        // Get the selected dates
+        const startDate = startDateInput.value;
+        const endDate = endDateInput.value;
+
+        // Update the form action URL with the selected dates
+        const formAction = "{% url 'workshop:section_item_list' %}?start_date=" + startDate + "&end_date=" + endDate;
+        document.getElementById('dateForm').action = formAction;
+
+        // Submit the form
+        document.getElementById('dateForm').submit();
+    }
+</script>
+{% endblock content1 %}
+
+{% block content %}
+<div class="container mt-1">
     {% if messages %}
-        {% for message in messages %}
-            <div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'warning' %}alert-warning{% endif %} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        {% endfor %}
+        <div class="container">
+            {% for message in messages %}
+                <div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'warning' %}alert-warning{% endif %} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% endfor %}
+        </div>
     {% endif %}
 </div>
-{% endblock content1 %}
-{% block content %}
-    <div class="container mt-1">
 
-       
-
-      
-
-        <div class="card m-3">
-            <div class="card-header">
-                <h2 class="container mx-5 card-title"> Number of Item per Section</h2>
-            </div>
-            <div class="card-body">
-                <table id="example1" class="table table-bordered table-striped">
-
-                    <thead class="dataTables_info">
+<div class="container mt-1">
+    <div class="card m-3">
+        <div class="card-header">
+            <h2 class="container mx-5 card-title"> Number of Item per Section</h2>
+        </div>
+        <div class="card-body">
+            <table id="example1" class="table table-bordered table-striped">
+                <thead class="dataTables_info">
                     <tr>
                         <th>link</th>
                         <th>Section</th>
-                        <th>Total </th>
-                        <th>Completed </th>
-                        <th>Damage </th>
-                        <th>Remain </th>
+                        <th>Total</th>
+                        <th>Completed</th>
+                        <th>Damage</th>
+                        <th>Remain</th>
                     </tr>
-                    </thead>
-                    <tbody>
-                    {% for section in sections %} 
-
+                </thead>
+                <tbody>
+                    {% for section in sections %}
                     <tr>
-                        <td><a class='btn btn-info btn-sm ' style='border-radius:10%'
-                            href="{% url 'workshop:section_item_detail' section.id %}"> <span class='fas fa-eye'>list Item</span></a></td>
+                        <td><a class='btn btn-info btn-sm' style='border-radius:10%' href="{% url 'workshop:section_item_detail' section.id %}"> <span class='fas fa-eye'>list Item</span></a></td>
                         <td>{{ section.name }}</td>
                         <td>{{ section.total_items }}</td>
                         <td>{{ section.completed_items }}</td>
@@ -66,12 +82,9 @@
                         <td>{{ section.pending_items }}</td>
                     </tr>
                     {% endfor %}
-                    
-                    </tbody>
-                </table>
-            </div>
+                </tbody>
+            </table>
         </div>
     </div>
-
-    
+</div>
 {% endblock content %}
