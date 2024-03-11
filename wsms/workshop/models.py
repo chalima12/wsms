@@ -18,7 +18,7 @@ class User(AbstractBaseUser,PermissionsMixin):
     last_name = models.CharField(max_length=50)
     user_name = models.EmailField(max_length=50,unique=1)
     pass_word= models.CharField(max_length=50)
-    user_type = models.CharField(choices=user_type,default="Engineer")
+    user_type = models.CharField(choices=user_type,default="Engineer",max_length=20)
     is_active=models.BooleanField(auto_created=True,default=True)
     is_staff = models.BooleanField(default=True,null=True,auto_created=True,blank=True)
     is_superuser = models.BooleanField(default=False,auto_created=True,null=True,blank=True)
@@ -88,7 +88,8 @@ class Item(models.Model):
           ('Damage', "Damage"),
            ('completed', "Completed"),
           ),default='pending' ,
-          auto_created=True
+          auto_created=True,
+          max_length=20
           )
     remark= models.TextField(blank=False,null=False)
     comment= models.TextField(blank=False,null=False)

@@ -9,8 +9,8 @@
 <div class="content-wrapper">
     <div class="card">
         <div class="row m-2">
-            <div class="col-sm-6">
-                <form method="get" class="float-right" id="reportForm1">
+            <div class="col-md-6">
+                <form method="get" id="reportForm1">
                     <div class="mb-3">
                         <label for="report_type" class="form-label">Select Report Type:</label>
                         <select name="report_type" id="report_type" class="form-select">
@@ -20,7 +20,7 @@
                             <option value="remaining" {% if report_type == "remaining" %}selected{% endif %}>Remaining</option>
                         </select>
                     </div>
-
+        
                     {% if user.user_type != 'Manager' %}
                     <div class="mb-3">
                         <label for="section" class="form-label">Select Section:</label>
@@ -32,23 +32,28 @@
                         </select>
                     </div>
                     {% endif %}
-
-                    <div class="mb-3">
-                        <label for="start_date" class="form-label">Start Date:</label>
-                        <input type="date" name="start_date" id="start_date" class="form-control" value="{{ start_date }}">
+        
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="start_date" class="form-label">Start Date:</label>
+                                <input type="date" name="start_date" id="start_date" class="form-control" value="{{ start_date }}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="end_date" class="form-label">End Date:</label>
+                                <input type="date" name="end_date" id="end_date" class="form-control" value="{{ end_date }}">
+                            </div>
+                        </div>
                     </div>
-
-                    <div class="mb-3">
-                        <label for="end_date" class="form-label">End Date:</label>
-                        <input type="date" name="end_date" id="end_date" class="form-control" value="{{ end_date }}">
-                    </div>
-
+        
                     <button class="btn btn-primary" type="submit">Generate</button>
                 </form>
             </div>
-
-            <div class="col-sm-6">
-                <form method="get" class="float-right" id="reportForm2">
+        
+            <div class="col-md-6">
+                <form method="get" id="reportForm2">
                     <div class="mb-3">
                         <label for="time_range" class="form-label">Select Time Range:</label>
                         <select name="time_range" id="time_range" class="form-select">
@@ -60,7 +65,7 @@
                             <option value="all" {% if time_range == "all" %}selected{% endif %}>All</option>
                         </select>
                     </div>
-
+        
                     <div class="mb-3">
                         <label for="report_type2" class="form-label">Select Report Type:</label>
                         <select name="report_type" id="report_type2" class="form-select">
@@ -70,7 +75,7 @@
                             <option value="remaining" {% if report_type == "remaining" %}selected{% endif %}>Remaining</option>
                         </select>
                     </div>
-
+        
                     {% if user.user_type != 'Manager' %}
                     <div class="mb-3">
                         <label for="section2" class="form-label">Select Section:</label>
@@ -82,12 +87,15 @@
                         </select>
                     </div>
                     {% endif %}
-
+        
                     <button class="btn btn-primary" type="submit">Generate</button>
                 </form>
             </div>
         </div>
-    </div>
+        
+        
+        
+
     <!-- Content Wrapper. Contains page content -->
     
     <!-- Content Header (Page header) -->
@@ -100,7 +108,7 @@
                     <h1>All Reports</h1>
                 {% endif %}
             </div>
-        <!-- /.container-fluid -->
+        </div>
     </section>
 
     <!-- Main content -->
@@ -110,7 +118,7 @@
                 <div class="col-12">
                     <div class="card m-3">
                         <div class="card-header">
-                            <h2 class="container mx-5 card-title">Number of Item per Section</h2>
+                            <h2 class="container mx-5 card-title">Report table</h2>
                         </div>
                         <div class="card-body">
                             <table id="example1" class="table table-bordered table-striped">
@@ -123,7 +131,7 @@
                                         <th>Stock Id</th>
                                         <th>Description</th>
                                         <th>Serial Number</th>
-                                        <th>Component</th>
+                                        
                                         <th>Delivered By</th>
                                         <th>Delivered Branch</th>
                                         <th>Delivered Region</th>
@@ -134,7 +142,9 @@
                                         <th>Maintained Solution given</th>
                                         <th>Status</th>
                                         <th>Maintainable on Site</th>
+                                        <th>Component</th>
                                     </tr>
+                                   
                                 </thead>
                                 <tbody> 
                                     {% for assignment in assignments %}
@@ -147,13 +157,7 @@
                                             <td>{{ assignment.stock_id.description }}</td>
                                             <td>{{ assignment.Serial_no }}</td>
                                             
-                                            <td>
-                                                {% for item in assignment.items.all %}
-                                                    <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#itemDetailModal{{ item.id }}">
-                                                        <span class="fas fa-eye"></span> Detail
-                                                    </button>
-                                                {% endfor %}
-                                            </td>
+                                            
                                             
                                             <td>{{ assignment.delivered_by }}</td>
                                             <td>{{ assignment.branch }}</td>
@@ -192,41 +196,23 @@
                                             </td>
                                             
                                             <td>{% if assignment.is_maintainable_onfield %}Yes{% else %}No{% endif %}</td>
+                                           
+
+                                            <td>
+                                                <!-- Link to component details view -->
+                                                
+                                                    
+                                                    {% for item_id, total_quantity in total_components.items.id %}
+                                                    
+                                            {{ total_quantity }}
+                                                {% endfor %}
+                                               
+                                                <a style='border-radius:10%' href="{% url 'workshop:component_detail' assignment.id %}" class="btn btn-info btn-sm">
+                                                    <span class="fas fa-eye">list</span>
+                                                </a>
+                                            </td>
                                         </tr>
-
-                                        <!-- Modal -->
-{% for item in assignment.items.all %}
-<div id="itemDetailModal{{ item.id }}" class="modal fade" role="dialog">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Item Detail</h4>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                </div>
-                   
-                    <div class="col-md-12">
-                        <h4>Components for: {{ item.item.id }}</h4>
-                        <ul>
-                            {% for component in components_data.item.id %}
-                                <li>Stock ID: {{ component.component.stock_id }} | Quantity: {{ component.quantity }}</li>
-                            {% empty %}
-                                <li>No components found for this item.</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-{% endfor %}
-
+                                   
                                     {% endfor %}
                                 </tbody>
                             </table>

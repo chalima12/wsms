@@ -1,39 +1,30 @@
-from datetime import datetime, timedelta
 from django.views.generic import UpdateView, CreateView, DetailView, ListView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse, reverse_lazy
-from django.http import Http404, JsonResponse
+from django.http import Http404, JsonResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.forms import PasswordChangeForm
-from django.contrib.auth import update_session_auth_hash
-from django.db.models import Count
+from django.contrib.auth import update_session_auth_hash, authenticate, login, get_user_model
+from django.db.models import Count, Q, Sum
 from django.utils import timezone
-from datetime import timedelta, datetime
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_POST
-from django.db.models import Count, Q  # Add this line
 from django.forms import BaseFormSet, inlineformset_factory, modelformset_factory
-
 from .forms import *
-
 from .models import *
-from django.contrib.auth import authenticate, login
 from plotly import graph_objects as go
-
 import plotly.express as px
 import pandas as pd
 from plotly.offline import plot
+from datetime import datetime, timedelta
+from django.contrib import messages
 
 
-from django.shortcuts import render, get_object_or_404
-from django.contrib.auth import get_user_model
-from django.core.mail import send_mail
-from django.urls import reverse
-from django.utils import timezone
-from django.http import HttpResponseRedirect
+
+@login_required(login_url='workshop:custom_login')
 
 def item_status_chart(request):
     # Get start_date and end_date from the query parameters
@@ -219,20 +210,26 @@ def analysis_view(request):
 
 def user_dashboard(request):
     item_status_counts = Item.objects.values('status').annotate(count=Count('status'))
-    df = pd.DataFrame(item_status_counts)
 
-    # Order the dataframe based on the desired sequence
-    status_order = ['pending', 'completed', 'Damage']
-    df['status'] = pd.Categorical(df['status'], categories=status_order, ordered=True)
-    df = df.sort_values('status')
+    # Check if 'status' key exists in the queryset
+    if item_status_counts.exists():
+        df = pd.DataFrame(item_status_counts)
 
-    # Create a pie chart with hover-over labels
-    fig = px.pie(df, names='status', values='count', hover_data=['count'], labels={'count': 'items'})
-    fig.update_traces(marker=dict(colors=['yellow', 'green', 'red']))
+        # Order the dataframe based on the desired sequence
+        status_order = ['pending', 'completed', 'Damage']
+        df['status'] = pd.Categorical(df['status'], categories=status_order, ordered=True)
+        df = df.sort_values('status')
 
-    # Convert the Plotly figure to HTML with config option
-    html_representation = fig.to_html(full_html=False, config={'displaylogo': False})
+        # Create a pie chart with hover-over labels
+        fig = px.pie(df, names='status', values='count', hover_data=['count'], labels={'count': 'items'})
+        fig.update_traces(marker=dict(colors=['yellow', 'green', 'red']))
 
+        # Convert the Plotly figure to HTML with config option
+        html_representation = fig.to_html(full_html=False, config={'displaylogo': False})
+
+    else:
+        # If 'status' key doesn't exist, set html_representation to None or an appropriate value
+        html_representation = None
 
     # Fetch data for the user dashboard
     item_count = Item.objects.count()
@@ -240,8 +237,7 @@ def user_dashboard(request):
     component_count = Item.objects.filter(is_valid=True, status='Damage').count()
     section_count = Item.objects.filter(is_valid=True, status='completed').count()
 
-
-     # Fetch items per section counts with status
+    # Fetch items per section counts with status
     section_item_counts = Section.objects.filter(is_valid=True).annotate(
         item_count=Count('sections__id'),
         pending_count=Count('sections__id', filter=Q(sections__status='pending')),
@@ -255,7 +251,6 @@ def user_dashboard(request):
     # Create a bar chart using Plotly Express
     fig = px.bar(df, x='name', y=['item_count', 'pending_count', 'Damage_count', 'completed_count'],
                  labels={'value': 'Count', 'variable': 'Status'},
-                 
                  color_discrete_map={'item_count': 'blue', 'pending_count': 'yellow', 'Damage_count': 'red', 'completed_count': 'green'})
 
     # Update layout for better visualization
@@ -265,9 +260,8 @@ def user_dashboard(request):
     # Convert the figure to HTML
     plot_div = plot(fig, output_type='div', include_plotlyjs=False,config={'displaylogo': False})
 
-
     section_item_count = Section.objects.filter(is_valid=True).annotate(
-    item_count=Count('sections__id'),
+        item_count=Count('sections__id'),
     ).values('name', 'item_count').order_by('id')
 
     df = pd.DataFrame(section_item_count)
@@ -293,8 +287,6 @@ def user_dashboard(request):
     # Convert the Plotly figure to HTML
     html_representation1 = fig.to_html(full_html=False, config={'displaylogo': False})
 
-
-
     context = {
         'plot_div': plot_div,
         'chart_html': html_representation,
@@ -306,6 +298,7 @@ def user_dashboard(request):
     }
 
     return render(request, 'workshop/home.html', context)
+
 def custom_login(request):
     if request.method == 'POST':
         username = request.POST['username']
@@ -363,16 +356,8 @@ class ItemCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
             messages.warning(self.request, f'This item fixed {count} times before may need special attention.')
         return super().form_valid(form)
     
+from django.contrib import messages
 
-from django.contrib.auth.decorators import login_required
-from django.contrib.messages import success, error
-from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse
-from django.forms import modelformset_factory
-from .models import Component, Assignments
-from .forms import ComponentForm
-
-@login_required(login_url='workshop:custom_login')
 def component_create_view(request, id):
     assignment = get_object_or_404(Assignments, id=id)
     item = assignment.item
@@ -390,10 +375,10 @@ def component_create_view(request, id):
             for instance in instances:
                 instance.item = item
                 instance.save()
-            success(request, "Components successfully created.")
+            messages.success(request, "Components successfully created.")
             return redirect(reverse('workshop:assignment'))
         else:
-            error(request, "Error occurred while creating components.")
+            messages.error(request, "Error occurred while creating components.")
     else:
         formset = ComponentFormSet(queryset=Component.objects.none())
 
@@ -404,36 +389,6 @@ def component_create_view(request, id):
 
     return render(request, 'workshop/add_component.html', context)
 
-
-
-
-
-
-
-
-
-@login_required
-def create_material_request(request, project_id):
-    project_id = int(project_id)
-    # Set a higher value for extra to include more empty forms for new rows
-    BoqFormSet = modelformset_factory(Assignments, form=ComponentForm, extra=5)
-
-    if request.method == 'POST':
-        formset = BoqFormSet(request.POST)
-        if formset.is_valid():
-            for form in formset:
-                if form.cleaned_data.get('request_no'):  # Check if request_no is not empty
-                    obj = form.save(commit=False)
-                    obj.id = project_id
-                    
-                    obj.save()
-
-            messages.success(request, "New material request created successfully!")
-            return redirect('request_list')
-    else:
-        formset = BoqFormSet(queryset=Assignments.objects.none())
-
-    return render(request, 'create_material_request.html', {'formset': formset})
 
 class SectionCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = Section
@@ -563,27 +518,19 @@ class AssignmentListView(LoginRequiredMixin,ListView):
             return Assignments.objects.filter(is_valid=True, engineer=user).order_by('-id')
 
 
-
-
-from django.db.models import Sum
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from django.utils import timezone
-from datetime import datetime, timedelta
-from django.views.generic import ListView
-from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Item, Section, Component  # Import your relevant models
-
-
-class ReporttListView(LoginRequiredMixin, ListView):
+class ReporttListView(ListView):
     model = Item
     context_object_name = 'assignments'
     template_name = "workshop/report.html"
-    login_url = 'workshop:custom_login'
 
-    def get_queryset(self, start_date, end_date, time_range, selected_section):
+    def get_queryset(self):
         user = self.request.user
         current_date = timezone.now().date()
+
+        start_date = self.request.GET.get('start_date')
+        end_date = self.request.GET.get('end_date')
+        time_range = self.request.GET.get('time_range', 'all')
+        selected_section = self.request.GET.get('section', 'all')
 
         if start_date and end_date:
             start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
@@ -646,51 +593,62 @@ class ReporttListView(LoginRequiredMixin, ListView):
 
         queryset = queryset.prefetch_related('components')  # Prefetch related components for performance
 
-        # Calculate total number of components for each item and add to queryset
-        for item in queryset:
-            total_components = item.components.aggregate(total_quantity=Sum('quantity'))['total_quantity']
-            item.total_components = total_components if total_components is not None else 0
-
         return queryset
 
-    def get(self, request, *args, **kwargs):
-        start_date = request.GET.get('start_date')
-        end_date = request.GET.get('end_date')
-        time_range = request.GET.get('time_range', 'all')
-        selected_section = request.GET.get('section', 'all')
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
 
-        try:
-            items = self.get_queryset(start_date, end_date, time_range, selected_section)
+        start_date = self.request.GET.get('start_date')
+        end_date = self.request.GET.get('end_date')
+        time_range = self.request.GET.get('time_range', 'all')
+        selected_section = self.request.GET.get('section', 'all')
 
-            sections = Section.objects.filter(is_valid=True)
-            
-            selected_section_name = None
-            if selected_section != 'all':
-                selected_section_name = Section.objects.get(pk=selected_section).name
+        items = self.get_queryset()  # No need to pass arguments here
 
-            context = {
-                'assignments': items,
-                'time_range': time_range,
-                'report_type': request.GET.get('report_type', 'all'),
-                'start_date': start_date,
-                'end_date': end_date,
-                'sections': sections,
-                'selected_section': selected_section,
-                'selected_section_name': selected_section_name,
-            }
+        sections = Section.objects.filter(is_valid=True)
 
-            # Additional context
-            components_data = {}
-            for item in items:
-                components_data[item.id] = item.components.all()
-            context['components_data'] = components_data
+        selected_section_name = None
+        if selected_section != 'all':
+            selected_section_name = Section.objects.get(pk=selected_section).name
 
-            return render(request, self.template_name, context)
+        context = {
+            'assignments': items,
+            'time_range': time_range,
+            'report_type': self.request.GET.get('report_type', 'all'),
+            'start_date': start_date,
+            'end_date': end_date,
+            'sections': sections,
+            'selected_section': selected_section,
+            'selected_section_name': selected_section_name,
+        }
 
-        except Section.DoesNotExist:
-            messages.error(request, 'Selected section does not exist.')
-            return redirect('/')  # Replace 'your_redirect_url' with the appropriate URL
+        # Additional context
+        components_data = {}
+        total_components = {}
 
+        for item in items:
+            components = item.components.all()
+            components_data[item.id] = components
+            total_quantity = components.aggregate(total_quantity=Sum('quantity'))['total_quantity']
+            total_components[item.id] = total_quantity if total_quantity is not None else 0
+
+        context['components_data'] = components_data
+        context['total_components'] = total_components
+
+        return context
+
+
+
+
+
+
+
+from django.shortcuts import render
+from .models import Component
+
+def component_detail_view(request, item_id):
+    item_components = Component.objects.filter(item_id=item_id,is_valid=True)
+    return render(request, 'workshop/component_detail.html', {'item_components': item_components})
 
 
 
@@ -726,7 +684,7 @@ def delete_component(request,pk):
     if request.method=='POST':
         component.is_valid=False
         component.save()
-        messages.success(request,  f'Componente {component.Serial_no} has been deactivated successfully.')
+        messages.success(request,  f'Componente {component.id} has been deactivated successfully.')
         return redirect('/component')
     context={'component':component}
     return render(request,'workshop/delete-item.html',context)

@@ -44,7 +44,7 @@ urlpatterns = [
      path('change_password/', views.change_password, name='change_password'),
      path('password_change_done/', views.password_change_done, name='password_change_done'),
      path('accounts/', include('django.contrib.auth.urls')), 
- path('create_material_request/<int:project_id>/', views.create_material_request, name='create_material_request'),
+ path('component/<int:item_id>/', views.component_detail_view, name='component_detail'),
 # delete
 path("delete-user/<str:pk>",views.delete_user ,name="delete-user"),
 path('item_delete/<str:pk>',views.delete_item, name='item_delete'),

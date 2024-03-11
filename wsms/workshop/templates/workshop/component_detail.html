@@ -1,0 +1,38 @@
+{% extends "./base1.html" %}
+{% load static %}
+
+{% block title %}
+    <title>Component Details</title>
+{% endblock title %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="row justify-content-center">
+        <div class="card m-3">
+            <div class="card-header">
+                <h2 class="container mx-5 card-title">List of Components for Item - Stock ID: {{ item_components.0.item.stock_id.number }}, Section: {{ item_components.0.item.Section.name }}</h2>
+            </div>
+            <div class="card-body">
+                <table id="example1" class="table table-bordered table-striped">
+                    <thead class="dataTables_info">
+                        <tr>
+                            <th>Section</th>
+                            <th>Stock Id</th>
+                            <th>Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for component in item_components %}
+                            <tr>
+                                <td>{{ component.item.Section.name }}</td>
+                                <td>{{ component.stock_id.number }}</td>
+                                <td>{{ component.quantity }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
