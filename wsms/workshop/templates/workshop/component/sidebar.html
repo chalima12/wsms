@@ -1,172 +1,188 @@
 {% load static %}
 {% block sidebar %}
-<body class="hold-transition sidebar-mini layout-fixed">
-  <div class="wrapper">    
 <aside class="main-sidebar sidebar-dark-primary elevation-4 fixed">
-   <!-- Brand Logo -->
-   {% if user.is_authenticated %}
-   <a href="{% url 'workshop:chart' %}" class="brand-link">
-    <img src="{% static 'dist/img/logoM.png' %}" alt="MOTI Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-    <span class="brand-text font-weight-light">MOTI ENGINEERING</span>
-  </a>
-  <!-- Sidebar -->
-  <div class="sidebar">
-    <!-- Sidebar Menu -->
-    <nav class="mt-2">
-      <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-        <!-- Add icons to the links using the .nav-icon class
-             with font-awesome or any other icon font library -->
-        <li class="nav-item menu-open">
-          <a href="#" class="nav-link ">
-            <i class="nav-icon fas fa-home"></i>
-            <p>
-              WSMS
-              <i class="right fas fa-angle-left"></i>
-            </p>
-          </a>
-          <ul class="nav nav-treeview">
-            
-            {% if user.view_dashboard %}
-            
-            {% url 'workshop:chart' as chart_url %}
-              <li class="nav-item">
-              <a href="{{ chart_url }}" 
-              class="nav-link {% if request.path == chart_url %}active{% endif %}">
-              <i class="far fa-circle nav-icon"></i>
-             <p> Dashboard</P>
-              </a>
-              </li>  
-            {% endif %}
-              {% if  user.view_user%}
-              {% url 'workshop:user' as user_url %}
-              <li class="nav-item">
-                <a href="{{ user_url }}"
-                 class="nav-link {% if request.path == user_url %}active{% endif %}"> 
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>users</p>
-                </a>
-              </li>
-              {% endif %}
-             {% if user.view_item %}
-             {% url 'workshop:item' as item_url %}
-             <li class="nav-item">
-               <a href="{{ item_url }}" 
-               class="nav-link {% if request.path == item_url %}active{% endif %}"> 
-                 <i class="far fa-circle nav-icon"></i>
-                 <p>Items</p>
-               </a>
-             </li>
-             {% endif %}
-            {% if user.view_section %}
-            {% url 'workshop:section' as section_url %}
-            <li class="nav-item">
-              <a href="{{ section_url }}" 
-              class="nav-link {% if request.path == section_url %}active{% endif %}">  
-                <i class="far fa-circle nav-icon"></i>
-                <p>Sections</p>
-              </a>
-            </li>
-            {% endif %}
-              {% if user.view_assignment %}
-              {% url 'workshop:assignment' as assignment_url %}
-              <li class="nav-item">
-                <a href="{{ assignment_url }}"
-                class="nav-link {% if request.path == assignment_url %}active{% endif %}"> 
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Assignments</p>
-                </a>
-              </li>
-              {% endif %}     
-          </ul>
-          <li class="nav-item menu-open">
-            <a href="#" class="nav-link">
-                <i class="nav-icon fas fa-repeat"></i>
-                <p>
-                    Reports
-                    <i class="right fas fa-angle-left"></i>
-                </p>
-            </a>
-            <ul class="nav nav-treeview">
-                {% if user.view_report %}
-                    {% url 'workshop:report' as report_url %}
-                    <li class="nav-item">
-                        <a href="{{ report_url }}" class="nav-link {% if request.path == report_url %}active{% endif %}">
-                            <i class="far fa-circle nav-icon"></i>
-                            <p>Table</p>
-                        </a>
-                    </li>
-                {% endif %}
-                {% if user.view_report %}
-                    {% url 'workshop:analysis' as an_url %}
-                    <li class="nav-item">
-                        <a href="{{ an_url }}" class="nav-link {% if request.path == an_url %}active{% endif %}">
-                            <i class="far fa-circle nav-icon"></i>
-                            <p>Chart</p>
-                        </a>
-                    </li>
-                {% endif %}
-                {% if user.view_report %}
-                    {% url 'workshop:stock_item_list' as stock_url %}
-                    <li class="nav-item">
-                        <a href="{{ stock_url }}" class="nav-link {% if request.path == stock_url %}active{% endif %}">
-                            <i class="far fa-circle nav-icon"></i>
-                            <p>Item per Stock</p>
-                        </a>
-                    </li>
-                {% endif %}
-                {% if user.view_report %}
-                {% url 'workshop:section_item_list' as section_url %}
-                <li class="nav-item">
-                    <a href="{{ section_url }}" class="nav-link {% if request.path == section_url %}active{% endif %}">
-                        <i class="far fa-circle nav-icon"></i>
-                        <p>Item per Section</p>
+    <!-- Brand Logo -->
+    {% if user.is_authenticated %}
+    <a href="{% url 'workshop:chart' %}" class="brand-link">
+        <img src="{% static 'dist/img/logoM.png' %}" alt="MOTI Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+        <span class="brand-text font-weight-light">MOTI ENGINEERING</span>
+    </a>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <!-- Sidebar Menu -->
+        <nav class="mt-2">
+            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                <!-- Add icons to the links using the .nav-icon class with font-awesome or any other icon font library -->
+                <!-- WSMS Dropdown -->
+                <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-home"></i>
+                        <p>
+                            WSMS
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
                     </a>
+                    <ul class="nav nav-treeview">
+                        {% if user.view_dashboard %}
+                        {% url 'workshop:chart' as chart_url %}
+                        <li class="nav-item">
+                            <a href="{{ chart_url }}" class="nav-link {% if request.path == chart_url %}active{% endif %}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Dashboard</p>
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% if user.view_user %}
+                        {% url 'workshop:user' as user_url %}
+                        <li class="nav-item">
+                            <a href="{{ user_url }}" class="nav-link {% if request.path == user_url %}active{% endif %}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Users</p>
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% if user.view_item %}
+                        {% url 'workshop:item' as item_url %}
+                        <li class="nav-item">
+                            <a href="{{ item_url }}" class="nav-link {% if request.path == item_url %}active{% endif %}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Items</p>
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% if user.view_section %}
+                        {% url 'workshop:section' as section_url %}
+                        <li class="nav-item">
+                            <a href="{{ section_url }}" class="nav-link {% if request.path == section_url %}active{% endif %}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Sections</p>
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% if user.view_assignment %}
+                        {% url 'workshop:assignment' as assignment_url %}
+                        <li class="nav-item">
+                            <a href="{{ assignment_url }}" class="nav-link {% if request.path == assignment_url %}active{% endif %}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Assignments</p>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
                 </li>
-            {% endif %}
-
-                {% if user.view_report %}
-                    {% url 'workshop:engineer_item_status' as eng_url %}
-                    <li class="nav-item">
-                        <a href="{{ eng_url }}" class="nav-link {% if request.path == eng_url %}active{% endif %}">
-                            <i class="far fa-circle nav-icon"></i>
-                            <p>Item per Engineers</p>
-                        </a>
-                    </li>
-                {% endif %}
+                <!-- Reports Dropdown -->
+                <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-repeat"></i>
+                        <p>
+                            Reports
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        {% if user.view_report %}
+                        {% url 'workshop:report' as report_url %}
+                        <li class="nav-item">
+                            <a href="{{ report_url }}" class="nav-link {% if request.path == report_url %}active{% endif %}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Table</p>
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% if user.view_report %}
+                        {% url 'workshop:analysis' as an_url %}
+                        <li class="nav-item">
+                            <a href="{{ an_url }}" class="nav-link {% if request.path == an_url %}active{% endif %}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Chart</p>
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% if user.view_report %}
+                        {% url 'workshop:stock_item_list' as stock_url %}
+                        <li class="nav-item">
+                            <a href="{{ stock_url }}" class="nav-link {% if request.path == stock_url %}active{% endif %}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Item per Stock</p>
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% if user.view_report %}
+                        {% url 'workshop:district_item_list' as district_url %}
+                        <li class="nav-item">
+                            <a href="{{ district_url }}" class="nav-link {% if request.path == district_url %}active{% endif %}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Item per District</p>
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% if user.view_report %}
+                        {% url 'workshop:section_item_list' as section_url %}
+                        <li class="nav-item">
+                            <a href="{{ section_url }}" class="nav-link {% if request.path == section_url %}active{% endif %}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Item per Section</p>
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% if user.view_report %}
+                        {% url 'workshop:engineer_item_status' as eng_url %}
+                        <li class="nav-item">
+                            <a href="{{ eng_url }}" class="nav-link {% if request.path == eng_url %}active{% endif %}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Item per Engineers</p>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </li>
             </ul>
-        </li>
-        {% endif %}
+        </nav>
+    </div>
+    {% endif %}
 </aside>
-</div>
-<script>
-  // Wait for the DOM to be ready
-  $(document).ready(function () {
-    // Get the current URL path
-    var currentPath = window.location.pathname;
 
-    // Find the corresponding sidebar link and make it active
-    $('.nav-link').each(function () {
-      var linkPath = $(this).attr('href');
-      // Check if the currentPath starts with linkPath
-      if (currentPath.startsWith(linkPath)) {
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+  $(document).ready(function () {
+    // Handle sidebar dropdown menus
+    $('.nav-item.has-treeview > .nav-link').on('click', function (e) {
+      e.preventDefault(); // Prevent the default link behavior
+      var $submenu = $(this).next('.nav-treeview');
+      // Toggle the 'menu-open' class on the parent item
+      $(this).parent('.nav-item').toggleClass('menu-open');
+      // Slide toggle the current submenu
+      $submenu.slideToggle();
+      // Activate the parent link if it's not already active
+      if (!$(this).hasClass('active')) {
         $(this).addClass('active');
-        // If you want to highlight the parent menu as well, you can uncomment the following line
-        $(this).closest('.nav-item').addClass('menu-open');
+        // Open the parent submenu
+        $(this).closest('.nav-item.has-treeview').addClass('menu-open');
       }
     });
 
-    // Handle sidebar link clicks
-    $('.nav-link').on('click', function () {
-      // Remove the "active" class from all sidebar links
-      $('.nav-link').removeClass('active');
-      // Add the "active" class to the clicked sidebar link
-      $(this).addClass('active');
-      // If you want to highlight the parent menu as well, you can uncomment the following line
-       $(this).closest('.nav-item').addClass('menu-open');
+    // Activate links based on the current URL path
+    $('.nav-link').each(function () {
+      var linkPath = $(this).attr('href');
+      // Check if the currentPath starts with linkPath
+      if (window.location.pathname.startsWith(linkPath)) {
+        $(this).addClass('active');
+        // Open the parent submenu
+        $(this).closest('.nav-item.has-treeview').addClass('menu-open');
+      }
     });
   });
 </script>
-</body>
+
+
+
+
+
+
+
 
 {% endblock sidebar %}
-  
+

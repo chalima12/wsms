@@ -5,5 +5,5 @@ class Command(BaseCommand):
     help = 'Delete all rows from the Stock model'
 
     def handle(self, *args, **options):
-        Item.objects.all().delete()
+        Component.objects.all().delete()
         self.stdout.write(self.style.SUCCESS('Successfully deleted all rows from Stock model'))

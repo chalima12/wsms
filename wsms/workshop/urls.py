@@ -36,16 +36,16 @@ urlpatterns = [
     #  path('delete', views.delete, name='delete'),
    #create
    
-     path('create-item', views.ItemCreateView.as_view(),name='create-item'),
-     path('create-component/<str:id>', views.component_create_view,name='create-component'),
+     path('item/create-item', views.ItemCreateView.as_view(),name='create-item'),
+     path('assignment/create-component/<str:id>', views.component_create_view,name='create-component'),
      path("user/register", views.UserCreateView.as_view(), name="register"),
-     path('create-section', views.SectionCreateView.as_view(),name='create-section'),
-     path('create-assignment/<str:id>', views.AssignmentCreateView.as_view(),name='create-assignment'),
+     path('section/create-section', views.SectionCreateView.as_view(),name='create-section'),
+     path('item/create-assignment/<str:id>', views.AssignmentCreateView.as_view(),name='create-assignment'),
     #  path('save_assignment', views.save_assignment_view,name='save_assignment'),
      path('change_password/', views.change_password, name='change_password'),
      path('password_change_done/', views.password_change_done, name='password_change_done'),
      path('accounts/', include('django.contrib.auth.urls')), 
- path('component/<int:item_id>/', views.component_detail_view, name='component_detail'),
+ path('report/component/<int:item_id>/', views.component_detail_view, name='component_detail'),
 # delete
 path("delete-user/<str:pk>",views.delete_user ,name="delete-user"),
 path('item_delete/<str:pk>',views.delete_item, name='item_delete'),
@@ -69,13 +69,14 @@ path('message-count_1/', views.get_message_count_1, name='message_count_1'),
     path('password_reset/<uuid:token>/', password_reset, name='password_reset'),
     path('reset_expired/', reset_expired, name='reset_expired'),
     path('stock-item-list/', views.StockItemList.as_view(), name='stock_item_list'),
+    path('district-item-list/', views.DistrictItemList.as_view(), name='district_item_list'),
     path('stection-item-list/', views.SectionItemList.as_view(), name='section_item_list'),
     path('engineer-item-status/', views.EngineerItemStatusView.as_view(), name='engineer_item_status'),
-    path('stocks/<int:stock_id>/', views.StockItemDetailView.as_view(), name='stock_item_detail'),
-    path('section/<int:section_id>/', views.SectionItemDetailView.as_view(), name='section_item_detail'),
+    path('stock-item-list/stocks/<int:stock_id>/', views.StockItemDetailView.as_view(), name='stock_item_detail'),
+    path('stection-item-list/section/<int:section_id>/', views.SectionItemDetailView.as_view(), name='section_item_detail'),
 
     # path('engineer/<int:pk>/', views.EngineerItemDetailView.as_view(), name='engineer_item_detail'),
-    path('engineer/<int:engineer_id>/items/', views.engineer_item_list, name='engineer_item_list'),
+    path('engineer-item-status/engineer/<int:engineer_id>/items/', views.engineer_item_list, name='engineer_item_list'),
 
 
 ]

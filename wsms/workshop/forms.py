@@ -45,13 +45,7 @@ class UserPermissionsForm(forms.ModelForm):
 
 
 class ItemForm(forms.ModelForm):
-    REGIONS_CHOICES = [
-        ('Central', 'Central'),
-        ('East', 'East'),
-        ('West', 'West'),
-        ('North', 'North'),
-        ('South', 'South'),
-    ]
+    
 
     Section = forms.ModelChoiceField(
         queryset=Section.objects.filter(is_valid=True),
@@ -59,9 +53,9 @@ class ItemForm(forms.ModelForm):
         widget=forms.Select(attrs={"class": "form-control"})
     )
 
-    region = forms.ChoiceField(
-        choices=REGIONS_CHOICES,
-        label="Region",
+    region = forms.ModelChoiceField(
+        queryset=District.objects.all(),
+        label="District",
         widget=forms.Select(attrs={"class": "form-control"})
     )
 
@@ -69,6 +63,7 @@ class ItemForm(forms.ModelForm):
         model = Item
         fields = ["Section", "stock_id", "Serial_no", 'region', 'branch', "delivered_by", "remark"]
         widgets = {
+            "region": forms.Select(attrs={"class": "form-control"}),
             "Section": forms.Select(attrs={"class": "form-control"}),
             "stock_id": forms.Select(attrs={"class": "form-control select2"}),
             "Serial_no": forms.TextInput(attrs={"class": "form-control"}),
@@ -79,6 +74,7 @@ class ItemForm(forms.ModelForm):
         }
         labels = {
             "remark": "Delivered Item Problem",
+            'branch':"Call Id"
         }
             
 

@@ -61,6 +61,14 @@ class Stock(models.Model):
 
     def __str__(self) -> str:
         return f" {self.id}. {self.number} ({self.description})"
+    
+class District(models.Model):
+    name = models.CharField(max_length=200)
+    region = models.CharField(max_length=200)
+
+    def __str__(self) -> str:
+        return f"  {self.name} ({self.region})"
+
 
 class Section(models.Model):
     name = models.CharField(max_length=100)
@@ -80,7 +88,7 @@ class Item(models.Model):
     engineer= models.ForeignKey(User, on_delete=models.CASCADE,null=True,blank=True,related_name='engineers')
     stock_id = models.ForeignKey(Stock,on_delete=models.CASCADE, related_name='stocks')
     Serial_no =models.CharField(max_length=15)
-    region = models.CharField(max_length=100,null=True,blank=True)
+    region = models.ForeignKey(District,on_delete=models.CASCADE, related_name='districts')
     branch = models.CharField(max_length=100,null=True,blank=True)
     delivered_by= models.CharField(max_length=100)
     status = models.CharField(choices=(

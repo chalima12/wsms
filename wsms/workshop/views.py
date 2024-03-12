@@ -675,6 +675,19 @@ def delete_item(request,pk):
     context={'item':item}
     return render(request,'workshop/delete-item.html',context)
 
+# activate Item
+@login_required(login_url='/login')
+
+def activate_item(request,pk):
+    item=Item.objects.get(id=pk)
+    if request.method=='POST':
+        item.is_valid=True
+        item.save()
+        messages.success(request,  f'user {item.Serial_no} has been deactivated successfully.')
+        return redirect('/item')
+    context={'item':item}
+    return render(request,'workshop/delete-item.html',context)
+
 @login_required(login_url='/login')
 
 def delete_component(request,pk):
@@ -959,6 +972,53 @@ class StockItemList(ListView):
         ).filter(total_items__gt=0)  # Filter out stocks with zero items
 
         return queryset
+from django.db.models import Q
+
+class DistrictItemList(ListView):
+    model = District
+    template_name = 'workshop/district_item_list.html'
+    context_object_name = 'stocks'
+
+    def get_queryset(self):
+        end_date = datetime.now().date()
+        start_date = end_date - timedelta(days=365)  # Default to one month of data
+
+        # Override default dates if provided in the URL parameters
+        start_date_param = self.request.GET.get('start_date')
+        end_date_param = self.request.GET.get('end_date')
+
+        if start_date_param:
+            start_date = datetime.strptime(start_date_param, '%Y-%m-%d').date()
+
+        if end_date_param:
+            end_date = datetime.strptime(end_date_param, '%Y-%m-%d').date()
+
+        queryset = District.objects.annotate(
+            total_items=Count('districts'),
+            completed_items=Sum(Case(
+                When(Q(districts__status='completed') & Q(districts__received_date__range=(start_date, end_date)), then=1),
+                default=0,
+                output_field=IntegerField()
+            )),
+            damage_items=Sum(Case(
+                When(Q(districts__status='Damage') & Q(districts__received_date__range=(start_date, end_date)), then=1),
+                default=0,
+                output_field=IntegerField()
+            )),
+            pending_items=Sum(Case(
+                When(Q(districts__status='pending') & Q(districts__received_date__range=(start_date, end_date)), then=1),
+                default=0,
+                output_field=IntegerField()
+            )),
+        ).filter(total_items__gt=0)  # Filter out stocks with zero items
+
+        return queryset
+
+    
+
+
+ 
+    
 class SectionItemList(ListView):
     model = Section
     template_name = 'workshop/section_item_list.html'
