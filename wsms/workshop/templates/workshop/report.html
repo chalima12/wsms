@@ -10,6 +10,12 @@
     <div class="card">
         <div class="row m-2">
             <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="container mx-5 card-title">Filter by Date Selection</h2>
+                      </div>
+                      <!-- /.card-header -->
+                 <div class="card-body">
                 <form method="get" id="reportForm1">
                     <div class="mb-3">
                         <label for="report_type" class="form-label">Select Report Type:</label>
@@ -47,12 +53,20 @@
                             </div>
                         </div>
                     </div>
+                </div>
         
-                    <button class="btn btn-primary" type="submit">Generate</button>
+                    {% comment %} <button class="btn btn-primary" type="submit">Generate</button> {% endcomment %}
                 </form>
+            </div>
             </div>
         
             <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="container mx-5 card-title">Filter by  Date range</h2>
+                      </div>
+                      <!-- /.card-header -->
+                 <div class="card-body">
                 <form method="get" id="reportForm2">
                     <div class="mb-3">
                         <label for="time_range" class="form-label">Select Time Range:</label>
@@ -88,12 +102,12 @@
                     </div>
                     {% endif %}
         
-                    <button class="btn btn-primary" type="submit">Generate</button>
+                    {% comment %} <button class="btn btn-primary" type="submit">Generate</button> {% endcomment %}
                 </form>
             </div>
         </div>
-        
-        
+    </div>
+</div>
         
 
     <!-- Content Wrapper. Contains page content -->
@@ -131,9 +145,8 @@
                                         <th>Stock Id</th>
                                         <th>Description</th>
                                         <th>Serial Number</th>
-                                        
                                         <th>Delivered By</th>
-                                        <th>Delivered Branch</th>
+                                        <th>Call Id</th>
                                         <th>Delivered Region</th>
                                         <th>Delivered Item problem</th>
                                         <th>Workshop Tested problem</th>
@@ -141,68 +154,56 @@
                                         <th>Maintained By</th>
                                         <th>Maintained Solution given</th>
                                         <th>Status</th>
-                                        <th>Maintainable on Site</th>
+                                        <th>Is Maintenance-Free</th>
                                         <th>Component</th>
                                     </tr>
-                                   
                                 </thead>
                                 <tbody> 
                                     {% for assignment in assignments %}
-                                        <tr >
+                                        <tr>
                                             <td>{{ forloop.counter }}</td>
-                                            <td>{{ assignment.item.id }}</td>
-                                            <td>{{ assignment.item.Section }}</td>
-                                            <td>{{ assignment.item.received_date }}</td>
-                                            <td>{{ assignment.item.stock_id.number }}</td>
-                                            <td>{{ assignment.item.stock_id.description }}</td>
+                                            <td>{{ assignment.id }}</td>
+                                            <td>{{ assignment.Section.name }}</td>
+                                            <td>{{ assignment.received_date }}</td>
+                                            <td>{{ assignment.stock_id.number }}</td>
+                                            <td>{{ assignment.stock_id.description }}</td>
                                             <td>{{ assignment.Serial_no }}</td>
-                                            
-                                            
-                                            
-                                            <td>{{ assignment.item.delivered_by }}</td>
-                                            <td>{{ assignment.item.branch }}</td>
-                                            <td>{{ assignment.item.region }}</td>
-                                            <td>{{ assignment.item.remark }}</td>
-                                            
+                                            <td>{{ assignment.delivered_by }}</td>
+                                            <td>{{ assignment.branch }}</td>
+                                            <td>{{ assignment.region }}</td>
+                                            <td>{{ assignment.remark }}</td>
                                             <td>
-                                                {% for item in assignment.item.items.all %}
+                                                {% for item in assignment.items.all %}
                                                     {{ item.remark }}
                                                 {% endfor %}
                                             </td>
-                                            
                                             <td>
-                                                {% for item in assignment.item.items.all %}
+                                                {% for item in assignment.items.all %}
                                                     {% if item.completed_date %}
                                                         {{ item.completed_date }}
                                                     {% endif %}
                                                 {% endfor %}
                                             </td>
-                                            
                                             <td>
-                                                {% for item in assignment.item.items.all %}
+                                                {% for item in assignment.items.all %}
                                                     {% if item.engineer %}
                                                         {{ item.engineer }}
                                                     {% endif %}
                                                 {% endfor %}
                                             </td>
-                                            
                                             <td>{{ assignment.comment }}</td>
-                                            
-                                            <td 
-                                                {% if assignment.item.status == 'completed' %}style="color:green;" 
+                                            <td {% if assignment.status == 'completed' %}style="color:green;" 
                                                 {% elif assignment.status == 'pending' %}style="color:orange;" 
                                                 {% else %}style="color:red;" {% endif %}>
                                                 <i><b>{{ assignment.status }}</b></i>
+                                            </td>
                                             <td>{% if assignment.is_maintainable_onfield %}Yes{% else %}No{% endif %}</td>
-                                           
-
-                                           
                                             <td>
                                                 <!-- Link to component details view -->
-                                                {% if assignment.item.id %}
-                                                    {% with components_count=assignment.item.components.all|length %}
+                                                {% if assignment.id %}
+                                                    {% with components_count=assignment.components.all|length %}
                                                         {% if components_count > 0 %}
-                                                            <a style='border-radius:10%' href="{% url 'workshop:component_detail' assignment.item.id %}" class="btn btn-info btn-sm">
+                                                            <a style='border-radius:10%' href="{% url 'workshop:component_detail' assignment.id %}" class="btn btn-info btn-sm">
                                                                 <span class="fas fa-eye">list</span> 
                                                             </a>
                                                         {% else %}
@@ -211,15 +212,11 @@
                                                     {% endwith %}
                                                 {% endif %}
                                             </td>
-                                            
-                                            
-                                            
                                         </tr>
-                                   
                                     {% endfor %}
                                 </tbody>
                             </table>
-                        </div>
+                                                    </div>
                     </div>
                 </div>
             </div>

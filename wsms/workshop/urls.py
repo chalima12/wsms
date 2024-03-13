@@ -31,7 +31,7 @@ urlpatterns = [
      path("component",views.ComponentListView.as_view() , name="component"),
      path('section', views.SectionListView.as_view(), name='section'),
      path('assignment', views.AssignmentListView.as_view(), name='assignment'),
-     path('report', views.report_list_view, name='report'),
+     path('report', views.ReportListView.as_view(), name='report'),
      
     #  path('delete', views.delete, name='delete'),
    #create

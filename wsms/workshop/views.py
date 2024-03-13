@@ -517,122 +517,103 @@ class AssignmentListView(LoginRequiredMixin,ListView):
             # If the user is not a manager, retrieve assignments for the specific engineer
             return Assignments.objects.filter(is_valid=True, engineer=user).order_by('-id')
 
-
-from django.shortcuts import render
-from django.db.models import Sum
+from django.views.generic import ListView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from .models import Item, Section
 from django.utils import timezone
 from datetime import datetime, timedelta
-from .models import Item, Section
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_GET
+from django.db.models import Sum
 
+class ReportListView(LoginRequiredMixin, ListView):
+    model = Item
+    template_name = 'workshop/report.html'
+    context_object_name = 'assignments'
 
-@login_required
-@require_GET
-def report_list_view(request):
-    user = request.user
-    current_date = timezone.now().date()
+    def get_queryset(self):
+        user = self.request.user
+        current_date = timezone.now().date()
 
-    start_date = request.GET.get('start_date')
-    end_date = request.GET.get('end_date')
-    time_range = request.GET.get('time_range', 'all')
-    selected_section = request.GET.get('section', 'all')
+        start_date = self.request.GET.get('start_date')
+        end_date = self.request.GET.get('end_date')
+        time_range = self.request.GET.get('time_range', 'all')
+        selected_section = self.request.GET.get('section', 'all')
 
-    if start_date and end_date:
-        start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
-        end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
-    else:
-        if time_range == 'daily':
-            start_date = current_date
-        elif time_range == 'weekly':
-            start_date = current_date - timedelta(days=(current_date.weekday() - 4) % 7)
-        elif time_range == 'monthly':
-            start_date = current_date.replace(day=1)
-        elif time_range == 'quarterly':
-            quarter_start_month = ((current_date.month - 1) // 3) * 3 + 1
-            start_date = current_date.replace(month=quarter_start_month, day=1)
-        elif time_range == 'yearly':
-            start_date = current_date.replace(month=1, day=1)
-        elif time_range == 'all':
-            start_date = None
+        if start_date and end_date:
+            start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+            end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
+        else:
+            if time_range == 'daily':
+                start_date = current_date
+            elif time_range == 'weekly':
+                start_date = current_date - timedelta(days=(current_date.weekday() - 4) % 7)
+            elif time_range == 'monthly':
+                start_date = current_date.replace(day=1)
+            elif time_range == 'quarterly':
+                quarter_start_month = ((current_date.month - 1) // 3) * 3 + 1
+                start_date = current_date.replace(month=quarter_start_month, day=1)
+            elif time_range == 'yearly':
+                start_date = current_date.replace(month=1, day=1)
+            elif time_range == 'all':
+                start_date = None
 
-    if start_date is not None:
-        queryset = Item.objects.filter(
-            received_date__gte=start_date,
-            received_date__lte=end_date or current_date,
-            is_valid=True
-        ).order_by('-id')
-    else:
-        queryset = Item.objects.filter(
-            is_valid=True
-        ).order_by('-id')
+        if start_date is not None:
+            queryset = Item.objects.filter(
+                received_date__gte=start_date,
+                received_date__lte=end_date or current_date,
+                is_valid=True
+            ).order_by('-id')
+        else:
+            queryset = Item.objects.filter(
+                is_valid=True
+            ).order_by('-id')
 
-    # Additional filters based on report_type
-    report_type = request.GET.get('report_type', 'all')
+        # Additional filters based on report_type
+        report_type = self.request.GET.get('report_type', 'all')
 
-    if report_type == 'damage':
-        queryset = queryset.filter(
-            is_valid=True,
-            status='Damage'
-        )
-    elif report_type == 'completed':
-        queryset = queryset.filter(
-            is_valid=True,
-            status='completed'
-        )
-    elif report_type == 'remaining':
-        queryset = queryset.filter(
-            is_valid=True,
-            status='pending'
-        )
+        if report_type == 'damage':
+            queryset = queryset.filter(
+                is_valid=True,
+                status='Damage'
+            )
+        elif report_type == 'completed':
+            queryset = queryset.filter(
+                is_valid=True,
+                status='completed'
+            )
+        elif report_type == 'remaining':
+            queryset = queryset.filter(
+                is_valid=True,
+                status='pending'
+            )
 
-    if selected_section != 'all':
-        queryset = queryset.filter(Section__id=selected_section)
+        if selected_section != 'all':
+            queryset = queryset.filter(Section__id=selected_section)
 
-    # Customize queryset based on user's role
-    if user.user_type == 'Registeror':
-        pass
-    elif user.user_type == 'Manager':
-        queryset = queryset.filter(Section__manager=user)
-    elif user.user_type == 'Engineer':
-        queryset = queryset.filter(engineer=user)
+        # Customize queryset based on user's role
+        if user.user_type == 'Registeror':
+            pass
+        elif user.user_type == 'Manager':
+            queryset = queryset.filter(Section__manager=user)
+        elif user.user_type == 'Engineer':
+            queryset = queryset.filter(engineer=user)
 
-    queryset = queryset.prefetch_related('components')  # Prefetch related components for performance
+        queryset = queryset.prefetch_related('components')  # Prefetch related components for performance
+        return queryset
 
-    # Additional context
-    sections = Section.objects.filter(is_valid=True)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['time_range'] = self.request.GET.get('time_range', 'all')
+        context['report_type'] = self.request.GET.get('report_type', 'all')
+        context['start_date'] = self.request.GET.get('start_date')
+        context['end_date'] = self.request.GET.get('end_date')
+        context['sections'] = Section.objects.filter(is_valid=True)
+        context['selected_section'] = self.request.GET.get('section', 'all')
+        selected_section_name = None
+        if context['selected_section'] != 'all':
+            selected_section_name = Section.objects.get(pk=context['selected_section']).name
+        context['selected_section_name'] = selected_section_name
+        return context
 
-    selected_section_name = None
-    if selected_section != 'all':
-        selected_section_name = Section.objects.get(pk=selected_section).name
-
-    assignments = []
-    for item in queryset:
-        components_data = {}
-        total_quantity = 0
-        components = item.components.all()
-        components_data[item.id] = components
-        total_quantity = components.aggregate(total_quantity=Sum('quantity'))['total_quantity']
-        total_quantity = total_quantity if total_quantity is not None else 0
-
-        assignments.append({
-            'item': item,
-            'components_data': components_data,
-            'total_quantity': total_quantity
-        })
-
-    context = {
-        'assignments': assignments,
-        'time_range': time_range,
-        'report_type': request.GET.get('report_type', 'all'),
-        'start_date': start_date,
-        'end_date': end_date,
-        'sections': sections,
-        'selected_section': selected_section,
-        'selected_section_name': selected_section_name,
-    }
-
-    return render(request, 'workshop/report.html', context)
 
 
 
@@ -757,17 +738,18 @@ def complete_assignment(request, pk):
     if request.method == 'POST':
         item.status = 'completed'
         assign.completed_date = timezone.now()
-        item.completed_date=assign.completed_date
+        item.completed_date = assign.completed_date
         assign.save()
         
-        if 'is_damage' in request.POST:
-            
+        # Check if the checkbox is checked
+        if request.POST.get('is_damage') == 'on':
             item.is_damage = True
-            item.status='Damage'
+            item.status = 'Damage'
         else:
             item.is_damage = False
             
-        if 'is_maintainable_onfield' in request.POST:
+        # Check if the checkbox is checked
+        if request.POST.get('is_maintainable_onfield') == 'on':
             item.is_maintainable_onfield = True
         else:
             item.is_maintainable_onfield = False
@@ -776,8 +758,6 @@ def complete_assignment(request, pk):
         item.save()
         messages.success(request, f'Assignment {assign.id} has been completed successfully.')
         return redirect('/assignment')
-    context = {'assign': assign}
-    return render(request, 'workshop/complete.html', context)
 
 
 def change_password(request):
