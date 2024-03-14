@@ -6,14 +6,16 @@
 
 <div class="container">
     <h1>Dashboard</h1>
+    
 
     <div class="row">
         <div class="col-lg-3 col-6">
             <!-- small box -->
             <div class="small-box bg-info">
                 <div class="inner">
-                    <h3>{{ item_count }}</h3>
-                    <p>Items</p>
+                    <h3>{{ item_count }}</h3><p>Total Items</p> <hr>
+                     <h3>{{ Today_item }}</h3><p>Today Items</p>
+                    
                 </div>
                 <div class="icon">
                     <i class="ion ion-bag"></i>
@@ -26,7 +28,8 @@
             <div class="small-box bg-success">
                 <div class="inner">
                     <h3>{{ section_count }}<sup style="font-size: 20px"></sup></h3>
-                    <p>Completed Item(Today)</p>
+                    <p>Completed From Total Item</p> <hr>
+                    <h3>{{ Today_completed }}</h3><p>Today Completed</p>
                 </div>
                 <div class="icon">
                     <i class="ion ion-stats-bars"></i>
@@ -39,7 +42,9 @@
             <div class="small-box bg-warning">
                 <div class="inner">
                     <h3>{{ user_count }}</h3>
-                    <p>Total Remaining Items</p>
+                    <p>Total Remaining  Items</p> <hr>
+                    
+                    <h3>{{ user_count }}</h3><p>Today Remaining</p>
                 </div>
                 <div class="icon">
                     <i class="ion ion-person-add"></i>
@@ -52,7 +57,9 @@
             <div class="small-box bg-danger">
                 <div class="inner">
                     <h3>{{ component_count }}</h3>
-                    <p>Damaged Items(from Today tested Item)</p>
+                    <p>Damaged From Total Items</p> <hr>
+                   
+                    <h3>{{ Today_damage }}</h3><p>Today Damage</p>
                 </div>
                 <div class="icon">
                     <i class="ion ion-pie-graph"></i>
@@ -70,7 +77,7 @@
             <div class="card">
                 <div class="card-header" style="background-color: lime;">
                     <h3 class="card-title" style="display: inline-block; color:white">
-                        Item Status
+                        Today's Data Status
                     </h3>
                     <!-- Add the plus/minus sign icons -->
                     <div style="float: right; cursor: pointer;" class="toggle-chart">
@@ -88,7 +95,7 @@
             <div class="card">
                 <div class="card-header" style="background-color: blue;">
                     <h3 class="card-title" style="display: inline-block; color:white">
-                        Number of Item per Section
+                      Total Item Data Status
                     </h3>
                     <!-- Add the plus/minus sign icons -->
                     <div style="float: right; cursor: pointer;" class="toggle-chart1">

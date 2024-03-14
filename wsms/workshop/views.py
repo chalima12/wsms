@@ -230,14 +230,48 @@ def user_dashboard(request):
     else:
         # If 'status' key doesn't exist, set html_representation to None or an appropriate value
         html_representation = None
-
-    # Fetch data for the user dashboard
-    today=timezone.now()
-    item_count = Item.objects.filter(received_date=today,is_valid=True).count()
+    item_count = Item.objects.filter( is_valid=True).count()
     user_count = Item.objects.filter(is_valid=True, status="pending").count()
     component_count = Item.objects.filter(is_valid=True, status='Damage').count()
-    section_count = Item.objects.filter(completed_date=today,is_valid=True, status='completed').count()
-    today=timezone.now()
+    section_count = Item.objects.filter(is_valid=True, status='completed').count()
+
+    # Fetch data for the user dashboard
+        # Get today's date
+    today = timezone.now().date()
+
+    # Query the data
+    Today_item_count = Item.objects.filter(received_date=today, is_valid=True).count()
+    today_pending = Item.objects.filter(is_valid=True, status="pending").count()
+    today_damage = Item.objects.filter(is_valid=True, status='Damage').count()
+    today_completed = Item.objects.filter(completed_date=today, is_valid=True, status='completed').count()
+
+    # Create DataFrame
+    data = {
+        'Category': ['New Item', 'Pending', 'Damage(TODAY)', 'Completed(TODAY)'],
+        'Count': [Today_item_count, today_pending, today_damage, today_completed]
+    }
+
+    # Convert to DataFrame and ensure 'Category' column is of string type
+    df = pd.DataFrame(data)
+    custom_colors = {
+        'New Item': 'rgb(31, 119, 180)',
+        'Pending': 'rgb(255, 255, 0)',
+        'Damage(TODAY)': 'rgb(255, 0, 0)',
+        'Completed(TODAY)': 'rgb(0, 255, 0)'
+    }
+
+    df['Category'] = df['Category'].astype(str)
+
+    # Custom colors
+   
+    # Create pie chart
+    fig = px.bar(df, x='Category', y='Count', title='Distribution of Items by Category',
+             color='Category', color_discrete_map=custom_colors)
+
+# Convert Plotly figure to HTML
+    plot_div1 = fig.to_html(full_html=False,config={'displaylogo': False})
+
+
 
     # Fetch items per section counts with status
     section_item_counts = Section.objects.filter(is_valid=True).annotate(
@@ -291,12 +325,15 @@ def user_dashboard(request):
 
     context = {
         'plot_div': plot_div,
-        'chart_html': html_representation,
-        'chart_html1': html_representation1,
+        'chart_html': plot_div1,
+        'chart_html1': html_representation,
         'user_count': user_count,
         'item_count': item_count,
         'component_count': component_count,
         'section_count': section_count,
+        'Today_item':Today_item_count,
+        'Today_completed':today_completed,
+        'Today_damage':today_damage,
     }
 
     return render(request, 'workshop/home.html', context)
