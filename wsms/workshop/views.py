@@ -232,10 +232,12 @@ def user_dashboard(request):
         html_representation = None
 
     # Fetch data for the user dashboard
-    item_count = Item.objects.count()
+    today=timezone.now()
+    item_count = Item.objects.filter(received_date=today,is_valid=True).count()
     user_count = Item.objects.filter(is_valid=True, status="pending").count()
     component_count = Item.objects.filter(is_valid=True, status='Damage').count()
-    section_count = Item.objects.filter(is_valid=True, status='completed').count()
+    section_count = Item.objects.filter(completed_date=today,is_valid=True, status='completed').count()
+    today=timezone.now()
 
     # Fetch items per section counts with status
     section_item_counts = Section.objects.filter(is_valid=True).annotate(
