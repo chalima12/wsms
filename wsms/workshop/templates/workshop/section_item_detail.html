@@ -25,7 +25,7 @@
 {% block content %}
     <div class="container mt-1">
 
-        <form method="get" action="{% url 'workshop:section_item_detail' section_id=section.id %}">
+        {% comment %} <form method="get" action="{% url 'workshop:section_item_detail' section_id=section.id %}">
             <label for="start_date">Start Date:</label>
             <input type="date" id="start_date" name="start_date" required>
         
@@ -33,7 +33,7 @@
             <input type="date" id="end_date" name="end_date" required>
         
             <button type="submit">Filter</button>
-        </form>
+        </form> {% endcomment %}
         
 
       

@@ -25,6 +25,7 @@ class User(AbstractBaseUser,PermissionsMixin):
     view_dashboard = models.BooleanField(default=True,null=True,auto_created=True,blank=True)
     # for role and permision
     is_admin = models.BooleanField(default=False,null=True,auto_created=True,blank=True)
+    is_wh = models.BooleanField(default=False,null=True,auto_created=True,blank=True)
     view_user = models.BooleanField(default=False,null=True,auto_created=True,blank=True)
     view_item = models.BooleanField(default=False,null=True,auto_created=True,blank=True)
     view_component = models.BooleanField(default=False,null=True,auto_created=True,blank=True)
@@ -101,8 +102,10 @@ class Item(models.Model):
           )
     remark= models.TextField(blank=False,null=False)
     comment= models.TextField(blank=False,null=False)
+    wh_comment= models.TextField(blank=True,null=True)
     is_valid=models.BooleanField(auto_created=True,default=True)
     is_accepted=models.BooleanField(auto_created=True,default=False)
+    is_approved = models.BooleanField(default=False,null=True,auto_created=True,blank=True)
     is_damage=models.BooleanField(auto_created=True,default=False)
     is_maintainable_onfield=models.BooleanField(auto_created=True,default=False)
     assigned=models.BooleanField(auto_created=True,default=False)

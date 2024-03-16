@@ -1,7 +1,7 @@
 {% extends "./base1.html" %}
 
 {% block title %}
-<title>Assignments List</title>
+<title>List of Items for Approval</title>
 {% endblock title %}
 
 {% block content %}
@@ -9,7 +9,7 @@
 <div class="content-wrapper">
     <div class="card">
         <div class="card-header">
-            <h2 class="container mx-5 card-title">List of Assignments</h2>
+            <h2 class="container mx-5 card-title">List of Items for Approval</h2>
             <div class="container">
                 {% if messages %}
                     {% for message in messages %}
@@ -35,24 +35,20 @@
                         <th>Section</th>
                         <th>Item</th>
                         <th>Engineer</th>
-                        <th>Stoore Management Comment</th>
                         <th>Action</th>
-                        {% if user.add_component  %}<th>component</th>{% endif %}
+                       
                         
                     </tr>
                 </thead>
                 <tbody>
                     {% for data in assignments %}
                     <tr>
-                        <td>{{ data.item.id }}</td>
-                        <td>{{ data.item.Section }}</td>
-                        <td>{{ data.item }}</td>
-                        <td>{{ data.engineer }}</td>
-                        <td>{{ data.item.wh_comment }}</td>
+                        <td>{{ data.id }}</td>
+                        <td>{{ data.Section }}</td>
+                        <td>{{ data.stock_id.number }}</td>
+                        <td>{{ data.Section.manager }}</td>
                         <td>
-                            <button type="button" class="btn btn-info btn-sm btn" data-toggle="modal" data-target="#itemDetailsModal{{ data.id }}">
-                                <span class="fas fa-eye">Detail</span>
-                            </button>
+                            
                              
                         {% if not request.user.user_type == "Registeror"%}
                                      {% comment %} {% if not data.item.is_accepted %}
@@ -67,9 +63,9 @@
                                             </a>
                                           {% endcomment %}
 
-                                            {% if  data.item.status == 'pending' %}
+                                            {% if not  data.is_approved %}
                                             <a href="#" class="btn btn-primary btn-sm" data-toggle="modal"
-                                                    data-target="#completeModal{{ data.id }}">Complete</a>
+                                                    data-target="#completeModal{{ data.id }}">Approve</a>
                                                 {% comment %} <a style='border-radius:10%' class="btn btn-warning btn-sm "
                                                     href="{% url 'workshop:create-component' data.id %}">
                                                     <span class="fa fa-plus"> component</span>
@@ -78,31 +74,16 @@
                                             {% else %}
                                                 
                                             <a style='border-radius:10%' class="btn btn-primary btn-sm btn disabled" href='#'>
-                                                <span class="fa">Completed</span>
+                                                <span class="fa">Approved</span>
                                             </a>
                                     {% endif %}
                                     {% comment %} {% endif %} {% endcomment %}
                         {% endif %}
                         
                                 
-                            
-                        </td>
-                        {% if user.add_component and data.item.status == 'pending' %}
-                        <td>
-                            <a class='btn btn-secondary btn-sm' style='border-radius:10%' href="{% url 'workshop:create-component' data.id %}">
-                                <span>Add component</span>
-                            </a>
-                       
-                    {% elif user.add_component and data.item.status != 'pending' %}
-                        <td>
-                            <a class='btn btn-secondary btn-sm disabled' style='border-radius:10%' href="{% url 'workshop:create-component' data.id %}">
-                                <span>Add component</span>
-                            </a>
-                        </td>
-                    {% endif %}
+                        
                     
                     </tr>
-                    {% include 'workshop/item_detail.html' %}
                     {% endfor %}
                 </tbody>
             </table>
@@ -120,52 +101,39 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="completeModalLabel{{ data.id }}">Complete Assignment</h5>
+                <h5 class="modal-title" id="completeModalLabel{{ data.id }}">Approval form</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
                 <!-- Your existing complete form content goes here -->
-                <form class='card p-3 mt-5 bg-light complete-modal-form'
-                    method="POST" action="{% url 'workshop:complete' data.id %}">
+                <form class='card p-3 mt-5 bg-light complete-modal-form' method="POST" action="{% url 'workshop:approve' data.id %}">
                     {% csrf_token %}
                     <div class="form-group m-2">
-                        <label for="comment">workshop Maintained solution:</label>
-                        <textarea class="form-control" id="comment" name="comment" rows="3"
-                         placeholder="Write workshop Maintained solution given  here ......." required></textarea>
+                        <label for="comment">Comment:</label>
+                        <textarea class="form-control" id="comment" name="comment" rows="3" placeholder="Write workshop maintained solution here..." required></textarea>
                     </div>
                     <div class="form-check m-2">
-                        <input type="checkbox" class="form-check-input is_damage" id="is_damage_{{ data.id }}" name="is_damage">
-                        <label class="form-check-label" for="is_damage_{{ data.id }}">Damage:  check this if Item is damage</label>
-                    </div>
-                    <div class="form-check m-2">
-                        <input type="checkbox" class="form-check-input is_maintainable_onfield" id="is_maintainable_onfield_{{ data.id }}" name="is_maintainable_onfield">
-                        <label class="form-check-label" for="is_maintainable_onfield_{{ data.id }}">Maintenance-Free: check this if Item is in healthy status</label>
+                        <input type="checkbox" class="form-check-input" id="is_damage" name="is_damage">
+                        <label class="form-check-label" for="is_damage">Approve</label>
                     </div>
                     <div class="col-4 m-3">
                         <button type="submit" class="btn btn-primary">Submit</button>
                     </div>
                 </form>
+                
             </div>
         </div>
     </div>
 </div>
-<script>
-    $(document).ready(function() {
-        $('#is_damage_{{ data.id }}').change(function() {
-            if ($(this).is(':checked')) {
-                $('#is_maintainable_onfield_{{ data.id }}').prop('checked', false).prop('disabled', true);
-            } else {
-                $('#is_maintainable_onfield_{{ data.id }}').prop('disabled', false);
-            }
-        });
-    });
-</script>
+
 {% endfor %}
 
 
+
 <!-- Add this script to the end of your template -->
+<!-- Add this script at the end of your template -->
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
     $(document).ready(function () {
@@ -183,7 +151,7 @@
                 data: form.serialize(),
                 success: function (data) {
                     // Update modal content or close modal, depending on your requirements
-                    modal.find('.modal-body').html('<p>Assignment completed successfully.</p>');
+                    modal.find('.modal-body').html('<p>Assignment Approved successfully.</p>');
                     // You might want to close the modal after a successful submission
                     // modal.modal('hide');
                 },
@@ -195,6 +163,7 @@
         });
     });
 </script>
+
 <!-- Add this script at the end of your HTML file or in a separate JavaScript file -->
 <script>
     // Use JavaScript to periodically check for the presence of the success message

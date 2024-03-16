@@ -9,7 +9,7 @@
         
 <!-- engineer_item_status.html -->
 
-<form method="get" action="{% url 'workshop:engineer_item_status' %}">
+{% comment %} <form method="get" action="{% url 'workshop:engineer_item_status' %}">
     <label for="start_date">Start Date:</label>
     <input type="date" id="start_date" name="start_date" value="{{ request.GET.start_date }}" required>
 
@@ -17,7 +17,7 @@
     <input type="date" id="end_date" name="end_date" value="{{ request.GET.end_date }}" required>
 
     <button type="submit">Filter</button>
-</form>
+</form> {% endcomment %}
 
 
 

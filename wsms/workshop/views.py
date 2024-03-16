@@ -238,11 +238,13 @@ def user_dashboard(request):
     # Fetch data for the user dashboard
         # Get today's date
     today = timezone.now().date()
+    current_date = timezone.now().strftime("%Y-%m-%d")
+
 
     # Query the data
     Today_item_count = Item.objects.filter(received_date=today, is_valid=True).count()
     today_pending = Item.objects.filter(is_valid=True, status="pending").count()
-    today_damage = Item.objects.filter(is_valid=True, status='Damage').count()
+    today_damage = Item.objects.filter(completed_date=today,is_valid=True, status='Damage').count()
     today_completed = Item.objects.filter(completed_date=today, is_valid=True, status='completed').count()
 
     # Create DataFrame
@@ -265,7 +267,7 @@ def user_dashboard(request):
     # Custom colors
    
     # Create pie chart
-    fig = px.bar(df, x='Category', y='Count', title='Distribution of Items by Category',
+    fig = px.bar(df, x='Category', y='Count', title= current_date,
              color='Category', color_discrete_map=custom_colors)
 
 # Convert Plotly figure to HTML
@@ -338,6 +340,8 @@ def user_dashboard(request):
 
     return render(request, 'workshop/home.html', context)
 
+from django.shortcuts import redirect
+
 def custom_login(request):
     if request.method == 'POST':
         username = request.POST['username']
@@ -345,12 +349,16 @@ def custom_login(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('/chart')  # Replace 'desired_page' with the URL name or path of the page you want to redirect to after login
+            if user.is_wh:  # Assuming 'is_wh' is the attribute indicating whether the user is a warehouse manager
+                return redirect('/item-list_for_approval')  # Redirect to the desired page if the user is a warehouse manager
+            else:
+                return redirect('/chart')  # Redirect to '/chart' if the user is not a warehouse manager
         else:
             error_message = 'Invalid username or password'
             return render(request, 'workshop/login.html', {'error_message': error_message})
     else:
         return render(request, 'workshop/login.html')
+
 
 def index(request_iter):
     return  render(request_iter,'workshop/index.html')
@@ -555,6 +563,30 @@ class AssignmentListView(LoginRequiredMixin,ListView):
         
             # If the user is not a manager, retrieve assignments for the specific engineer
             return Assignments.objects.filter(is_valid=True, engineer=user).order_by('-id')
+        
+class AssignmentListView1(LoginRequiredMixin,ListView):
+    model = Item
+    context_object_name = 'assignments'
+    template_name = "workshop/Assignment1.html"
+    login_url = 'workshop:custom_login'
+
+    def get_queryset(self):
+        # user = self.request.user
+        # user_type = user.user_type
+
+        # if user_type == 'Registeror':
+        #     # If the user is a manager, retrieve all assignments
+        #     return Assignments.objects.filter(is_valid=True).order_by('-id')
+        # elif user_type == 'Manager':
+        #     assigned_items = Section.objects.filter(manager=self.request.user, is_valid=True)
+        #     sections_ids = assigned_items.values_list('id', flat=True)
+        #     item_id=Item.objects.filter(Section_id__in=sections_ids, is_valid=True).order_by('-id')
+        #     return Assignments.objects.filter(item_id__in=item_id, is_valid=True).order_by('-id')
+        # else:
+        
+            # If the user is not a manager, retrieve assignments for the specific engineer
+            return Item.objects.filter(is_valid=True, status='completed').order_by('-id')
+
 
 from django.views.generic import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -797,6 +829,38 @@ def complete_assignment(request, pk):
         item.save()
         messages.success(request, f'Assignment {assign.id} has been completed successfully.')
         return redirect('/assignment')
+
+
+from django.contrib import messages
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import Item
+
+def approve_assignment(request, pk):
+    if request.method == 'POST':
+        item = Item.objects.get(pk=pk)
+
+        # Check if the checkbox is checked
+        if request.POST.get('is_damage') == 'on':
+            item.is_approved = True
+        else:
+            item.is_approved = False
+
+        item.wh_comment = request.POST.get('comment', '')
+        item.save()
+        
+        messages.success(request, f'Assignment {item.id} has been approved successfully.')
+        return redirect('/item-list_for_approval')
+
+    else:
+        # Handle GET request
+        # You may want to handle GET requests differently, e.g., show a form
+        pass
+
+
+
+
 
 
 def change_password(request):
