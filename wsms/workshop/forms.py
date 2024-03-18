@@ -21,7 +21,7 @@ class UserPermissionsForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['view_dashboard', 'view_user', 'view_item', 'view_component', 'view_assignment', 'view_section', 'view_report',
-                  'add_user','add_item','add_component','add_assignment','add_section'
+                  'add_user','add_item','add_component','add_assignment','add_section','is_wh'
                   ,'delete_user','delete_component','delete_section','delete_assignment','delete_item' ]
         widgets = {
         'view_dashboard': forms.CheckboxInput(),
@@ -41,6 +41,12 @@ class UserPermissionsForm(forms.ModelForm):
         'delete_component': forms.CheckboxInput(),
         'delete_section': forms.CheckboxInput(),
         'delete_assignment': forms.CheckboxInput(),
+        'is_wh': forms.CheckboxInput(),
+        }
+
+        labels = {
+            "is_wh": "Approve Item",
+            
         }
 
 

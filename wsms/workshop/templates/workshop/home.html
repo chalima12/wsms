@@ -5,6 +5,7 @@
 {% block content %}
 
 <div class="container">
+    {% if user.view_dashboard %}
     <h1>Dashboard</h1>
     
 
@@ -114,6 +115,7 @@
   
     
     <!-- Section Item Chart -->
+    {% if not user.user_type == 'Manager' %}
     <div class="row">
         <div class="col-md-12">
             <div class="card">
@@ -132,11 +134,11 @@
         </div>
     </div>
 
-
+{% endif %}
 
 
 </div>
-
+{% endif %}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

@@ -154,6 +154,7 @@
                                         <th>Maintained By</th>
                                         <th>Maintained Solution given</th>
                                         <th>Status</th>
+                                        <th>Store Approval</th>
                                         <th>Is Maintenance-Free</th>
                                         <th>Component</th>
                                     </tr>
@@ -197,6 +198,10 @@
                                                 {% else %}style="color:red;" {% endif %}>
                                                 <i><b>{{ assignment.status }}</b></i>
                                             </td>
+                                            <td {% if assignment.is_approved %}style="color:green;" {% else %}style="color:orange;" {% endif %}>
+                                                <i><b>{% if assignment.is_approved %}Approved{% else %}Waiting{% endif %}</b></i>
+                                            </td>
+                                            
                                             <td>{% if assignment.is_maintainable_onfield %}Yes{% else %}No{% endif %}</td>
                                             <td>
                                                 <!-- Link to component details view -->

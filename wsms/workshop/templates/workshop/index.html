@@ -4,10 +4,6 @@
 
 
 
-{% if messages %}
-<ul class="messages alert-success float-right">
-{% for message in messages %}
-<li style='List-style:none' class="{{ message.tags }}">{{ message }}</li>
-{% endfor %}
-</ul>
-{% endif %}
+{% block content %}
+
+{% endblock content %}

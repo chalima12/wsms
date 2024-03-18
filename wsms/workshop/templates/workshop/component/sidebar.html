@@ -136,7 +136,17 @@
                         {% endif %}
                     </ul>
                 </li>
+                {% if user.is_wh %}
+                        {% url 'workshop:assignment1' as store_url %}
+                        <li class="nav-item">
+                            <a href="{{ store_url }}" class="nav-link {% if request.path == store_url %}active{% endif %}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Items for Approval</p>
+                            </a>
+                        </li>
+                        {% endif %}
             </ul>
+            
         </nav>
     </div>
     {% endif %}

@@ -21,7 +21,7 @@ urlpatterns = [
     path('analysis/', views.analysis_view, name='analysis'),
      path('stock-search/', StockSearchView.as_view(), name='stock_search'),
      path('autocomplet', autocomplete_view, name='autocomplete_view'),
-    path('', views.index,name='index'),
+    path('', views.user_dashboard,name='index'),
     path('home', views.index,name='index'),
     
     #  path("register-item", views.register_item, name="register-item"),

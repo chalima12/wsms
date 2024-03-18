@@ -54,11 +54,11 @@
 </head>
   
 <body>
-    
+    {% block sidebar %}{% include './component/sidebar.html' %}{% endblock sidebar %}
    
-  {% include './component/sidebar.html' %}
+  {% block navbar %} {% include './component/navbar.html' %}{% endblock navbar %}
      
-       {% include './component/navbar.html' %}
+      
          
        
        {% block content1 %}

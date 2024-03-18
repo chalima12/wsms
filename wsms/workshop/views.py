@@ -32,6 +32,7 @@ def item_status_chart(request):
     end_date = request.GET.get('end_date')
 
     # Initialize items as an empty queryset
+
     items = Item.objects.all()
 
     # Retrieve items based on the selected date range
@@ -209,7 +210,17 @@ def analysis_view(request):
 
 
 def user_dashboard(request):
-    item_status_counts = Item.objects.values('status').annotate(count=Count('status'))
+    user = request.user
+     # Filter items based on user type
+    if user.user_type == 'Registeror':
+        items = Item.objects.all()
+    elif user.user_type == 'Manager':
+        items = Item.objects.filter(Section__manager=user)
+    elif user.user_type == 'Engineer':
+        items = Item.objects.filter(engineer=user)
+
+   
+    item_status_counts = items.values('status').annotate(count=Count('status'))
 
     # Check if 'status' key exists in the queryset
     if item_status_counts.exists():
@@ -224,16 +235,17 @@ def user_dashboard(request):
         fig = px.pie(df, names='status', values='count', hover_data=['count'], labels={'count': 'items'})
         fig.update_traces(marker=dict(colors=['yellow', 'green', 'red']))
 
+
         # Convert the Plotly figure to HTML with config option
         html_representation = fig.to_html(full_html=False, config={'displaylogo': False})
 
     else:
         # If 'status' key doesn't exist, set html_representation to None or an appropriate value
         html_representation = None
-    item_count = Item.objects.filter( is_valid=True).count()
-    user_count = Item.objects.filter(is_valid=True, status="pending").count()
-    component_count = Item.objects.filter(is_valid=True, status='Damage').count()
-    section_count = Item.objects.filter(is_valid=True, status='completed').count()
+    item_count = items.filter( is_valid=True).count()
+    user_count = items.filter(is_valid=True, status="pending").count()
+    component_count = items.filter(is_valid=True, status='Damage').count()
+    section_count = items.filter(is_valid=True, status='completed').count()
 
     # Fetch data for the user dashboard
         # Get today's date
@@ -242,10 +254,10 @@ def user_dashboard(request):
 
 
     # Query the data
-    Today_item_count = Item.objects.filter(received_date=today, is_valid=True).count()
-    today_pending = Item.objects.filter(is_valid=True, status="pending").count()
-    today_damage = Item.objects.filter(completed_date=today,is_valid=True, status='Damage').count()
-    today_completed = Item.objects.filter(completed_date=today, is_valid=True, status='completed').count()
+    Today_item_count = items.filter(received_date=today, is_valid=True).count()
+    today_pending = items.filter(is_valid=True, status="pending").count()
+    today_damage = items.filter(completed_date=today,is_valid=True, status='Damage').count()
+    today_completed = items.filter(completed_date=today, is_valid=True, status='completed').count()
 
     # Create DataFrame
     data = {
@@ -585,7 +597,7 @@ class AssignmentListView1(LoginRequiredMixin,ListView):
         # else:
         
             # If the user is not a manager, retrieve assignments for the specific engineer
-            return Item.objects.filter(is_valid=True, status='completed').order_by('-id')
+            return Item.objects.filter(is_valid=True,is_approved=False, status='completed').order_by('-completed_date')
 
 
 from django.views.generic import ListView
@@ -1099,48 +1111,40 @@ class DistrictItemList(ListView):
 
     
 
-
- 
-    
 class SectionItemList(ListView):
     model = Section
     template_name = 'workshop/section_item_list.html'
     context_object_name = 'sections'
 
+    def get_week_boundaries(self, date):
+        # Get the day of the week (0 = Monday, 1 = Tuesday, ..., 6 = Sunday)
+        weekday = date.weekday()
+
+        # Calculate the start date of the week (Monday)
+        start_date = date - timedelta(days=weekday)
+
+        # Calculate the end date of the week (Sunday)
+        end_date = start_date + timedelta(days=6)
+
+        return start_date, end_date
+
     def get_queryset(self):
+    # Get current date and calculate boundaries for current week
         end_date = datetime.now().date()
-        start_date = end_date - timedelta(days=365)  # Default to one month of data
+        start_date, end_date = self.get_week_boundaries(end_date)
 
-        # Override default dates if provided in the URL parameters
-        start_date_param = self.request.GET.get('start_date')
-        end_date_param = self.request.GET.get('end_date')
-
-        if start_date_param:
-            start_date = datetime.strptime(start_date_param, '%Y-%m-%d').date()
-
-        if end_date_param:
-            end_date = datetime.strptime(end_date_param, '%Y-%m-%d').date()
-
+        # Query for sections with annotations for pending items for current week and previous week
         queryset = Section.objects.annotate(
             total_items=Count('sections'),
-            completed_items=Sum(Case(
-                When(sections__status='completed', sections__received_date__range=(start_date, end_date), then=1),
-                default=0,
-                output_field=IntegerField()
-            )),
-            damage_items=Sum(Case(
-                When(sections__status='Damage', sections__received_date__range=(start_date, end_date), then=1),
-                default=0,
-                output_field=IntegerField()
-            )),
-            pending_items=Sum(Case(
-                When(sections__status='pending', sections__received_date__range=(start_date, end_date), then=1),
-                default=0,
-                output_field=IntegerField()
-            )),
-        ).filter(total_items__gt=0)  # Filter out stocks with zero items
+            completed_items=Count('sections', filter=Q(sections__status='completed', sections__completed_date__range=(start_date, end_date))),
+            damage_items=Count('sections', filter=Q(sections__status='Damage', sections__completed_date__range=(start_date, end_date))),
+            pending_items_current_week=Count('sections', filter=Q(sections__status='pending', sections__received_date__range=(start_date, end_date))),
+            pending_items_prev_week=Count('sections', filter=Q(sections__status='pending', sections__received_date__lt=start_date)),
+        ).filter(total_items__gt=0)  # Exclude sections with zero items
 
         return queryset
+
+
 
 
 class StockItemDetailView(ListView):

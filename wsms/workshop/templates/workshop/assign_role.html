@@ -4,107 +4,111 @@
 <div class="container mt-3 card">
     <h2>Assign Role to: {{role.first_name}} {{role.last_name}}</h2>
 
-    <form  method="post">
+    <form method="post">
         {% csrf_token %}
         <div class="row">
-            <div class="col-3">
-              <div class="form-floating mb-3 mt-3">
-                 {{form.view_component|as_crispy_field }}
-              </div>
-            </div>
-            <div class="col-3">
-              <div class="form-floating mb-3 mt-3">
-                {{ form.view_dashboard|as_crispy_field }}
-              </div>
-            </div>
-      
-            <div class="col-3">
-              <div class="form-floating mb-3 mt-3">
-                 {{form.view_user|as_crispy_field }}
-              </div>
-            </div>
-            <div class="col-3">
+            <div class="col">
                 <div class="form-floating mb-3 mt-3">
-                   {{form.view_item|as_crispy_field }}
+                    {{ form.view_component|as_crispy_field }}
                 </div>
-              </div>
-          </div>
-          <div class="row">
-            <div class="col-3">
-              <div class="form-floating mb-3 mt-3">
-                 {{form.view_assignment|as_crispy_field }}
-              </div>
             </div>
-            <div class="col-3">
-              <div class="form-floating mb-3 mt-3">
-                {{ form.view_report|as_crispy_field }}
-              </div>
-            </div>
-      
-            <div class="col-3">
-              <div class="form-floating mb-3 mt-3">
-                 {{form.add_user|as_crispy_field }}
-              </div>
-            </div>
-            <div class="col-3">
+            <div class="col">
                 <div class="form-floating mb-3 mt-3">
-                   {{form.add_item|as_crispy_field }}
+                    {{ form.view_dashboard|as_crispy_field }}
                 </div>
-              </div>
-          </div>
-          <div class="row">
-            <div class="col-3">
-              <div class="form-floating mb-3 mt-3">
-                 {{form.add_component|as_crispy_field }}
-              </div>
             </div>
-            <div class="col-3">
-              <div class="form-floating mb-3 mt-3">
-                {{ form.add_assignment|as_crispy_field }}
-              </div>
-            </div>
-      
-            <div class="col-3">
-              <div class="form-floating mb-3 mt-3">
-                 {{form.delete_user|as_crispy_field }}
-              </div>
-            </div>
-            <div class="col-3">
+            <div class="col">
                 <div class="form-floating mb-3 mt-3">
-                   {{form.delete_item|as_crispy_field }}
+                    {{ form.view_user|as_crispy_field }}
                 </div>
-              </div>
-          </div>
-          <div class="row">
-            <div class="col-3">
-              <div class="form-floating mb-3 mt-3">
-                 {{form.delete_component|as_crispy_field }}
-              </div>
             </div>
-            <div class="col-3">
-              <div class="form-floating mb-3 mt-3">
-                {{ form.delete_assignment|as_crispy_field }}
-              </div>
-            </div>
-      
-            <div class="col-3">
-              <div class="form-floating mb-3 mt-3">
-                 {{form.delete_section|as_crispy_field }}
-              </div>
-            </div>
-            <div class="col-3">
+        </div>
+        <div class="row">
+            <div class="col">
                 <div class="form-floating mb-3 mt-3">
-                   {{form.view_section|as_crispy_field }}
+                    {{ form.view_item|as_crispy_field }}
                 </div>
-              </div>
-          </div>
-          <div class="col-3">
-            <div class="form-floating mb-3 mt-3">
-               {{form.add_section|as_crispy_field }}
             </div>
-          </div>
+            <div class="col">
+                <div class="form-floating mb-3 mt-3">
+                    {{ form.view_assignment|as_crispy_field }}
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-floating mb-3 mt-3">
+                    {{ form.view_report|as_crispy_field }}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="form-floating mb-3 mt-3">
+                    {{ form.add_user|as_crispy_field }}
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-floating mb-3 mt-3">
+                    {{ form.add_item|as_crispy_field }}
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-floating mb-3 mt-3">
+                    {{ form.add_component|as_crispy_field }}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="form-floating mb-3 mt-3">
+                    {{ form.add_assignment|as_crispy_field }}
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-floating mb-3 mt-3">
+                    {{ form.delete_user|as_crispy_field }}
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-floating mb-3 mt-3">
+                    {{ form.delete_item|as_crispy_field }}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="form-floating mb-3 mt-3">
+                    {{ form.delete_component|as_crispy_field }}
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-floating mb-3 mt-3">
+                    {{ form.delete_assignment|as_crispy_field }}
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-floating mb-3 mt-3">
+                    {{ form.delete_section|as_crispy_field }}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="form-floating mb-3 mt-3">
+                    {{ form.view_section|as_crispy_field }}
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-floating mb-3 mt-3">
+                    {{ form.add_section|as_crispy_field }}
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-floating mb-3 mt-3">
+                    {{ form.is_wh|as_crispy_field }}
+                </div>
+            </div>
+        </div>
         <input style='border-radius:10%' class='btn btn-primary btn-sm m-3 ' type="submit" value="Assign Role">
     </form>
-
 </div>
 {% endblock %}
