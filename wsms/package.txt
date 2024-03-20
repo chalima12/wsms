@@ -1,0 +1,3 @@
+package name:wsms
+project name:wsms
+app name    :workshop

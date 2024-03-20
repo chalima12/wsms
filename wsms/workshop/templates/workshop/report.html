@@ -144,8 +144,7 @@
                                         <th>Received Date</th>
                                         <th>Stock Id</th>
                                         <th>Description</th>
-                                        <th>Serial Number</th>
-                                        <th>Delivered By</th>
+                                     
                                         <th>Call Id</th>
                                         <th>Delivered Region</th>
                                         <th>Delivered Item problem</th>
@@ -168,8 +167,8 @@
                                             <td>{{ assignment.received_date }}</td>
                                             <td>{{ assignment.stock_id.number }}</td>
                                             <td>{{ assignment.stock_id.description }}</td>
-                                            <td>{{ assignment.Serial_no }}</td>
-                                            <td>{{ assignment.delivered_by }}</td>
+                                            
+                                           
                                             <td>{{ assignment.branch }}</td>
                                             <td>{{ assignment.region }}</td>
                                             <td>{{ assignment.remark }}</td>
@@ -209,7 +208,7 @@
                                                     {% with components_count=assignment.components.all|length %}
                                                         {% if components_count > 0 %}
                                                             <a style='border-radius:10%' href="{% url 'workshop:component_detail' assignment.id %}" class="btn btn-info btn-sm">
-                                                                <span class="fas fa-eye">list</span> 
+                                                                <span class="fas fa-eye">list</span>
                                                             </a>
                                                         {% else %}
                                                             <span>No components</span>

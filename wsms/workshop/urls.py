@@ -32,7 +32,7 @@ urlpatterns = [
      path('section', views.SectionListView.as_view(), name='section'),
      path('assignment', views.AssignmentListView.as_view(), name='assignment'),
      path('item-list_for_approval', views.AssignmentListView1.as_view(), name='assignment1'),
-     path('report', views.ReportListView.as_view(), name='report'),
+     path('report', views.report_list_view, name='report'),
      
     #  path('delete', views.delete, name='delete'),
    #create

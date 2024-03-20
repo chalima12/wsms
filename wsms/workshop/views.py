@@ -583,119 +583,100 @@ class AssignmentListView1(LoginRequiredMixin,ListView):
     login_url = 'workshop:custom_login'
 
     def get_queryset(self):
-        # user = self.request.user
-        # user_type = user.user_type
-
-        # if user_type == 'Registeror':
-        #     # If the user is a manager, retrieve all assignments
-        #     return Assignments.objects.filter(is_valid=True).order_by('-id')
-        # elif user_type == 'Manager':
-        #     assigned_items = Section.objects.filter(manager=self.request.user, is_valid=True)
-        #     sections_ids = assigned_items.values_list('id', flat=True)
-        #     item_id=Item.objects.filter(Section_id__in=sections_ids, is_valid=True).order_by('-id')
-        #     return Assignments.objects.filter(item_id__in=item_id, is_valid=True).order_by('-id')
-        # else:
+       
         
             # If the user is not a manager, retrieve assignments for the specific engineer
             return Item.objects.filter(is_valid=True,is_approved=False, status='completed').order_by('-completed_date')
 
 
-from django.views.generic import ListView
-from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Item, Section
-from django.utils import timezone
-from datetime import datetime, timedelta
-from django.db.models import Sum
 
-class ReportListView(LoginRequiredMixin, ListView):
-    model = Item
-    template_name = 'workshop/report.html'
-    context_object_name = 'assignments'
+@login_required
+def report_list_view(request):
+    user = request.user
+    current_date = timezone.now().date()
 
-    def get_queryset(self):
-        user = self.request.user
-        current_date = timezone.now().date()
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    time_range = request.GET.get('time_range', 'all')
+    selected_section = request.GET.get('section', 'all')
 
-        start_date = self.request.GET.get('start_date')
-        end_date = self.request.GET.get('end_date')
-        time_range = self.request.GET.get('time_range', 'all')
-        selected_section = self.request.GET.get('section', 'all')
+    if start_date and end_date:
+        start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+        end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
+    else:
+        if time_range == 'daily':
+            start_date = current_date
+        elif time_range == 'weekly':
+            start_date = current_date - timedelta(days=(current_date.weekday() - 4) % 7)
+        elif time_range == 'monthly':
+            start_date = current_date.replace(day=1)
+        elif time_range == 'quarterly':
+            quarter_start_month = ((current_date.month - 1) // 3) * 3 + 1
+            start_date = current_date.replace(month=quarter_start_month, day=1)
+        elif time_range == 'yearly':
+            start_date = current_date.replace(month=1, day=1)
+        elif time_range == 'all':
+            start_date = None
 
-        if start_date and end_date:
-            start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
-            end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
-        else:
-            if time_range == 'daily':
-                start_date = current_date
-            elif time_range == 'weekly':
-                start_date = current_date - timedelta(days=(current_date.weekday() - 4) % 7)
-            elif time_range == 'monthly':
-                start_date = current_date.replace(day=1)
-            elif time_range == 'quarterly':
-                quarter_start_month = ((current_date.month - 1) // 3) * 3 + 1
-                start_date = current_date.replace(month=quarter_start_month, day=1)
-            elif time_range == 'yearly':
-                start_date = current_date.replace(month=1, day=1)
-            elif time_range == 'all':
-                start_date = None
+    if start_date is not None:
+        queryset = Item.objects.filter(
+            received_date__gte=start_date,
+            received_date__lte=end_date or current_date,
+            is_valid=True
+        ).order_by('-id')
+    else:
+        queryset = Item.objects.filter(
+            is_valid=True
+        ).order_by('-id')
 
-        if start_date is not None:
-            queryset = Item.objects.filter(
-                received_date__gte=start_date,
-                received_date__lte=end_date or current_date,
-                is_valid=True
-            ).order_by('-id')
-        else:
-            queryset = Item.objects.filter(
-                is_valid=True
-            ).order_by('-id')
+    # Additional filters based on report_type
+    report_type = request.GET.get('report_type', 'all')
 
-        # Additional filters based on report_type
-        report_type = self.request.GET.get('report_type', 'all')
+    if report_type == 'damage':
+        queryset = queryset.filter(
+            is_valid=True,
+            status='Damage'
+        )
+    elif report_type == 'completed':
+        queryset = queryset.filter(
+            is_valid=True,
+            status='completed'
+        )
+    elif report_type == 'remaining':
+        queryset = queryset.filter(
+            is_valid=True,
+            status='pending'
+        )
 
-        if report_type == 'damage':
-            queryset = queryset.filter(
-                is_valid=True,
-                status='Damage'
-            )
-        elif report_type == 'completed':
-            queryset = queryset.filter(
-                is_valid=True,
-                status='completed'
-            )
-        elif report_type == 'remaining':
-            queryset = queryset.filter(
-                is_valid=True,
-                status='pending'
-            )
+    if selected_section != 'all':
+        queryset = queryset.filter(Section__id=selected_section)
 
-        if selected_section != 'all':
-            queryset = queryset.filter(Section__id=selected_section)
+    # Customize queryset based on user's role
+    if user.user_type == 'Registeror':
+        pass
+    elif user.user_type == 'Manager':
+        queryset = queryset.filter(Section__manager=user)
+    elif user.user_type == 'Engineer':
+        queryset = queryset.filter(engineer=user)
 
-        # Customize queryset based on user's role
-        if user.user_type == 'Registeror':
-            pass
-        elif user.user_type == 'Manager':
-            queryset = queryset.filter(Section__manager=user)
-        elif user.user_type == 'Engineer':
-            queryset = queryset.filter(engineer=user)
+    queryset = queryset.prefetch_related('components')  # Prefetch related components for performance
 
-        queryset = queryset.prefetch_related('components')  # Prefetch related components for performance
-        return queryset
+    context = {
+        'assignments': queryset,
+        'time_range': request.GET.get('time_range', 'all'),
+        'report_type': request.GET.get('report_type', 'all'),
+        'start_date': request.GET.get('start_date'),
+        'end_date': request.GET.get('end_date'),
+        'sections': Section.objects.filter(is_valid=True),
+        'selected_section': request.GET.get('section', 'all')
+    }
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['time_range'] = self.request.GET.get('time_range', 'all')
-        context['report_type'] = self.request.GET.get('report_type', 'all')
-        context['start_date'] = self.request.GET.get('start_date')
-        context['end_date'] = self.request.GET.get('end_date')
-        context['sections'] = Section.objects.filter(is_valid=True)
-        context['selected_section'] = self.request.GET.get('section', 'all')
-        selected_section_name = None
-        if context['selected_section'] != 'all':
-            selected_section_name = Section.objects.get(pk=context['selected_section']).name
-        context['selected_section_name'] = selected_section_name
-        return context
+    selected_section_name = None
+    if context['selected_section'] != 'all':
+        selected_section_name = Section.objects.get(pk=context['selected_section']).name
+    context['selected_section_name'] = selected_section_name
+
+    return render(request, 'workshop/report.html', context)
 
 
 
